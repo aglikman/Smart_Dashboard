@@ -1,0 +1,5 @@
+node_modules/
+.netlify/
+proxy.log
+.DS_Store
+*.log

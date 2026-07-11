@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__891e7815-e143-4bbf-8edc-c0a35bbbba91__read_file_content",
+      "Bash(curl -s -m 20 -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://arboxserver.arboxapp.com/api/v1\")",
+      "Bash(curl -s -m 20 -w \"\\\\nHTTP %{http_code}\\\\n\" -H \"apiKey: c0db5a6a-7b28-52fb-b2e2-b0294ba8\" \"https://arboxserver.arboxapp.com/api/v1/user\")",
+      "Bash(curl -s -m 20 -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://api.scallacrm.co.il/\")",
+      "Bash(curl -s -m 20 -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://scallacrm.co.il/\")",
+      "Bash(curl -s -m 25 -X POST \"https://api.scallacrm.co.il/api/loginAndFetchModules\" -H \"Content-Type: application/x-www-form-urlencoded\" --data \"username=edendavid92@gmail.com&password=edendavid92@gmail.com\")",
+      "Bash(ls -la)",
+      "Bash(ls -la netlify/functions/)",
+      "Bash(curl -s -m 30 -c /tmp/scookie.txt -X POST \"https://api.scallacrm.co.il/scallaapi/api\" -H \"Content-Type: application/x-www-form-urlencoded\" --data \"_operation=loginAndFetchModules&username=edendavid92@gmail.com&password=edendavid92@gmail.com\")",
+      "Bash(curl -s -m 25 -X POST \"https://apiappv2.arboxapp.com/api/v2/user/login\" -H \"Content-Type: application/json\" --data '{\"email\":\"Shashua55@gmail.com\",\"password\":\"Meital1234!\"}')",
+      "Bash(curl -s -m 20 -o /dev/null -w \"login2 HTTP %{http_code}\\\\n\" -X POST \"https://api.arboxapp.com/index.php/api/v2/user/login\" -H \"Content-Type: application/json\" --data '{\"email\":\"Shashua55@gmail.com\",\"password\":\"Meital1234!\"}')",
+      "Read(//c/tmp/**)",
+      "Bash(python3 -)",
+      "Bash(curl -s -m 25 https://arboxserver.arboxapp.com/docs/api.json -o /c/Users/aryeg/AppData/Local/Temp/claude/C--Users-aryeg-OneDrive-Documents-Claude-Projects-DashBoard-project/e20ca5de-d1c3-474e-b31d-c6fc1fcb6be8/scratchpad/arbox_spec.json)",
+      "Bash(python3 - /c/Users/aryeg/AppData/Local/Temp/claude/C--Users-aryeg-OneDrive-Documents-Claude-Projects-DashBoard-project/e20ca5de-d1c3-474e-b31d-c6fc1fcb6be8/scratchpad/arbox_spec.json)",
+      "Bash(node scalla_proxy.js)",
+      "Bash(curl -s -m 10 \"http://localhost:3001/health\")",
+      "Bash(curl -s -m 25 -X POST \"http://localhost:3001/api/scalla\" -H \"Content-Type: application/x-www-form-urlencoded\" --data \"_operation=loginAndFetchModules&username=edendavid92@gmail.com&password=edendavid92@gmail.com\")",
+      "Bash(curl -s -m 10 -o /dev/null -w \"root HTTP %{http_code}\\\\n\" \"http://localhost:3001/\")",
+      "Read(//tmp/**)",
+      "Bash(grep -iE \"^docx$\")",
+      "Bash(python -c \"import docx; print\\('python-docx OK', docx.__version__\\)\")",
+      "Bash(pip install *)",
+      "Bash(python -c \"import docx; print\\('python-docx', docx.__version__\\)\")",
+      "Bash(python \"/c/Users/aryeg/AppData/Local/Temp/claude/C--Users-aryeg-OneDrive-Documents-Claude-Projects-DashBoard-project/e20ca5de-d1c3-474e-b31d-c6fc1fcb6be8/scratchpad/build_guide.py\")"
+    ]
+  }
+}

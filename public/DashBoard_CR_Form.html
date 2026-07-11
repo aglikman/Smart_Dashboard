@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DashBoard - Change Request | בקשת שינוי</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Heebo', sans-serif;
+  background: #F5F3FF;
+  color: #1E1B4B;
+  direction: rtl;
+  min-height: 100vh;
+}
+
+.header {
+  background: linear-gradient(135deg, #581C87 0%, #7C3AED 50%, #DB2777 100%);
+  padding: 24px 32px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header h1 { font-size: 28px; font-weight: 900; letter-spacing: 1px; }
+.header .subtitle { font-size: 14px; opacity: 0.9; }
+.header .en { font-size: 12px; opacity: 0.7; direction: ltr; text-align: left; }
+
+.container {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 20px 40px;
+}
+
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border-right: 4px solid #7C3AED;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #581C87;
+  margin-bottom: 4px;
+}
+.section-en {
+  font-size: 12px;
+  color: #9CA3AF;
+  direction: ltr;
+  display: inline;
+  margin-bottom: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 14px;
+}
+.form-row.full { grid-template-columns: 1fr; }
+
+label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  display: block;
+  margin-bottom: 4px;
+}
+.en-label { font-weight: 400; font-size: 11px; color: #9CA3AF; direction: ltr; }
+
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #D1D5DB;
+  border-radius: 8px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  color: #1E1B4B;
+  background: #FAFAFA;
+  transition: border 0.2s;
+  direction: rtl;
+}
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+textarea { resize: vertical; min-height: 100px; }
+
+/* Category cards */
+.category-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.category-card {
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.category-card:hover { border-color: #7C3AED; background: #F5F3FF; }
+.category-card.selected {
+  border-color: #7C3AED;
+  background: #EDE9FE;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+}
+.category-card.selected::after {
+  content: " \2713";
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  color: #16A34A;
+  font-size: 18px;
+  font-weight: 700;
+}
+.category-card input { display: none; }
+.cat-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #581C87;
+  margin-bottom: 2px;
+}
+.cat-name-en {
+  font-size: 11px;
+  color: #9CA3AF;
+  direction: ltr;
+  display: block;
+}
+.cat-desc {
+  font-size: 12px;
+  color: #6B7280;
+  margin-top: 6px;
+  line-height: 1.5;
+}
+.cat-price {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+.cat-price.free {
+  background: #DCFCE7;
+  color: #15803D;
+}
+.cat-price.paid {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+/* Billing notice */
+.billing-notice {
+  display: none;
+  background: #FEF3C7;
+  border: 1.5px solid #F59E0B;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 14px;
+  font-size: 13px;
+  color: #92400E;
+  line-height: 1.6;
+}
+.billing-notice.visible { display: block; }
+.billing-notice strong { font-weight: 700; }
+
+/* Billing section */
+.billing-section {
+  display: none;
+}
+.billing-section.visible { display: block; }
+.payment-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+.payment-card {
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.payment-card:hover { border-color: #7C3AED; background: #F5F3FF; }
+.payment-card.selected {
+  border-color: #7C3AED;
+  background: #EDE9FE;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+}
+.payment-card input { display: none; }
+.pay-name { font-size: 14px; font-weight: 700; color: #581C87; }
+.pay-en { font-size: 10px; color: #9CA3AF; display: block; }
+
+/* Severity cards */
+.severity-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 12px;
+}
+.severity-card {
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 12px 10px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.severity-card:hover { border-color: #7C3AED; }
+.severity-card.selected {
+  border-color: #7C3AED;
+  background: #EDE9FE;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.15);
+}
+.severity-card input { display: none; }
+.sev-label { font-size: 14px; font-weight: 700; }
+.sev-en { font-size: 10px; color: #9CA3AF; display: block; margin-top: 2px; }
+.severity-card:nth-child(1) .sev-label { color: #DC2626; }
+.severity-card:nth-child(2) .sev-label { color: #D97706; }
+.severity-card:nth-child(3) .sev-label { color: #2563EB; }
+.severity-card:nth-child(4) .sev-label { color: #6B7280; }
+
+/* Checkbox items */
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1.5px solid #E5E7EB;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-size: 13px;
+  color: #374151;
+  background: #FAFAFA;
+}
+.checkbox-item:hover { border-color: #7C3AED; background: #F5F3FF; }
+.checkbox-item.checked {
+  border-color: #7C3AED;
+  background: #EDE9FE;
+}
+.cb-text { font-weight: 500; }
+.cb-en { font-size: 10px; color: #9CA3AF; direction: ltr; }
+
+/* Info box */
+.info-box {
+  background: #EDE9FE;
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  border-right: 3px solid #7C3AED;
+}
+.info-box p { font-size: 13px; color: #581C87; line-height: 1.6; }
+.info-box strong { font-weight: 700; }
+
+/* Submit */
+.submit-section {
+  text-align: center;
+  margin-top: 24px;
+}
+.submit-btn {
+  background: linear-gradient(135deg, #581C87 0%, #7C3AED 50%, #DB2777 100%);
+  color: white;
+  border: none;
+  padding: 14px 60px;
+  font-size: 18px;
+  font-weight: 700;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: 'Heebo', sans-serif;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(124,58,237,0.35);
+}
+
+.footer-note {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 12px;
+  color: #9CA3AF;
+}
+
+@media (max-width: 600px) {
+  .form-row, .category-grid, .checkbox-group { grid-template-columns: 1fr; }
+  .severity-grid { grid-template-columns: 1fr 1fr; }
+  .header { flex-direction: column; text-align: center; gap: 8px; }
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>DashBoard</h1>
+    <div class="subtitle">טופס בקשת שינוי</div>
+  </div>
+  <div style="text-align:left; direction:ltr;">
+    <div class="en">Change Request Form</div>
+    <div class="en">Submit modifications to your dashboard</div>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- SECTION 1: Client Info -->
+  <div class="section">
+    <div class="section-title">פרטי הלקוח <span class="section-en">Client Information</span></div>
+    <div class="form-row">
+      <div>
+        <label>שם העסק <span class="en-label">Business Name</span></label>
+        <input type="text" placeholder="שם העסק שלכם">
+      </div>
+      <div>
+        <label>איש קשר <span class="en-label">Contact Person</span></label>
+        <input type="text" placeholder="שם מלא">
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>טלפון <span class="en-label">Phone</span></label>
+        <input type="tel" placeholder="050-0000000">
+      </div>
+      <div>
+        <label>אימייל <span class="en-label">Email</span></label>
+        <input type="email" placeholder="email@example.com" dir="ltr">
+      </div>
+    </div>
+    <div class="form-row">
+      <div>
+        <label>תאריך <span class="en-label">Date</span></label>
+        <input type="date">
+      </div>
+      <div>
+        <label>מזהה דשבורד <span class="en-label">Dashboard ID (if known)</span></label>
+        <input type="text" placeholder="DB-XXX">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: Category -->
+  <div class="section">
+    <div class="section-title">סוג השינוי <span class="section-en">Change Category</span></div>
+    <p style="font-size:13px; color:#6B7280; margin-top:4px;">בחרו את סוג הבקשה <span style="direction:ltr; display:inline;">(Select the type of change)</span></p>
+
+    <div class="category-grid">
+      <div class="category-card" onclick="selectCategory(this)">
+        <input type="radio" name="category" value="minor">
+        <div class="cat-name">התאמה קטנה <span class="cat-name-en">Minor Adjustment</span></div>
+        <div class="cat-desc">שינויים ויזואליים קטנים, תיקון טקסט, שינוי צבע, סדר אלמנטים. עד 30 דקות עבודה.</div>
+        <div class="cat-price free">כלול בתחזוקה | Included</div>
+      </div>
+      <div class="category-card" onclick="selectCategory(this)">
+        <input type="radio" name="category" value="kpi">
+        <div class="cat-name">שינוי KPI / נתונים <span class="cat-name-en">KPI / Data Change</span></div>
+        <div class="cat-desc">הוספה, הסרה או שינוי של מדד, גרף, מקור נתונים, או פילטר.</div>
+        <div class="cat-price paid">2 בחודש כלולים, מעבר: ₪200 | 2/mo included, then ₪200 each</div>
+      </div>
+      <div class="category-card" onclick="selectCategory(this)">
+        <input type="radio" name="category" value="feature">
+        <div class="cat-name">תוספת פיצ'ר <span class="cat-name-en">Feature Addition</span></div>
+        <div class="cat-desc">פונקציונליות חדשה: התראות, תצוגה נוספת, ייצוא נתונים, אינטגרציה חדשה.</div>
+        <div class="cat-price paid">בהצעת מחיר: ₪500-1,500 | Quoted: ₪500-1,500</div>
+      </div>
+      <div class="category-card" onclick="selectCategory(this)">
+        <input type="radio" name="category" value="rebuild">
+        <div class="cat-name">בנייה מחדש <span class="cat-name-en">Structural Rebuild</span></div>
+        <div class="cat-desc">שינוי מהותי: החלפת מערכת CRM, עיצוב מחדש, תמיכה רב-סניפית.</div>
+        <div class="cat-price paid">בהצעת מחיר: ₪1,500-3,000 | Quoted: ₪1,500-3,000</div>
+      </div>
+    </div>
+
+    <div class="billing-notice" id="billingNotice">
+      <strong>שימו לב:</strong> סוג שינוי זה עשוי להיות כרוך בתשלום נוסף. נשלח הצעת מחיר לאישורכם לפני תחילת העבודה.
+      <br><span style="direction:ltr; display:inline; font-size:12px;"><strong>Note:</strong> This type of change may incur additional charges. We'll send a quote for your approval before starting work.</span>
+    </div>
+  </div>
+
+  <!-- SECTION 3: Severity -->
+  <div class="section">
+    <div class="section-title">דחיפות <span class="section-en">Severity / Priority</span></div>
+    <p style="font-size:13px; color:#6B7280; margin-top:4px;">מה רמת הדחיפות? <span style="direction:ltr; display:inline;">(How urgent is this?)</span></p>
+
+    <div class="severity-grid">
+      <div class="severity-card" onclick="selectSeverity(this)">
+        <input type="radio" name="severity" value="p1">
+        <div class="sev-label">P1 - קריטי</div>
+        <div class="sev-en">Critical</div>
+        <div style="font-size:11px; color:#6B7280; margin-top:4px;">הדשבורד לא עובד או מציג נתונים שגויים</div>
+      </div>
+      <div class="severity-card" onclick="selectSeverity(this)">
+        <input type="radio" name="severity" value="p2">
+        <div class="sev-label">P2 - גבוה</div>
+        <div class="sev-en">High</div>
+        <div style="font-size:11px; color:#6B7280; margin-top:4px;">פיצ'ר חשוב לא עובד או KPI לא מתעדכן</div>
+      </div>
+      <div class="severity-card" onclick="selectSeverity(this)">
+        <input type="radio" name="severity" value="p3">
+        <div class="sev-label">P3 - בינוני</div>
+        <div class="sev-en">Medium</div>
+        <div style="font-size:11px; color:#6B7280; margin-top:4px;">בעיה קוסמטית או אי-דיוק קטן</div>
+      </div>
+      <div class="severity-card" onclick="selectSeverity(this)">
+        <input type="radio" name="severity" value="p4">
+        <div class="sev-label">P4 - נמוך</div>
+        <div class="sev-en">Low</div>
+        <div style="font-size:11px; color:#6B7280; margin-top:4px;">בקשת שיפור, nice-to-have</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 4: Description -->
+  <div class="section">
+    <div class="section-title">תיאור השינוי <span class="section-en">Change Description</span></div>
+
+    <div class="form-row full" style="margin-top:12px;">
+      <div>
+        <label>מה השינוי המבוקש? <span class="en-label">What change do you need?</span></label>
+        <textarea placeholder="תארו בפירוט את השינוי שאתם מבקשים..." rows="4"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row full">
+      <div>
+        <label>למה זה חשוב? <span class="en-label">Why is this important? (business context)</span></label>
+        <textarea placeholder="הסבירו את הצורך העסקי מאחורי הבקשה..." rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="form-row full">
+      <div>
+        <label>איפה בדשבורד? <span class="en-label">Where in the dashboard? (screen, section, chart name)</span></label>
+        <input type="text" placeholder="לדוגמא: כרטיס הכנסות בעמוד הראשי, גרף מגמות חודשי...">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 5: Affected Areas -->
+  <div class="section">
+    <div class="section-title">אלמנטים מושפעים <span class="section-en">Affected Dashboard Elements</span></div>
+    <p style="font-size:13px; color:#6B7280; margin-bottom:4px;">סמנו את כל האלמנטים שקשורים לשינוי <span style="direction:ltr; display:inline;">(Select all that apply)</span></p>
+
+    <div class="checkbox-group">
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">כרטיסי KPI</div><div class="cb-en">KPI Cards</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">גרפים ותרשימים</div><div class="cb-en">Charts & Graphs</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">טבלאות נתונים</div><div class="cb-en">Data Tables</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">פילטרים ומסננים</div><div class="cb-en">Filters</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">חיבור למערכת CRM</div><div class="cb-en">CRM Connection</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">התראות ודוחות</div><div class="cb-en">Alerts & Reports</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">עיצוב ותצוגה</div><div class="cb-en">Layout & Design</div></div>
+      </div>
+      <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+        <input type="checkbox"><div><div class="cb-text">אחר</div><div class="cb-en">Other</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 6: Attachments & Notes -->
+  <div class="section">
+    <div class="section-title">מידע נוסף <span class="section-en">Additional Information</span></div>
+
+    <div class="form-row full" style="margin-top:12px;">
+      <div>
+        <label>צילום מסך או קובץ מצורף <span class="en-label">Screenshot or Attachment (paste URL or describe)</span></label>
+        <input type="text" placeholder="הדביקו קישור לצילום מסך או תארו מה רואים...">
+      </div>
+    </div>
+
+    <div class="form-row full">
+      <div>
+        <label>הערות נוספות <span class="en-label">Additional Notes</span></label>
+        <textarea placeholder="כל מידע נוסף שיעזור לנו לטפל בבקשה..." rows="3"></textarea>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <p><strong>מה קורה אחרי שליחת הטופס?</strong></p>
+      <p>1. נאשר קבלה תוך יום עסקים אחד</p>
+      <p>2. נסווג את הבקשה ונעדכן אתכם על לו"ז וע לות (אם רלוונטי)</p>
+      <p>3. לאחר אישורכם, נבצע את השינוי ונעדכן אתכם עם סיום</p>
+      <p style="margin-top:8px; font-size:12px; color:#7C3AED;"><strong>What happens next?</strong> We acknowledge within 1 business day, classify and quote if applicable, then deliver after your approval.</p>
+    </div>
+  </div>
+
+  <!-- SECTION 7: Billing (shown only for billable categories) -->
+  <div class="section billing-section" id="billingSection">
+    <div class="section-title">פרטי חיוב <span class="section-en">Billing Information</span></div>
+    <p style="font-size:13px; color:#6B7280; margin-top:4px;">יש למלא רק אם הבקשה כרוכה בתשלום <span style="direction:ltr; display:inline;">(Required only for billable changes)</span></p>
+
+    <div class="form-row">
+      <div>
+        <label>שם העסק לחשבונית <span class="en-label">Business Name for Invoice</span></label>
+        <input type="text" id="invoiceName" placeholder="שם העסק כפי שיופיע בחשבונית">
+      </div>
+      <div>
+        <label>ח.פ. / ע.מ. <span class="en-label">Business Registration Number</span></label>
+        <input type="text" id="bizNumber" placeholder="מספר עוסק / חברה">
+      </div>
+    </div>
+
+    <div class="form-row full">
+      <div>
+        <label>כתובת לחשבונית <span class="en-label">Invoice Address</span></label>
+        <input type="text" id="invoiceAddress" placeholder="כתובת מלאה">
+      </div>
+    </div>
+
+    <div style="margin-top:14px;">
+      <label>אמצעי תשלום מועדף <span class="en-label">Preferred Payment Method</span></label>
+      <div class="payment-grid">
+        <div class="payment-card" onclick="selectPayment(this)">
+          <input type="radio" name="payment" value="transfer">
+          <div class="pay-name">העברה בנקאית</div>
+          <div class="pay-en">Bank Transfer</div>
+        </div>
+        <div class="payment-card" onclick="selectPayment(this)">
+          <input type="radio" name="payment" value="bit">
+          <div class="pay-name">Bit / PayBox</div>
+          <div class="pay-en">Mobile Payment</div>
+        </div>
+        <div class="payment-card" onclick="selectPayment(this)">
+          <input type="radio" name="payment" value="credit">
+          <div class="pay-name">כרטיס אשראי</div>
+          <div class="pay-en">Credit Card (invoice)</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box" style="margin-top:14px;">
+      <p><strong>מדיניות תשלום:</strong> חשבונית תישלח בסוף החודש, יחד עם דמי התחזוקה החודשיים. הצעת מחיר תישלח לאישור לפני תחילת עבודה על שינויים בתשלום.</p>
+      <p style="font-size:12px; color:#7C3AED; margin-top:6px;"><strong>Payment policy:</strong> Invoice sent at month-end with monthly maintenance. Quotes require your approval before billable work begins.</p>
+    </div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-section">
+    <button class="submit-btn" onclick="submitForm()">שליחת בקשת שינוי | Submit CR</button>
+    <div class="footer-note">הטופס ישלח לצוות DashBoard ויטופל בהתאם ל-SLA שהוגדר</div>
+    <div class="footer-note" style="direction:ltr;">This form will be sent to the DashBoard team and handled per the defined SLA</div>
+  </div>
+
+</div>
+
+<script>
+const BILLABLE = ['kpi', 'feature', 'rebuild'];
+
+function selectCategory(el) {
+  document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+
+  const val = el.querySelector('input').value;
+  const isBillable = BILLABLE.includes(val);
+  document.getElementById('billingNotice').classList.toggle('visible', isBillable);
+  document.getElementById('billingSection').classList.toggle('visible', isBillable);
+}
+
+function selectSeverity(el) {
+  document.querySelectorAll('.severity-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+}
+
+function selectPayment(el) {
+  document.querySelectorAll('.payment-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  el.querySelector('input').checked = true;
+}
+
+function submitForm() {
+  const category = document.querySelector('input[name="category"]:checked');
+  const severity = document.querySelector('input[name="severity"]:checked');
+  if (!category) { alert('Please select a change category / בחרו סוג שינוי'); return; }
+  if (!severity) { alert('Please select severity / בחרו דחיפות'); return; }
+
+  const isBillable = BILLABLE.includes(category.value);
+  let msg = 'בקשת השינוי נשלחה בהצלחה!\nצוות DashBoard יצור קשר תוך יום עסקים אחד.';
+  if (isBillable) {
+    msg += '\n\nבקשה זו עשויה להיות כרוכה בתשלום.\nנשלח הצעת מחיר לאישורכם לפני תחילת העבודה.';
+  }
+  alert('Change request submitted successfully!\n\n' + msg);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DashBoard - מרכז כלים | Tools Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #6B21A8;
+    --primary-light: #9333EA;
+    --secondary: #0891B2;
+    --success: #16A34A;
+    --success-light: #DCFCE7;
+    --danger: #DC2626;
+    --danger-light: #FEE2E2;
+    --warning: #D97706;
+    --warning-light: #FEF3C7;
+    --bg: #F3F0FF;
+    --card: #FFFFFF;
+    --text: #1E1B4B;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+    --shadow: 0 2px 16px rgba(107,33,168,0.08);
+    --shadow-hover: 0 8px 32px rgba(107,33,168,0.18);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Heebo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
+  .header {
+    background: linear-gradient(135deg, #581C87 0%, #7C3AED 50%, #DB2777 100%);
+    padding: 26px 32px;
+    color: white;
+  }
+  .header-inner { max-width: 1000px; margin: 0 auto; display: flex; align-items: center; gap: 14px; }
+  .brand-icon {
+    width: 50px; height: 50px; background: rgba(255,255,255,0.2);
+    border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+  }
+  .header h1 { font-size: 22px; font-weight: 800; }
+  .header .subtitle { font-size: 12px; opacity: 0.85; margin-top: 3px; }
+
+  .main { max-width: 1000px; margin: 0 auto; padding: 28px 24px; }
+  .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+  @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+
+  .tool-card {
+    background: var(--card); border-radius: 16px; padding: 22px;
+    box-shadow: var(--shadow); border-top: 4px solid var(--border);
+    display: flex; flex-direction: column; gap: 10px;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .tool-card.link { cursor: pointer; text-decoration: none; color: inherit; }
+  .tool-card.link:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+  .tool-card.dashboard { border-top-color: var(--primary); }
+  .tool-card.intake    { border-top-color: var(--secondary); }
+  .tool-card.cr        { border-top-color: #EC4899; }
+  .tool-card.proxy     { border-top-color: var(--warning); }
+
+  .tool-icon { font-size: 30px; }
+  .tool-name { font-size: 16px; font-weight: 800; }
+  .tool-desc { font-size: 12.5px; color: var(--text-secondary); line-height: 1.5; }
+  .tool-open { font-size: 12px; font-weight: 700; color: var(--primary); margin-top: auto; }
+
+  .proxy-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; width: fit-content;
+  }
+  .proxy-badge.checking { background: var(--warning-light); color: var(--warning); }
+  .proxy-badge.online   { background: var(--success-light); color: var(--success); }
+  .proxy-badge.offline  { background: var(--danger-light); color: var(--danger); }
+  .proxy-detail { font-size: 11.5px; color: var(--text-secondary); }
+  .proxy-actions { display: flex; gap: 8px; margin-top: auto; flex-wrap: wrap; }
+  .proxy-btn {
+    font-size: 12px; font-weight: 700; border: none; border-radius: 8px;
+    padding: 6px 12px; cursor: pointer; font-family: inherit;
+  }
+  .proxy-btn.refresh { background: var(--primary); color: white; }
+  .proxy-btn.refresh:hover { background: var(--primary-light); }
+  .proxy-btn.stats {
+    background: var(--bg); color: var(--text); border: 1px solid var(--border);
+    text-decoration: none; display: inline-flex; align-items: center;
+  }
+  .proxy-cmd {
+    background: #1E1B4B; color: #E9D5FF; font-family: 'Courier New', monospace;
+    font-size: 11.5px; padding: 6px 10px; border-radius: 6px; margin-top: 2px; width: fit-content;
+  }
+
+  .footer { max-width: 1000px; margin: 0 auto; padding: 0 24px 28px; font-size: 11px; color: var(--text-secondary); text-align: center; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand-icon">🧰</div>
+    <div>
+      <h1>מרכז כלים | DashBoard Tools Hub</h1>
+      <div class="subtitle">גישה מהירה לדשבורד, טפסים וסטטוס ה-API Proxy</div>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+  <div class="grid">
+
+    <a class="tool-card link dashboard" href="index.html">
+      <div class="tool-icon">🖥</div>
+      <div class="tool-name">דשבורד ראשי</div>
+      <div class="tool-desc">לוח הבקרה המלא של הבית של גיליגולי - לידים, סטודיו ושיווק.</div>
+      <div class="tool-open">פתח את הדשבורד ↗</div>
+    </a>
+
+    <a class="tool-card link intake" href="DashBoard_Client_Intake_Form.html">
+      <div class="tool-icon">📝</div>
+      <div class="tool-name">טופס קליטת לקוח</div>
+      <div class="tool-desc">Client Intake Form - טופס אונבורדינג ללקוח חדש בפרויקט ה-DashBoard.</div>
+      <div class="tool-open">פתח טופס ↗</div>
+    </a>
+
+    <a class="tool-card link cr" href="DashBoard_CR_Form.html">
+      <div class="tool-icon">🔧</div>
+      <div class="tool-name">טופס בקשת שינוי</div>
+      <div class="tool-desc">Change Request Form - הגשת בקשה לשינוי או תוספת מדדים בדשבורד.</div>
+      <div class="tool-open">פתח טופס ↗</div>
+    </a>
+
+    <div class="tool-card proxy">
+      <div class="tool-icon">📡</div>
+      <div class="tool-name">סטטוס Proxy מקומי</div>
+      <div class="tool-desc">בדיקת חיים ל-scalla_proxy.js על localhost:3001 (חייב לרוץ מקומית במחשב שלך, לא בענן).</div>
+      <div id="proxyStatus" class="proxy-badge checking">⟳ בודק...</div>
+      <div id="proxyDetail" class="proxy-detail"></div>
+      <div class="proxy-actions">
+        <button class="proxy-btn refresh" onclick="checkProxyHealth()">🔄 בדוק שוב</button>
+        <a class="proxy-btn stats" href="http://localhost:3001/stats" target="_blank" rel="noopener">📊 /stats</a>
+        <a class="proxy-btn stats" href="http://localhost:3001" target="_blank" rel="noopener">🌐 פתח דרך ה-Proxy</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<div class="footer">DashBoard Tools Hub</div>
+
+<script>
+async function checkProxyHealth() {
+  const statusEl = document.getElementById('proxyStatus');
+  const detailEl = document.getElementById('proxyDetail');
+  statusEl.textContent = '⟳ בודק...';
+  statusEl.className = 'proxy-badge checking';
+  detailEl.innerHTML = '';
+
+  try {
+    const res = await fetch('http://localhost:3001/health', { signal: AbortSignal.timeout(3000) });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    statusEl.textContent = '✓ Proxy פעיל';
+    statusEl.className = 'proxy-badge online';
+    const mins = Math.floor((data.uptimeSeconds || 0) / 60);
+    const secs = (data.uptimeSeconds || 0) % 60;
+    detailEl.textContent = `זמן פעילות: ${mins}מ׳ ${secs}ש׳ | Session פעיל: ${data.cookies ? 'כן' : 'לא עדיין'}`;
+  } catch (err) {
+    statusEl.textContent = '✕ Proxy לא פעיל';
+    statusEl.className = 'proxy-badge offline';
+    detailEl.innerHTML = 'הפעל מהטרמינל בתיקיית הפרויקט (במחשב שלך):<div class="proxy-cmd">node scalla_proxy.js</div>';
+  }
+}
+
+checkProxyHealth();
+</script>
+
+</body>
+</html>

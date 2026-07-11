@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DashBoard - Client Intake Form | טופס קליטת לקוח</title>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Heebo', sans-serif;
+  background: #F5F3FF;
+  color: #1E1B4B;
+  direction: rtl;
+  min-height: 100vh;
+}
+
+/* ── Header ── */
+.header {
+  background: linear-gradient(135deg, #581C87 0%, #7C3AED 50%, #DB2777 100%);
+  padding: 24px 32px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.header h1 { font-size: 28px; font-weight: 900; letter-spacing: 1px; }
+.header .subtitle { font-size: 14px; opacity: 0.9; }
+.header .en { font-size: 12px; opacity: 0.7; direction: ltr; text-align: left; }
+
+/* ── Main container ── */
+.container {
+  max-width: 900px;
+  margin: 24px auto;
+  padding: 0 20px 40px;
+}
+
+/* ── Section cards ── */
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  border-right: 4px solid #7C3AED;
+}
+.section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #581C87;
+  margin-bottom: 4px;
+}
+.section-title-en {
+  font-size: 13px;
+  font-weight: 400;
+  color: #9CA3AF;
+  direction: ltr;
+  text-align: left;
+  margin-bottom: 16px;
+}
+
+/* ── Prerequisites section ── */
+.section.prereq {
+  border-right-color: #DB2777;
+  background: #FFF5F7;
+}
+.section.prereq .section-title { color: #DB2777; }
+
+/* ── Form elements ── */
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 14px;
+  margin-bottom: 4px;
+  margin-top: 14px;
+}
+label .en-label {
+  font-weight: 400;
+  font-size: 12px;
+  color: #9CA3AF;
+  direction: ltr;
+  display: inline;
+}
+input[type="text"], input[type="email"], input[type="tel"], textarea, select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid #D1D5DB;
+  border-radius: 8px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  transition: border 0.2s;
+  direction: rtl;
+}
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #7C3AED;
+  box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
+}
+textarea { min-height: 80px; resize: vertical; }
+
+.row { display: flex; gap: 16px; }
+.row > div { flex: 1; }
+
+/* ── Checkbox groups ── */
+.checkbox-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+.checkbox-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #F9F5FF;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s;
+  border: 1px solid transparent;
+}
+.checkbox-item:hover { background: #EDE9FE; }
+.checkbox-item.checked {
+  background: #EDE9FE;
+  border-color: #7C3AED;
+}
+.checkbox-item input[type="checkbox"] {
+  margin-top: 3px;
+  accent-color: #7C3AED;
+  width: 16px;
+  height: 16px;
+}
+.checkbox-item .cb-text { font-size: 13px; line-height: 1.4; }
+.checkbox-item .cb-en { font-size: 11px; color: #9CA3AF; direction: ltr; }
+
+/* ── CRM system cards ── */
+.crm-cards { display: flex; gap: 12px; margin-top: 12px; flex-wrap: wrap; }
+.crm-card {
+  flex: 1;
+  min-width: 180px;
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+}
+.crm-card:hover { border-color: #7C3AED; background: #F9F5FF; }
+.crm-card.selected { border-color: #7C3AED; background: #EDE9FE; }
+.crm-card .crm-name { font-size: 16px; font-weight: 700; color: #581C87; }
+.crm-card .crm-desc { font-size: 11px; color: #6B7280; margin-top: 4px; }
+.crm-card input[type="checkbox"] { display: none; }
+.crm-card.selected .crm-name::after { content: " ✓"; color: #16A34A; }
+
+/* ── Prerequisites list ── */
+.prereq-list { list-style: none; margin-top: 12px; }
+.prereq-list li {
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  border-right: 3px solid #DB2777;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.prereq-list li .req-title { font-weight: 700; color: #DB2777; }
+.prereq-list li .req-en { font-size: 11px; color: #9CA3AF; direction: ltr; display: block; margin-top: 2px; }
+
+/* ── Priority badges ── */
+.priority-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-right: 6px;
+}
+.priority-must { background: #FEE2E2; color: #DC2626; }
+.priority-nice { background: #FEF3C7; color: #D97706; }
+
+/* ── Submit area ── */
+.submit-area {
+  text-align: center;
+  margin-top: 24px;
+}
+.btn-submit {
+  background: linear-gradient(135deg, #7C3AED 0%, #DB2777 100%);
+  color: white;
+  border: none;
+  padding: 14px 48px;
+  border-radius: 10px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn-submit:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(124,58,237,0.3);
+}
+.btn-print {
+  background: white;
+  color: #7C3AED;
+  border: 2px solid #7C3AED;
+  padding: 12px 36px;
+  border-radius: 10px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-right: 12px;
+  transition: background 0.2s;
+}
+.btn-print:hover { background: #F9F5FF; }
+
+/* ── Signature area ── */
+.sig-row {
+  display: flex;
+  gap: 32px;
+  margin-top: 20px;
+}
+.sig-box {
+  flex: 1;
+  border-bottom: 2px solid #D1D5DB;
+  padding-bottom: 8px;
+  text-align: center;
+}
+.sig-label { font-size: 12px; color: #6B7280; margin-top: 6px; }
+
+/* ── Print styles ── */
+@media print {
+  body { background: white; }
+  .container { max-width: 100%; padding: 0; }
+  .section { box-shadow: none; page-break-inside: avoid; }
+  .btn-submit, .btn-print { display: none; }
+  .header { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  .checkbox-item, .crm-card, .prereq-list li { print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════ HEADER ══════════ -->
+<div class="header">
+  <div>
+    <h1>DashBoard</h1>
+    <div class="subtitle">טופס קליטת לקוח - הגדרת דרישות דשבורד</div>
+  </div>
+  <div style="text-align: left; direction: ltr;">
+    <div class="en">Client Intake Form</div>
+    <div class="en">Dashboard Requirements</div>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ══════════ 1. CLIENT INFO ══════════ -->
+<div class="section">
+  <div class="section-title">1. פרטי הלקוח</div>
+  <div class="section-title-en">Client Information</div>
+
+  <div class="row">
+    <div>
+      <label>שם העסק <span class="en-label">Business Name</span></label>
+      <input type="text" placeholder="לדוגמה: סטודיו פילאטיס תל אביב">
+    </div>
+    <div>
+      <label>איש קשר <span class="en-label">Contact Person</span></label>
+      <input type="text" placeholder="שם מלא">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>טלפון <span class="en-label">Phone</span></label>
+      <input type="tel" placeholder="050-0000000" dir="ltr">
+    </div>
+    <div>
+      <label>אימייל <span class="en-label">Email</span></label>
+      <input type="email" placeholder="name@business.co.il" dir="ltr">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>תחום פעילות <span class="en-label">Industry / Vertical</span></label>
+      <select>
+        <option value="">בחרו תחום...</option>
+        <option>כושר ובריאות (חדר כושר, סטודיו, יוגה, פילאטיס)</option>
+        <option>פעילויות ילדים וחינוך (חוגים, קייטנות, מרכזי העשרה)</option>
+        <option>שירותים מקצועיים (יועצים, סוכנויות, פרילנסרים)</option>
+        <option>קמעונאות (חנויות פיזיות ואונליין)</option>
+        <option>יופי וטיפוח</option>
+        <option>נדל"ן</option>
+        <option>מרפאות ובריאות</option>
+        <option>אחר</option>
+      </select>
+    </div>
+    <div>
+      <label>מספר עובדים <span class="en-label">Number of Employees</span></label>
+      <select>
+        <option value="">בחרו...</option>
+        <option>1-5</option>
+        <option>6-15</option>
+        <option>16-50</option>
+        <option>50+</option>
+      </select>
+    </div>
+  </div>
+
+  <label>תיאור קצר של העסק <span class="en-label">Brief Business Description</span></label>
+  <textarea placeholder="ספרו לנו בקצרה מה העסק עושה, כמה לקוחות/מנויים, מה המוצרים או השירותים העיקריים..."></textarea>
+</div>
+
+<!-- ══════════ 2. CRM SYSTEMS ══════════ -->
+<div class="section">
+  <div class="section-title">2. מערכות CRM בשימוש</div>
+  <div class="section-title-en">CRM Systems in Use</div>
+
+  <p style="font-size:13px; color:#6B7280; margin-bottom: 8px;">סמנו את כל המערכות שהעסק משתמש בהן כיום <span style="direction:ltr; display:inline;">(Select all systems currently in use)</span></p>
+
+  <div class="crm-cards">
+    <div class="crm-card" onclick="this.classList.toggle('selected'); this.querySelector('input').checked = this.classList.contains('selected')">
+      <input type="checkbox" name="crm" value="scalla">
+      <div class="crm-name">ScallaCRM</div>
+      <div class="crm-desc">SMB כללי - מכירות, שירותים, קמעונאות<br>General SMB - sales, services, retail</div>
+    </div>
+    <div class="crm-card" onclick="this.classList.toggle('selected'); this.querySelector('input').checked = this.classList.contains('selected')">
+      <input type="checkbox" name="crm" value="arbox">
+      <div class="crm-name">ArBox</div>
+      <div class="crm-desc">כושר, בריאות, סטודיואים<br>Fitness, wellness, studios</div>
+    </div>
+    <div class="crm-card" onclick="this.classList.toggle('selected'); this.querySelector('input').checked = this.classList.contains('selected')">
+      <input type="checkbox" name="crm" value="monday">
+      <div class="crm-name">Monday.com</div>
+      <div class="crm-desc">ניהול פרויקטים ו-CRM<br>Project management & CRM</div>
+    </div>
+    <div class="crm-card" onclick="this.classList.toggle('selected'); this.querySelector('input').checked = this.classList.contains('selected')">
+      <input type="checkbox" name="crm" value="hubspot">
+      <div class="crm-name">HubSpot</div>
+      <div class="crm-desc">שיווק, מכירות, שירות<br>Marketing, sales, service</div>
+    </div>
+  </div>
+
+  <label style="margin-top:16px;">מערכות נוספות <span class="en-label">Other Systems</span></label>
+  <input type="text" placeholder="פרטו מערכות נוספות שבשימוש (ERP, חשבשבת, גרין אינבויס, וכד')">
+
+  <div class="row" style="margin-top:12px;">
+    <div>
+      <label>חבילה נוכחית במערכת <span class="en-label">Current Plan/Tier</span></label>
+      <input type="text" placeholder="לדוגמה: Scalla מתקדם, ArBox Pro">
+    </div>
+    <div>
+      <label>האם יש גישת API? <span class="en-label">API Access Available?</span></label>
+      <select>
+        <option value="">בחרו...</option>
+        <option>כן - מפתח API קיים</option>
+        <option>לא בטוח - צריך לבדוק</option>
+        <option>לא - צריך שדרוג חבילה</option>
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 3. DASHBOARD KPIs ══════════ -->
+<div class="section">
+  <div class="section-title">3. מה תרצו לראות בדשבורד?</div>
+  <div class="section-title-en">What Do You Want to See on the Dashboard?</div>
+
+  <p style="font-size:13px; color:#6B7280; margin-bottom: 4px;">סמנו את כל המדדים והנתונים שחשובים לכם <span style="direction:ltr; display:inline;">(Select all relevant KPIs and data points)</span></p>
+
+  <h3 style="font-size:14px; font-weight:700; color:#7C3AED; margin-top:16px; margin-bottom:8px;">מדדי מכירות והכנסות <span style="font-weight:400; font-size:11px; color:#9CA3AF;">Sales & Revenue</span></h3>
+  <div class="checkbox-group">
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">הכנסות חודשיות / שנתיות</div><div class="cb-en">Monthly / Annual Revenue</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">הכנסה ממוצעת ללקוח</div><div class="cb-en">Average Revenue per Customer</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">פילוח הכנסות לפי מוצר/שירות</div><div class="cb-en">Revenue by Product/Service</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">מגמת מכירות חודש-לחודש</div><div class="cb-en">Month-over-Month Sales Trend</div></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px; font-weight:700; color:#7C3AED; margin-top:16px; margin-bottom:8px;">לידים ושיווק <span style="font-weight:400; font-size:11px; color:#9CA3AF;">Leads & Marketing</span></h3>
+  <div class="checkbox-group">
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">מספר לידים חדשים</div><div class="cb-en">New Leads Count</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">שיעור המרה (ליד ללקוח)</div><div class="cb-en">Lead-to-Customer Conversion Rate</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">מקורות לידים (פרסום, אורגני, הפניות)</div><div class="cb-en">Lead Sources (paid, organic, referral)</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">עלות גיוס לקוח (CAC)</div><div class="cb-en">Customer Acquisition Cost</div></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px; font-weight:700; color:#7C3AED; margin-top:16px; margin-bottom:8px;">לקוחות ושימור <span style="font-weight:400; font-size:11px; color:#9CA3AF;">Customers & Retention</span></h3>
+  <div class="checkbox-group">
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">מספר לקוחות/מנויים פעילים</div><div class="cb-en">Active Customers / Members</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">שיעור נטישה חודשי</div><div class="cb-en">Monthly Churn Rate</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">ערך חיי לקוח (LTV)</div><div class="cb-en">Customer Lifetime Value</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">לקוחות חדשים לעומת חוזרים</div><div class="cb-en">New vs. Returning Customers</div></div>
+    </div>
+  </div>
+
+  <h3 style="font-size:14px; font-weight:700; color:#7C3AED; margin-top:16px; margin-bottom:8px;">תפעול ופעילות <span style="font-weight:400; font-size:11px; color:#9CA3AF;">Operations & Activity</span></h3>
+  <div class="checkbox-group">
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">תפוסת שיעורים / פגישות</div><div class="cb-en">Class / Appointment Utilization</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">ביצועי צוות / עובדים</div><div class="cb-en">Staff / Team Performance</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">משימות פתוחות / סטטוס פרויקטים</div><div class="cb-en">Open Tasks / Project Status</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">נוכחות / ביקורים</div><div class="cb-en">Attendance / Check-ins</div></div>
+    </div>
+  </div>
+
+  <label style="margin-top:16px;">מדדים נוספים (פרטו) <span class="en-label">Additional KPIs (specify)</span></label>
+  <textarea placeholder="האם יש מדדים ייחודיים לעסק שלכם שלא מופיעים ברשימה? פרטו כאן..."></textarea>
+</div>
+
+<!-- ══════════ 4. DASHBOARD PREFERENCES ══════════ -->
+<div class="section">
+  <div class="section-title">4. העדפות דשבורד</div>
+  <div class="section-title-en">Dashboard Preferences</div>
+
+  <div class="row">
+    <div>
+      <label>חבילה מועדפת <span class="en-label">Preferred Tier</span></label>
+      <select>
+        <option value="">בחרו חבילה...</option>
+        <option>סטארטר (349 ש"ח/חודש) - דשבורד בודד, 5 KPIs, 2 גרפים</option>
+        <option>עסקי (499 ש"ח/חודש) - רב-תצוגות, 10 KPIs, 5 גרפים, טבלה</option>
+        <option>פרימיום (599 ש"ח/חודש) - בנייה מותאמת, ללא הגבלה, התראות</option>
+      </select>
+    </div>
+    <div>
+      <label>תדירות עדכון נתונים <span class="en-label">Data Refresh Frequency</span></label>
+      <select>
+        <option value="">בחרו...</option>
+        <option>בזמן אמת (real-time)</option>
+        <option>כל שעה</option>
+        <option>יומי (פעם ביום)</option>
+        <option>שבועי</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>מי ישתמש בדשבורד? <span class="en-label">Dashboard Users</span></label>
+      <select>
+        <option value="">בחרו...</option>
+        <option>בעל/ת העסק בלבד</option>
+        <option>בעל/ת העסק + מנהלים</option>
+        <option>כל הצוות</option>
+      </select>
+    </div>
+    <div>
+      <label>צפייה מ... <span class="en-label">Viewing Device</span></label>
+      <select>
+        <option value="">בחרו...</option>
+        <option>מחשב בלבד</option>
+        <option>מחשב + מובייל</option>
+        <option>בעיקר מובייל</option>
+      </select>
+    </div>
+  </div>
+
+  <label>התראות ודוחות אוטומטיים <span class="en-label">Alerts & Automated Reports</span></label>
+  <div class="checkbox-group">
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">דוח שבועי במייל</div><div class="cb-en">Weekly Email Report</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">התראה על ירידה בביצועים</div><div class="cb-en">Performance Drop Alert</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">סיכום חודשי אוטומטי</div><div class="cb-en">Monthly Automated Summary</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')">
+      <input type="checkbox"><div><div class="cb-text">התראה על לידים חדשים</div><div class="cb-en">New Lead Notification</div></div>
+    </div>
+  </div>
+
+  <label style="margin-top:14px;">הערות נוספות <span class="en-label">Additional Notes</span></label>
+  <textarea placeholder="האם יש דרישות מיוחדות? צבעי מותג? לוגו? פריסה מועדפת? כתבו כאן..."></textarea>
+</div>
+
+<!-- ══════════ 5. PREREQUISITES ══════════ -->
+<div class="section prereq">
+  <div class="section-title">5. דרישות סף לחיבור</div>
+  <div class="section-title-en">Prerequisites for Integration</div>
+
+  <p style="font-size:13px; color:#6B7280; margin-bottom: 4px;">להלן התנאים שחייבים להתקיים לפני תחילת עבודה. ודאו שכולם מתקיימים או ציינו אם נדרשת עזרה.</p>
+  <p style="font-size:11px; color:#9CA3AF; direction:ltr; text-align:left; margin-bottom:12px;">The following conditions must be met before we can begin. Confirm each item or flag if you need help.</p>
+
+  <ul class="prereq-list">
+    <li>
+      <span class="priority-badge priority-must">חובה</span>
+      <span class="req-title">גישת API למערכת CRM</span><br>
+      לכל מערכת CRM שנבחרה, חייב להיות מפתח API פעיל. ב-ScallaCRM, נדרשת חבילת "מתקדם" (349 ש"ח/חודש) ומעלה. ב-ArBox, נדרשת חבילה עם גישת API. ב-HubSpot ו-Monday, נדרשת חבילה עם API tokens.
+      <span class="req-en">Active API key required for each selected CRM. ScallaCRM: "Advanced" plan (349 NIS/mo) or higher. ArBox: plan with API access. HubSpot/Monday: plan with API tokens.</span>
+    </li>
+    <li>
+      <span class="priority-badge priority-must">חובה</span>
+      <span class="req-title">הרשאות מנהל במערכת</span><br>
+      נדרשת גישת מנהל (Admin) למערכת ה-CRM כדי לאפשר את החיבור ולאשר הרשאות קריאת נתונים.
+      <span class="req-en">Admin-level access to the CRM system is required to authorize the API connection and grant read permissions.</span>
+    </li>
+    <li>
+      <span class="priority-badge priority-must">חובה</span>
+      <span class="req-title">נתונים קיימים במערכת</span><br>
+      המערכת חייבת להכיל לפחות 3 חודשי נתונים כדי לייצר דשבורד בעל ערך עם מגמות והשוואות.
+      <span class="req-en">At least 3 months of historical data in the CRM is required to produce meaningful trends and comparisons.</span>
+    </li>
+    <li>
+      <span class="priority-badge priority-must">חובה</span>
+      <span class="req-title">איש קשר טכני זמין</span><br>
+      צריך מישהו בצד הלקוח (בעל העסק או מנהל מערכת) שיכול לספק מפתחות API, לאשר הרשאות, ולענות על שאלות טכניות בזמן ההקמה.
+      <span class="req-en">A technical contact (business owner or system admin) must be available to provide API keys, approve permissions, and answer setup questions.</span>
+    </li>
+    <li>
+      <span class="priority-badge priority-nice">מומלץ</span>
+      <span class="req-title">רשימת KPIs מתועדפת</span><br>
+      הגדירו מראש את 5-10 המדדים החשובים ביותר לעסק. זה מזרז את תהליך ההקמה ומבטיח שהדשבורד מתמקד במה שחשוב.
+      <span class="req-en">Pre-prioritize your top 5-10 KPIs. This accelerates setup and ensures the dashboard focuses on what matters most.</span>
+    </li>
+    <li>
+      <span class="priority-badge priority-nice">מומלץ</span>
+      <span class="req-title">חומרי מיתוג (לוגו, צבעים)</span><br>
+      אם רוצים דשבורד ממותג - שלחו לוגו בפורמט PNG/SVG וקוד צבעים של המותג.
+      <span class="req-en">For branded dashboards, provide your logo (PNG/SVG) and brand color codes.</span>
+    </li>
+  </ul>
+
+  <h3 style="font-size:14px; font-weight:700; color:#DB2777; margin-top:20px;">אישור דרישות סף <span style="font-weight:400; font-size:11px; color:#9CA3AF;">Prerequisites Confirmation</span></h3>
+  <div class="checkbox-group" style="grid-template-columns: 1fr;">
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')" style="background:#FFF;">
+      <input type="checkbox"><div><div class="cb-text">יש לנו גישת API פעילה למערכת CRM שנבחרה</div><div class="cb-en">We have active API access for our selected CRM</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')" style="background:#FFF;">
+      <input type="checkbox"><div><div class="cb-text">יש לנו הרשאות מנהל למערכת</div><div class="cb-en">We have admin access to the system</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')" style="background:#FFF;">
+      <input type="checkbox"><div><div class="cb-text">יש לנו לפחות 3 חודשי נתונים במערכת</div><div class="cb-en">We have at least 3 months of data in the system</div></div>
+    </div>
+    <div class="checkbox-item" onclick="this.classList.toggle('checked'); this.querySelector('input').checked = this.classList.contains('checked')" style="background:#FFF;">
+      <input type="checkbox"><div><div class="cb-text">יש לנו איש קשר טכני זמין לתהליך ההקמה</div><div class="cb-en">We have a technical contact available for setup</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 6. SIGNATURES ══════════ -->
+<div class="section">
+  <div class="section-title">6. אישור וחתימה</div>
+  <div class="section-title-en">Approval & Signature</div>
+
+  <div class="row" style="margin-top:12px;">
+    <div>
+      <label>תאריך <span class="en-label">Date</span></label>
+      <input type="text" id="formDate">
+    </div>
+    <div>
+      <label>חבילה שנבחרה <span class="en-label">Selected Tier</span></label>
+      <input type="text" placeholder="סטארטר / עסקי / פרימיום">
+    </div>
+  </div>
+
+  <div class="sig-row">
+    <div class="sig-box">
+      <div style="height:50px;"></div>
+      <div class="sig-label">חתימת הלקוח <span style="font-size:10px; color:#9CA3AF;">Client Signature</span></div>
+    </div>
+    <div class="sig-box">
+      <div style="height:50px;"></div>
+      <div class="sig-label">חתימת DashBoard <span style="font-size:10px; color:#9CA3AF;">DashBoard Rep</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ BUTTONS ══════════ -->
+<div class="submit-area">
+  <button class="btn-print" onclick="window.print()">הדפס / שמור PDF</button>
+  <button class="btn-submit" onclick="alert('הטופס נשמר בהצלחה! ניצור קשר תוך 24 שעות.')">שלח טופס</button>
+</div>
+
+</div>
+
+<script>
+// Auto-fill today's date
+document.getElementById('formDate').value = new Date().toLocaleDateString('he-IL');
+</script>
+
+</body>
+</html>
