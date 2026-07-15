@@ -1617,17 +1617,39 @@ function isoDate(offsetDays = 0) {
   const d = new Date(); d.setDate(d.getDate() + offsetDays);
   return d.toISOString().slice(0, 10);
 }
+function dateOnly(value) {
+  return value ? String(value).slice(0, 10) : '';
+}
+function inDateRange(value, fromDate, toDate) {
+  const d = dateOnly(value);
+  return !!d && d >= fromDate && d <= toDate;
+}
+
+let arboxQueue = Promise.resolve();
 
 async function arboxProxy(path) {
-  const r = await fetch(ARBOX.ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ path }),
-    signal: AbortSignal.timeout(12000)
-  });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(j.detail || j.error || ('Arbox HTTP ' + r.status));
-  return j;
+  const run = async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const r = await fetch(ARBOX.ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+        signal: AbortSignal.timeout(18000)
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok) return j;
+      if (r.status === 429 && attempt < 2) {
+        await new Promise(resolve => setTimeout(resolve, 900 * (attempt + 1)));
+        continue;
+      }
+      throw new Error(j.detail || j.error?.message || j.error || ('Arbox HTTP ' + r.status));
+    }
+  };
+
+  const previous = arboxQueue.catch(() => {});
+  const task = previous.then(run);
+  arboxQueue = task;
+  return task;
 }
 
 async function arboxGet(path) {
@@ -1656,23 +1678,19 @@ async function loadStudioData() {
   try {
     const today = isoDate(0), minus30 = isoDate(-30), plus30 = isoDate(30), plus7 = isoDate(7);
 
-    const minus90 = isoDate(-90);
-    const [members, schedule, lateCancels, bookings, receipts] = await Promise.all([
-      arboxGet(`/reports/activeMembershipsReport?from_date=${minus30}&to_date=${today}`),
+    const [members, schedule, lateCancels, bookings, transactions] = await Promise.all([
+      arboxGet(`/reports/activeMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
       arboxGet(`/schedule?from_date=${today}&to_date=${plus30}`),
       arboxGet(`/reports/lateCancellationReport?fromDate=${minus30}&toDate=${today}`),
       arboxGet(`/reports/bookingsReport?fromDate=${minus30}&toDate=${today}`),
-      arboxGet(`/reports/receiptsReport?from_date=${minus90}&to_date=${today}`).catch(() => []),
+      arboxGetSafe(`/reports/transactionsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
     ]);
 
-    // Endpoints not confirmed to exist on this account - fail gracefully, don't block the tab.
-    // Param casing switched to fromDate/toDate (camelCase) per Arbox's own API docs, matching
-    // the convention already confirmed working for lateCancellationReport/bookingsReport below.
     const [inactiveMembers, expiredMemberships, renewals, cancellations] = await Promise.all([
-      arboxGetSafe(`/reports/inactiveMembersReport?fromDate=${minus90}&toDate=${today}`),
-      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${minus30}&toDate=${today}`),
-      arboxGetSafe(`/reports/membershipRenewalReport?fromDate=${minus30}&toDate=${today}`),
-      arboxGetSafe(`/reports/membershipCancellationReport?fromDate=${minus30}&toDate=${today}`),
+      arboxGetSafe(`/reports/inactiveMembersReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/renewalsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/canceledMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
     ]);
 
     let fh = 0, ih = 0, kr = 0;
@@ -1732,29 +1750,43 @@ async function loadStudioData() {
     setTxt('kpiActivePlans', members.length);
     setTxt('kpiActivePlansSub', topPlan ? `הגדול ביותר: ${topPlan[0]} (${topPlan[1]})` : 'סה"כ מנויים פעילים');
 
-    // 2. Session Packs Sold - receipts matching "כרטיסיה/כרטיסיות" line items, last 90 days
-    const packReceipts = (receipts || []).filter(r => {
+    // 2. Session Packs Sold - transaction lines matching card/session-pack products, last 30 days
+    const packReceipts = (transactions || []).filter(r => {
       const desc = (r.description || r.product_name || r.item_name || '').toLowerCase();
-      return desc.includes('כרטיסי');
+      const amount = Number.parseFloat(r.amount || r.price || r.total || 0);
+      return amount > 0 && (desc.includes('כרטיסי') || desc.includes('כרטיסיה') || desc.includes('lucky') || desc.includes('מיני האוס'));
     });
-    setTxt('kpiPacksSold', receipts && receipts.length ? packReceipts.length : '?');
-    setTxt('kpiPacksActiveSub', kr + ' פעילות');
+    setTxt('kpiPacksSold', transactions ? packReceipts.length : '?');
+    setTxt('kpiPacksActiveSub', `${kr} פעילות | 30 יום`);
 
     // 3. Expiring session packs KPI entry-point (full breakdown already below in punchExpList)
     setTxt('kpiPunchExpKPI', punchExpiring.length);
 
-    // 4-7. Inactive Members / Expired Plans / Renewals / Cancellations
-    // These require Arbox report endpoints not yet confirmed on this account - see task notes 07/07/2026.
-    if (inactiveMembers) setTxt('kpiInactive', inactiveMembers.length);
+    const renewalsInRange = (renewals || []).filter(r => inDateRange(r.created_at || r.date || r.purchase_date, minus30, today));
+    const cancellationsInRange = (cancellations || []).filter(c => inDateRange(c.cancelled_time || c.cancel_date || c.created_at || c.date, minus30, today));
+
+    if (inactiveMembers) {
+      setTxt('kpiInactive', inactiveMembers.length);
+      setTxt('kpiInactiveSub', 'ללא פעילות ב-30 יום');
+    }
     else setPending('kpiInactive', 'kpiInactiveSub', 'נדרש אימות מול Arbox');
 
-    if (expiredMemberships) setTxt('kpiExpiredPlans', expiredMemberships.length);
+    if (expiredMemberships) {
+      setTxt('kpiExpiredPlans', expiredMemberships.length);
+      setTxt('kpiExpiredPlansSub', 'פגו ב-30 הימים האחרונים');
+    }
     else setPending('kpiExpiredPlans', 'kpiExpiredPlansSub', 'נדרש אימות מול Arbox');
 
-    if (renewals) setTxt('kpiRenewals', renewals.length);
+    if (renewals) {
+      setTxt('kpiRenewals', renewalsInRange.length);
+      setTxt('kpiRenewalsSub', '30 הימים האחרונים');
+    }
     else setPending('kpiRenewals', 'kpiRenewalsSub', 'נדרש אימות מול Arbox');
 
-    if (cancellations) setTxt('kpiCancellations', cancellations.length);
+    if (cancellations) {
+      setTxt('kpiCancellations', cancellationsInRange.length);
+      setTxt('kpiCancellationsSub', 'לפי תאריך ביטול');
+    }
     else setPending('kpiCancellations', 'kpiCancellationsSub', 'נדרש אימות מול Arbox');
 
     // 8. Active Courses (upcoming, next 30 days) - distinct course/session names
@@ -1856,7 +1888,7 @@ expiring.sort((a, b) => a.days - b.days);
           <div class="ranking-item"><div class="rank-num rank-${i+1}">${i+1}</div><div class="ranking-name">${name}</div><div class="ranking-score danger">${count} ביטולים</div></div>`).join('')
       : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין ביטולים מאוחרים</div>';
 
-        // Single lesson buyers: receipts for 99₪ or 220₪ — cross-ref Arbox ↔ ScallaCRM
+        // Single lesson buyers: transactions for 99₪ or 220₪ — cross-ref Arbox ↔ ScallaCRM
     const TRIAL_PRICES = [99, 220];
     const activeNames = new Set(members.map(m => (m.full_name || '').trim().toLowerCase()));
     // Build ScallaCRM name lookup (full name + first name fallback)
@@ -1868,18 +1900,19 @@ expiring.sort((a, b) => a.days - b.days);
       if (firstName && !scallaNameMap[firstName]) scallaNameMap[firstName] = l;
     });
     const onetimeMap = {};
-    (receipts || []).forEach(r => {
-      const price = parseFloat(r.price || r.amount || r.total || 0);
+    (transactions || []).forEach(r => {
+      const price = Number.parseFloat(r.amount || r.price || r.total || 0);
       if (!TRIAL_PRICES.includes(price)) return;
       const name = (r.full_name || r.client_name || r.name || '').trim();
       if (!name) return;
-      if (!onetimeMap[name] || r.date > onetimeMap[name].date) {
+      const transactionDate = r.transaction_date || r.date || r.created_at || '';
+      if (!onetimeMap[name] || transactionDate > onetimeMap[name].date) {
         const nameKey = name.toLowerCase();
         const firstName = nameKey.split(' ')[0];
         const scallaMatch = scallaNameMap[nameKey] || scallaNameMap[firstName] || null;
         onetimeMap[name] = {
           name, price,
-          date: r.date || r.created_at || '',
+          date: transactionDate,
           isActive: activeNames.has(nameKey),
           inScalla: !!scallaMatch,
           scallaStatus: scallaMatch ? (scallaMatch.statusLabel || '') : '',
@@ -1905,7 +1938,7 @@ expiring.sort((a, b) => a.days - b.days);
             <div class="ranking-score" style="color:var(--warning);font-size:11px;">${o.date ? fmtDateHeb(o.date.slice(0,10)) : ''}</div>
           </div>`).join('')
       : `<div style="padding:14px;background:var(--bg);border-radius:10px;font-size:12px;color:var(--text-secondary);text-align:center;">
-          ${receipts && receipts.length > 0 ? '✓ אין רוכשי שיעור ניסיון ללא מנוי פעיל' : '🔍 נתוני קבלות לא זמינים מ-Arbox (יש לבדוק הרשאות API)'}
+          ${transactions && transactions.length > 0 ? '✓ אין רוכשי שיעור ניסיון ללא מנוי פעיל' : '🔍 נתוני עסקאות לא זמינים מ-Arbox (יש לבדוק הרשאות API)'}
         </div>`;
 
 const note = document.getElementById('studioInfoNote');
