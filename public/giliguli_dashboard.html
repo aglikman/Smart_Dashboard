@@ -192,6 +192,7 @@
       font-family: 'Heebo',sans-serif; transition: all .2s;
     }
     .alert-config-btn:hover { background: rgba(107,33,168,.15); }
+    .service-link { display: inline-flex; align-items: center; text-decoration: none; white-space: nowrap; }
     .kpi-card.red    { border-top-color: var(--danger); }
     .kpi-icon { font-size: 22px; margin-bottom: 6px; }
     .kpi-value { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
@@ -581,6 +582,7 @@
       <div class="header-date" id="currentDate"></div>
       <div class="badge-live" id="crmBadge"><span class="pulse"></span> מתחבר ל-ScallaCRM...</div>
       <div class="badge-live" id="arboxBadge">⟳ בודק Arbox...</div>
+      <a class="alert-config-btn service-link" href="DashBoard_CR_Form.html">בקשת שירות</a>
       <button class="alert-config-btn" onclick="openEmailJSModal()">🔔 התראות</button>
       <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()">🔄 רענן נתונים</button>
     </div>

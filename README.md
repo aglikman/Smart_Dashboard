@@ -56,4 +56,14 @@ Phase 3 consolidated the deployment entrypoint: `public/index.html` now matches 
 
 Phase 4 cleaned local project hygiene: the dashboard HTML files no longer contain NUL bytes, npm scripts are defined, the unused Express dependency was removed, old generated artifacts were archived locally, and this folder now has its own valid Git repository.
 
+## CR and bug tracker
+
+- Customer form: `DashBoard_CR_Form.html`
+- Admin tracker: `DashBoard_CR_Admin.html`
+- Public API: `netlify/functions/cr.mjs`
+- Admin API: `netlify/functions/cr-admin.mjs`
+- Persistent store: Netlify Blobs (`smart-dashboard-cr`)
+
+The admin screen requires `CR_ADMIN_PASSWORD` and `CR_AUTH_SECRET` in the Netlify Functions environment. Customer requests are stored centrally and remain available across deployments.
+
 Next phase should address product decisions: whether the AI chat remains Anthropic/Claude-powered, whether Meta should be configured locally, and whether customer docs need a refresh after the cleanup.

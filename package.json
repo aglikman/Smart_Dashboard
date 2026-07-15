@@ -5,10 +5,13 @@
   "main": "scalla_proxy.js",
   "scripts": {
     "start": "node scalla_proxy.js",
-    "check": "node --check scalla_proxy.js && node --check netlify/functions/scalla.js && node --check netlify/functions/arbox.js && node --check netlify/functions/meta.js && node --check netlify/functions/agent.js",
+    "check": "node --check scalla_proxy.js && node --check netlify/functions/scalla.js && node --check netlify/functions/arbox.js && node --check netlify/functions/meta.js && node --check netlify/functions/agent.js && node --check netlify/functions/cr.mjs && node --check netlify/functions/cr-admin.mjs && node --check netlify/lib/cr-store.mjs",
     "deploy": "netlify deploy --prod --dir=public --functions=netlify/functions"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@netlify/blobs": "^10.7.9"
+  }
 }

@@ -3,6 +3,8 @@ node_modules/
 proxy.log
 .DS_Store
 *.log
+*.pid
+deno.lock
 
 # Local secrets and environment overrides
 .env

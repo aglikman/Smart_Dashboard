@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ניהול בקשות שירות | Smart Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee9;
+      --canvas: #f3f5f8;
+      --surface: #fff;
+      --purple: #6b5cf5;
+      --purple-dark: #5142d8;
+      --purple-pale: #f0eeff;
+      --teal: #087d69;
+      --orange: #b54708;
+      --red: #b42318;
+      --blue: #175cd3;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); font-family: Heebo, Arial, sans-serif; }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .hidden { display: none !important; }
+    .topbar { min-height: 66px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 20px; color: #fff; background: #16192a; border-bottom: 3px solid var(--purple); }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .brand-mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 7px; background: var(--purple); font-weight: 800; }
+    .brand strong { display: block; }
+    .brand small { display: block; color: #b8bfd0; font-size: 11px; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
+    .btn { min-height: 38px; padding: 8px 13px; border: 1px solid #cbd2de; border-radius: 6px; color: #344054; background: #fff; font-weight: 700; font-size: 12px; text-decoration: none; }
+    .btn:hover { border-color: #948af7; color: var(--purple-dark); }
+    .btn.primary { color: #fff; border-color: var(--purple); background: var(--purple); }
+    .btn.primary:hover { background: var(--purple-dark); }
+    .btn.dark { color: #e4e7ec; border-color: #484d63; background: transparent; }
+    .btn.danger { color: var(--red); }
+    .login-page { min-height: calc(100vh - 69px); display: grid; place-items: center; padding: 28px; }
+    .login-box { width: min(430px, 100%); padding: 30px; background: #fff; border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 12px 35px rgba(22, 25, 42, .09); }
+    .login-box h1 { margin: 0 0 5px; font-size: 24px; }
+    .login-box p { margin: 0 0 22px; color: var(--muted); font-size: 13px; }
+    label { display: block; margin-bottom: 6px; color: #344054; font-size: 12px; font-weight: 700; }
+    input, select, textarea { width: 100%; min-height: 40px; padding: 8px 10px; color: var(--ink); border: 1px solid #cbd2de; border-radius: 6px; background: #fff; outline: 0; }
+    textarea { min-height: 85px; resize: vertical; }
+    input:focus, select:focus, textarea:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(107,92,245,.16); }
+    .login-box .btn { width: 100%; margin-top: 14px; }
+    .login-error { min-height: 21px; margin-top: 10px; color: var(--red); font-size: 12px; }
+    .app { max-width: 1540px; margin: 0 auto; padding: 24px; }
+    .page-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 18px; }
+    h1 { margin: 0; font-size: 25px; }
+    .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .summary { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); border: 1px solid var(--line); border-radius: 8px; background: #fff; overflow: hidden; }
+    .metric { min-height: 92px; padding: 17px 18px; border-left: 1px solid var(--line); }
+    .metric:last-child { border-left: 0; }
+    .metric span { display: block; color: var(--muted); font-size: 11px; font-weight: 600; }
+    .metric strong { display: block; margin-top: 5px; font-size: 27px; line-height: 1; }
+    .metric.critical strong { color: var(--red); }
+    .metric.progress strong { color: var(--blue); }
+    .metric.waiting strong { color: var(--orange); }
+    .metric.resolved strong { color: var(--teal); }
+    .workspace { margin-top: 16px; background: #fff; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .filters { padding: 13px 15px; display: grid; grid-template-columns: minmax(220px, 2fr) repeat(4, minmax(135px, 1fr)) auto; gap: 9px; border-bottom: 1px solid var(--line); background: #fbfcfd; }
+    .filters input, .filters select { min-height: 38px; font-size: 12px; }
+    .results-meta { padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; gap: 10px; color: var(--muted); font-size: 11px; border-bottom: 1px solid #edf0f4; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 1050px; }
+    th { padding: 10px 12px; color: #475467; background: #f8f9fb; border-bottom: 1px solid var(--line); font-size: 11px; text-align: right; white-space: nowrap; }
+    td { padding: 12px; border-bottom: 1px solid #edf0f4; font-size: 12px; vertical-align: middle; }
+    tbody tr:hover { background: #faf9ff; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .id { direction: ltr; text-align: right; color: var(--purple-dark); font-weight: 700; white-space: nowrap; }
+    .title { max-width: 320px; font-weight: 700; }
+    .title small { display: block; margin-top: 2px; color: var(--muted); font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .tag { display: inline-flex; align-items: center; min-height: 23px; padding: 3px 8px; border-radius: 999px; font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .type-bug { color: #9b241b; background: #ffebe9; }
+    .type-change { color: #5142d8; background: #eeecff; }
+    .status-new, .status-triage { color: #5142d8; background: #eeecff; }
+    .status-in_progress, .status-scheduled { color: #175cd3; background: #e9f0ff; }
+    .status-waiting_customer { color: #9a4a08; background: #fff2dc; }
+    .status-resolved, .status-closed { color: #087d69; background: #e4f6f1; }
+    .priority-critical { color: var(--red); font-weight: 800; }
+    .priority-high { color: var(--orange); font-weight: 800; }
+    .empty { padding: 58px 20px; color: var(--muted); text-align: center; }
+    .loading { padding: 30px; color: var(--muted); text-align: center; }
+    .drawer-backdrop, .modal-backdrop { position: fixed; inset: 0; z-index: 50; background: rgba(17, 24, 39, .48); }
+    .drawer { position: fixed; inset: 0 0 0 auto; z-index: 60; width: min(680px, 96vw); overflow-y: auto; background: #fff; box-shadow: -18px 0 45px rgba(17, 24, 39, .18); }
+    .drawer-head { position: sticky; top: 0; z-index: 2; padding: 17px 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; color: #fff; background: #16192a; }
+    .drawer-head strong { direction: ltr; }
+    .icon-btn { width: 34px; height: 34px; border: 1px solid #5a6075; border-radius: 6px; color: #fff; background: transparent; font-size: 18px; }
+    .drawer-body { padding: 21px; }
+    .detail-title { margin: 0 0 5px; font-size: 22px; }
+    .detail-meta { color: var(--muted); font-size: 12px; }
+    .detail-grid { margin: 19px 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .detail-item { min-height: 66px; padding: 11px 12px; background: #fff; }
+    .detail-item span { display: block; color: var(--muted); font-size: 10px; }
+    .detail-item strong { display: block; margin-top: 3px; font-size: 12px; overflow-wrap: anywhere; }
+    .content-block { margin: 17px 0; padding-top: 15px; border-top: 1px solid var(--line); }
+    .content-block h3 { margin: 0 0 7px; font-size: 14px; }
+    .content-block p { margin: 0; color: #475467; font-size: 12px; line-height: 1.7; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .edit-panel { margin-top: 20px; padding: 17px; border: 1px solid #d4d0ff; border-radius: 7px; background: #f8f7ff; }
+    .edit-panel h3 { margin: 0 0 13px; font-size: 15px; }
+    .edit-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+    .full { grid-column: 1 / -1; }
+    .timeline { margin-top: 20px; }
+    .timeline h3 { font-size: 14px; }
+    .event { position: relative; margin-right: 7px; padding: 0 20px 15px 0; border-right: 2px solid #e1e4ea; }
+    .event::before { content: ""; position: absolute; right: -6px; top: 3px; width: 10px; height: 10px; border-radius: 50%; background: var(--purple); }
+    .event strong { display: block; font-size: 11px; }
+    .event span { display: block; color: var(--muted); font-size: 10px; }
+    .event p { margin: 4px 0 0; color: #475467; font-size: 11px; white-space: pre-wrap; }
+    .modal { position: fixed; z-index: 70; top: 50%; left: 50%; width: min(620px, 94vw); max-height: 86vh; overflow-y: auto; transform: translate(-50%, -50%); padding: 22px; background: #fff; border-radius: 8px; box-shadow: 0 22px 60px rgba(17, 24, 39, .24); }
+    .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 17px; }
+    .modal-head h2 { margin: 0; font-size: 20px; }
+    .customer-list { margin-top: 18px; border-top: 1px solid var(--line); }
+    .customer-row { padding: 11px 0; display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid #edf0f4; }
+    .customer-row strong { display: block; font-size: 12px; }
+    .customer-row small { color: var(--muted); font-size: 10px; }
+    .toast { position: fixed; z-index: 100; left: 20px; bottom: 20px; max-width: 360px; padding: 11px 15px; color: #fff; background: #16192a; border-radius: 6px; box-shadow: 0 10px 28px rgba(17,24,39,.24); font-size: 12px; }
+    @media (max-width: 980px) {
+      .summary { grid-template-columns: repeat(3, 1fr); }
+      .metric { border-bottom: 1px solid var(--line); }
+      .filters { grid-template-columns: repeat(2, 1fr); }
+      .filters input:first-child { grid-column: 1 / -1; }
+    }
+    @media (max-width: 620px) {
+      .topbar, .app { padding-left: 14px; padding-right: 14px; }
+      .top-actions .desktop-only { display: none; }
+      .page-head { align-items: flex-start; flex-direction: column; }
+      .summary { grid-template-columns: repeat(2, 1fr); }
+      .metric { min-height: 78px; padding: 14px; }
+      .metric strong { font-size: 23px; }
+      .filters, .detail-grid, .edit-grid { grid-template-columns: 1fr; }
+      .filters input:first-child, .full { grid-column: auto; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="brand-mark">SD</div><div><strong>Smart Dashboard</strong><small>ניהול תקלות ובקשות שינוי</small></div></div>
+    <div class="top-actions" id="topActions">
+      <a class="btn dark desktop-only" href="DashBoard_CR_Form.html">פתיחת פנייה</a>
+      <button class="btn dark desktop-only hidden" id="customersBtn" type="button">לקוחות</button>
+      <button class="btn dark hidden" id="logoutBtn" type="button">יציאה</button>
+    </div>
+  </header>
+
+  <main id="loginPage" class="login-page">
+    <form id="loginForm" class="login-box">
+      <h1>כניסת מנהל</h1>
+      <p>המסך מכיל מידע מכלל הלקוחות ולכן הגישה מוגנת.</p>
+      <label for="adminPassword">סיסמת מנהל</label>
+      <input id="adminPassword" type="password" autocomplete="current-password" minlength="12" required>
+      <button id="loginBtn" class="btn primary" type="submit">כניסה למערכת</button>
+      <div id="loginError" class="login-error" role="alert"></div>
+    </form>
+  </main>
+
+  <main id="app" class="app hidden">
+    <div class="page-head">
+      <div><h1>מרכז בקשות שירות</h1><p id="lastRefresh">תמונת מצב של כל הלקוחות והפניות הפתוחות</p></div>
+      <div class="top-actions"><button class="btn" id="refreshBtn" type="button">רענון</button><button class="btn" id="exportBtn" type="button">ייצוא CSV</button><a class="btn primary" href="DashBoard_CR_Form.html">פנייה חדשה</a></div>
+    </div>
+
+    <section class="summary" aria-label="מדדי פניות">
+      <div class="metric"><span>פתוחות</span><strong id="mOpen">0</strong></div>
+      <div class="metric critical"><span>קריטיות פתוחות</span><strong id="mCritical">0</strong></div>
+      <div class="metric progress"><span>בטיפול</span><strong id="mProgress">0</strong></div>
+      <div class="metric waiting"><span>ממתינות ללקוח</span><strong id="mWaiting">0</strong></div>
+      <div class="metric resolved"><span>נסגרו החודש</span><strong id="mResolved">0</strong></div>
+    </section>
+
+    <section class="workspace">
+      <div class="filters">
+        <input id="search" type="search" placeholder="חיפוש לפי מספר, לקוח, כותרת או איש קשר">
+        <select id="fCustomer"><option value="">כל הלקוחות</option></select>
+        <select id="fType"><option value="">כל הסוגים</option><option value="bug">תקלות</option><option value="change">בקשות שינוי</option></select>
+        <select id="fStatus"><option value="">כל הסטטוסים</option></select>
+        <select id="fPriority"><option value="">כל העדיפויות</option></select>
+        <button id="clearFilters" class="btn" type="button">ניקוי</button>
+      </div>
+      <div class="results-meta"><span id="resultCount">0 פניות</span><span>לחיצה על שורה תפתח את פרטי הטיפול</span></div>
+      <div id="tableState" class="loading">טוען פניות...</div>
+      <div id="tableWrap" class="table-wrap hidden">
+        <table>
+          <thead><tr><th>מספר</th><th>לקוח</th><th>סוג</th><th>כותרת</th><th>סטטוס</th><th>עדיפות</th><th>אחראי</th><th>עודכן</th></tr></thead>
+          <tbody id="requestRows"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div id="drawerBackdrop" class="drawer-backdrop hidden"></div>
+  <aside id="drawer" class="drawer hidden" aria-label="פרטי פנייה">
+    <div class="drawer-head"><strong id="drawerId"></strong><button id="closeDrawer" class="icon-btn" type="button" aria-label="סגירה">×</button></div>
+    <div id="drawerBody" class="drawer-body"></div>
+  </aside>
+
+  <div id="customerBackdrop" class="modal-backdrop hidden"></div>
+  <section id="customerModal" class="modal hidden" aria-label="ניהול לקוחות">
+    <div class="modal-head"><h2>ניהול לקוחות</h2><button id="closeCustomers" class="icon-btn" style="color:#344054;border-color:#cbd2de" type="button" aria-label="סגירה">×</button></div>
+    <form id="customerForm">
+      <div class="edit-grid">
+        <div><label for="newCustomerName">שם לקוח</label><input id="newCustomerName" required maxlength="100"></div>
+        <div><label for="newDashboardId">מזהה דשבורד</label><input id="newDashboardId" maxlength="80"></div>
+        <div class="full"><label for="newCustomerEmail">דוא"ל מרכזי</label><input id="newCustomerEmail" type="email" dir="ltr" maxlength="160"></div>
+      </div>
+      <button class="btn primary" style="margin-top:12px" type="submit">הוספת לקוח</button>
+    </form>
+    <div id="customerList" class="customer-list"></div>
+  </section>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+    const API = '/.netlify/functions/cr-admin';
+    const STATUS = {
+      new: 'חדשה', triage: 'בבדיקה', in_progress: 'בטיפול', waiting_customer: 'ממתינה ללקוח',
+      scheduled: 'מתוזמנת', resolved: 'נפתרה', closed: 'נסגרה'
+    };
+    const PRIORITY = { critical: 'קריטית', high: 'גבוהה', medium: 'רגילה', low: 'נמוכה' };
+    const TYPE = { bug: 'תקלה', change: 'בקשת שינוי' };
+    const AREA = { leads: 'לידים', studio: 'סטודיו', marketing: 'שיווק', alerts: 'התראות', reports: 'דוחות', access: 'גישה והרשאות', other: 'אחר' };
+    const CATEGORY = { data: 'מידע חסר או שגוי', integration: 'חיבור למערכת', calculation: 'חישוב או KPI', display: 'תצוגה ועיצוב', performance: 'מהירות וביצועים', permissions: 'הרשאות וגישה', feature: 'יכולת חדשה', other: 'אחר' };
+    const SYSTEM = { dashboard: 'דשבורד', scalla: 'Scalla CRM', arbox: 'Arbox', meta: 'Meta', email: 'דוא"ל והתראות', other: 'אחר' };
+    const ACTION = { request_created: 'הפנייה נפתחה', admin_update: 'הפנייה עודכנה' };
+    let token = sessionStorage.getItem('cr_admin_token') || '';
+    let requests = [];
+    let customers = [];
+    let selectedId = '';
+
+    function esc(value) { return String(value ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c])); }
+    function formatDate(value, time = false) {
+      if (!value) return '—';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return esc(value);
+      return new Intl.DateTimeFormat('he-IL', time ? { dateStyle: 'short', timeStyle: 'short' } : { dateStyle: 'short' }).format(date);
+    }
+    function api(action, body = {}) {
+      return fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ action, ...body }),
+      }).then(async response => {
+        const data = await response.json().catch(() => ({}));
+        if (response.status === 401 && action !== 'login') logout();
+        if (!response.ok) throw new Error(data.error || 'REQUEST_FAILED');
+        return data;
+      });
+    }
+    function toast(message) {
+      const el = document.getElementById('toast');
+      el.textContent = message; el.classList.remove('hidden');
+      clearTimeout(toast.timer); toast.timer = setTimeout(() => el.classList.add('hidden'), 2800);
+    }
+    function showApp() {
+      document.getElementById('loginPage').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('logoutBtn').classList.remove('hidden');
+      document.getElementById('customersBtn').classList.remove('hidden');
+      loadData();
+    }
+    function logout() {
+      token = ''; sessionStorage.removeItem('cr_admin_token');
+      document.getElementById('app').classList.add('hidden');
+      document.getElementById('loginPage').classList.remove('hidden');
+      document.getElementById('logoutBtn').classList.add('hidden');
+      document.getElementById('customersBtn').classList.add('hidden');
+      closeDrawer(); closeCustomers();
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      const button = document.getElementById('loginBtn');
+      const error = document.getElementById('loginError');
+      button.disabled = true; error.textContent = '';
+      try {
+        const data = await api('login', { password: document.getElementById('adminPassword').value });
+        token = data.token; sessionStorage.setItem('cr_admin_token', token); showApp();
+      } catch (err) {
+        error.textContent = err.message === 'ADMIN_NOT_CONFIGURED' ? 'גישת המנהל טרם הוגדרה בשרת.' : 'הסיסמה אינה נכונה.';
+      } finally { button.disabled = false; }
+    });
+
+    async function loadData() {
+      document.getElementById('tableState').classList.remove('hidden');
+      document.getElementById('tableWrap').classList.add('hidden');
+      try {
+        const data = await api('list');
+        requests = data.requests || []; customers = data.customers || [];
+        document.getElementById('lastRefresh').textContent = `עודכן ${new Intl.DateTimeFormat('he-IL', { dateStyle: 'short', timeStyle: 'short' }).format(new Date())}`;
+        populateFilters(); render(); renderCustomers();
+      } catch { document.getElementById('tableState').textContent = 'לא ניתן לטעון את הפניות כרגע.'; }
+    }
+
+    function populateFilters() {
+      const requestCustomers = [...new Set(requests.map(item => item.customerName).filter(Boolean))].sort((a,b) => a.localeCompare(b, 'he'));
+      const current = document.getElementById('fCustomer').value;
+      document.getElementById('fCustomer').innerHTML = '<option value="">כל הלקוחות</option>' + requestCustomers.map(name => `<option value="${esc(name)}">${esc(name)}</option>`).join('');
+      document.getElementById('fCustomer').value = current;
+      document.getElementById('fStatus').innerHTML = '<option value="">כל הסטטוסים</option>' + Object.entries(STATUS).map(([key,label]) => `<option value="${key}">${label}</option>`).join('');
+      document.getElementById('fPriority').innerHTML = '<option value="">כל העדיפויות</option>' + Object.entries(PRIORITY).map(([key,label]) => `<option value="${key}">${label}</option>`).join('');
+    }
+
+    function filteredRequests() {
+      const q = document.getElementById('search').value.trim().toLowerCase();
+      const customer = document.getElementById('fCustomer').value;
+      const type = document.getElementById('fType').value;
+      const status = document.getElementById('fStatus').value;
+      const priority = document.getElementById('fPriority').value;
+      return requests.filter(item => {
+        const haystack = [item.id, item.customerName, item.title, item.contact?.name, item.contact?.email].join(' ').toLowerCase();
+        return (!q || haystack.includes(q)) && (!customer || item.customerName === customer) && (!type || item.type === type) && (!status || item.status === status) && (!priority || item.priority === priority);
+      });
+    }
+
+    function render() {
+      renderMetrics();
+      const rows = filteredRequests();
+      document.getElementById('resultCount').textContent = `${rows.length} פניות`;
+      const state = document.getElementById('tableState');
+      const wrap = document.getElementById('tableWrap');
+      if (!rows.length) { state.textContent = requests.length ? 'לא נמצאו פניות לפי הסינון.' : 'עדיין לא הוגשו פניות.'; state.classList.remove('hidden'); wrap.classList.add('hidden'); return; }
+      state.classList.add('hidden'); wrap.classList.remove('hidden');
+      document.getElementById('requestRows').innerHTML = rows.map(item => `
+        <tr data-id="${esc(item.id)}" tabindex="0">
+          <td class="id">${esc(item.id)}</td><td>${esc(item.customerName)}</td>
+          <td><span class="tag type-${esc(item.type)}">${TYPE[item.type] || item.type}</span></td>
+          <td class="title">${esc(item.title)}<small>${esc(item.contact?.name || '')}</small></td>
+          <td><span class="tag status-${esc(item.status)}">${STATUS[item.status] || item.status}</span></td>
+          <td class="priority-${esc(item.priority)}">${PRIORITY[item.priority] || item.priority}</td>
+          <td>${esc(item.assignee || 'לא הוקצה')}</td><td>${formatDate(item.updatedAt, true)}</td>
+        </tr>`).join('');
+      document.querySelectorAll('#requestRows tr').forEach(row => {
+        row.addEventListener('click', () => openDrawer(row.dataset.id));
+        row.addEventListener('keydown', event => { if (event.key === 'Enter') openDrawer(row.dataset.id); });
+      });
+    }
+
+    function renderMetrics() {
+      const closed = new Set(['resolved', 'closed']);
+      const month = new Date().toISOString().slice(0, 7);
+      document.getElementById('mOpen').textContent = requests.filter(item => !closed.has(item.status)).length;
+      document.getElementById('mCritical').textContent = requests.filter(item => item.priority === 'critical' && !closed.has(item.status)).length;
+      document.getElementById('mProgress').textContent = requests.filter(item => item.status === 'in_progress').length;
+      document.getElementById('mWaiting').textContent = requests.filter(item => item.status === 'waiting_customer').length;
+      document.getElementById('mResolved').textContent = requests.filter(item => closed.has(item.status) && String(item.updatedAt).startsWith(month)).length;
+    }
+
+    function contentBlock(title, value) { return value ? `<div class="content-block"><h3>${esc(title)}</h3><p>${esc(value)}</p></div>` : ''; }
+    function openDrawer(id) {
+      const item = requests.find(request => request.id === id); if (!item) return;
+      selectedId = id; document.getElementById('drawerId').textContent = id;
+      const systems = (item.systems || []).map(key => SYSTEM[key] || key).join(', ') || '—';
+      const notes = [...(item.notes || [])].reverse().map(note => `<div class="event"><strong>${esc(note.author)} · הערה</strong><span>${formatDate(note.at, true)}</span><p>${esc(note.text)}</p></div>`).join('');
+      const history = [...(item.history || [])].reverse().map(event => `<div class="event"><strong>${esc(event.actor)} · ${ACTION[event.action] || event.action}</strong><span>${formatDate(event.at, true)}</span>${event.changes?.length ? `<p>${event.changes.map(c => `${fieldLabel(c.field)}: ${valueLabel(c.field,c.from)} ← ${valueLabel(c.field,c.to)}`).join('\n')}</p>` : ''}</div>`).join('');
+      document.getElementById('drawerBody').innerHTML = `
+        <h2 class="detail-title">${esc(item.title)}</h2><div class="detail-meta">נפתחה ${formatDate(item.createdAt, true)} על ידי ${esc(item.contact?.name)}</div>
+        <div class="detail-grid">
+          <div class="detail-item"><span>לקוח</span><strong>${esc(item.customerName)}</strong></div><div class="detail-item"><span>סוג</span><strong>${TYPE[item.type] || item.type}</strong></div>
+          <div class="detail-item"><span>אזור</span><strong>${AREA[item.area] || item.area}</strong></div><div class="detail-item"><span>קטגוריה</span><strong>${CATEGORY[item.category] || item.category}</strong></div>
+          <div class="detail-item"><span>מערכות</span><strong>${esc(systems)}</strong></div><div class="detail-item"><span>איש קשר</span><strong>${esc(item.contact?.name)} · ${esc(item.contact?.email)} · ${esc(item.contact?.phone || '')}</strong></div>
+          <div class="detail-item"><span>השפעה</span><strong>${esc(item.affectedUsers || '—')}</strong></div><div class="detail-item"><span>תאריך רצוי</span><strong>${formatDate(item.desiredDate)}</strong></div>
+          <div class="detail-item"><span>סביבה</span><strong>${esc(item.environment || '—')}</strong></div><div class="detail-item"><span>אסמכתא</span><strong>${safeLink(item.evidenceUrl)}</strong></div>
+        </div>
+        ${contentBlock('תיאור', item.description)}${contentBlock('השפעה עסקית', item.businessImpact)}${contentBlock('ציפייה', item.expectedBehavior)}${contentBlock('מה קרה בפועל', item.actualBehavior)}${contentBlock('שלבים לשחזור', item.reproductionSteps)}${contentBlock('צורך עסקי', item.businessReason)}${contentBlock('פתרון / סיכום', item.resolution)}
+        <form id="updateForm" class="edit-panel"><h3>עדכון טיפול</h3><div class="edit-grid">
+          <div><label for="uStatus">סטטוס</label><select id="uStatus">${Object.entries(STATUS).map(([key,label]) => `<option value="${key}" ${item.status===key?'selected':''}>${label}</option>`).join('')}</select></div>
+          <div><label for="uPriority">עדיפות</label><select id="uPriority">${Object.entries(PRIORITY).map(([key,label]) => `<option value="${key}" ${item.priority===key?'selected':''}>${label}</option>`).join('')}</select></div>
+          <div><label for="uAssignee">אחראי</label><input id="uAssignee" maxlength="160" value="${esc(item.assignee || '')}"></div>
+          <div><label for="uTargetDate">תאריך יעד</label><input id="uTargetDate" type="date" value="${esc(item.targetDate || '')}"></div>
+          <div class="full"><label for="uResolution">פתרון / סיכום</label><textarea id="uResolution" maxlength="3000">${esc(item.resolution || '')}</textarea></div>
+          <div class="full"><label for="uNote">הערה פנימית חדשה</label><textarea id="uNote" maxlength="3000" placeholder="ההערה תתווסף להיסטוריה"></textarea></div>
+          <div><label for="uAuthor">עודכן על ידי</label><input id="uAuthor" maxlength="100" value="מנהל"></div>
+          <div style="align-self:end"><button class="btn primary" style="width:100%" type="submit">שמירת עדכון</button></div>
+        </div></form>
+        <div class="timeline"><h3>היסטוריית טיפול</h3>${notes}${history || '<p class="detail-meta">אין היסטוריה נוספת.</p>'}</div>`;
+      document.getElementById('drawerBackdrop').classList.remove('hidden'); document.getElementById('drawer').classList.remove('hidden'); document.body.style.overflow = 'hidden';
+      document.getElementById('updateForm').addEventListener('submit', updateSelected);
+    }
+
+    function safeLink(url) {
+      if (!url) return '—';
+      try { const parsed = new URL(url); if (!['http:','https:'].includes(parsed.protocol)) return '—'; return `<a href="${esc(parsed.href)}" target="_blank" rel="noopener">פתיחת קישור</a>`; } catch { return '—'; }
+    }
+    function fieldLabel(field) { return { status:'סטטוס', priority:'עדיפות', assignee:'אחראי', targetDate:'תאריך יעד', resolution:'פתרון' }[field] || field; }
+    function valueLabel(field, value) { return field === 'status' ? (STATUS[value] || value || 'ריק') : field === 'priority' ? (PRIORITY[value] || value || 'ריק') : (value || 'ריק'); }
+    function closeDrawer() { document.getElementById('drawerBackdrop').classList.add('hidden'); document.getElementById('drawer').classList.add('hidden'); document.body.style.overflow = ''; selectedId = ''; }
+    async function updateSelected(event) {
+      event.preventDefault();
+      try {
+        const data = await api('update', { id: selectedId, status: document.getElementById('uStatus').value, priority: document.getElementById('uPriority').value, assignee: document.getElementById('uAssignee').value, targetDate: document.getElementById('uTargetDate').value, resolution: document.getElementById('uResolution').value, note: document.getElementById('uNote').value, author: document.getElementById('uAuthor').value });
+        requests = requests.map(item => item.id === data.request.id ? data.request : item); render(); openDrawer(data.request.id); toast('הפנייה עודכנה בהצלחה.');
+      } catch (err) { toast(err.message === 'NO_CHANGES' ? 'לא בוצעו שינויים.' : 'שמירת העדכון נכשלה.'); }
+    }
+
+    function openCustomers() { renderCustomers(); document.getElementById('customerBackdrop').classList.remove('hidden'); document.getElementById('customerModal').classList.remove('hidden'); }
+    function closeCustomers() { document.getElementById('customerBackdrop').classList.add('hidden'); document.getElementById('customerModal').classList.add('hidden'); }
+    function renderCustomers() {
+      document.getElementById('customerList').innerHTML = customers.length ? customers.map(customer => `<div class="customer-row"><div><strong>${esc(customer.name)}</strong><small>${esc(customer.dashboardId || 'ללא מזהה')} · ${esc(customer.contactEmail || 'ללא דוא"ל')}</small></div><button class="btn ${customer.active === false ? '' : 'danger'}" data-customer="${esc(customer.id)}" data-active="${customer.active === false}">${customer.active === false ? 'הפעלה' : 'השבתה'}</button></div>`).join('') : '<div class="empty">עדיין לא הוגדרו לקוחות. טופס הפנייה מציג את GiliGuli כברירת מחדל.</div>';
+      document.querySelectorAll('[data-customer]').forEach(button => button.addEventListener('click', () => toggleCustomer(button.dataset.customer, button.dataset.active === 'true')));
+    }
+    document.getElementById('customerForm').addEventListener('submit', async event => {
+      event.preventDefault();
+      try {
+        const data = await api('add_customer', { name: document.getElementById('newCustomerName').value, dashboardId: document.getElementById('newDashboardId').value, contactEmail: document.getElementById('newCustomerEmail').value });
+        customers.push(data.customer); event.target.reset(); renderCustomers(); toast('הלקוח נוסף בהצלחה.');
+      } catch { toast('לא ניתן להוסיף את הלקוח.'); }
+    });
+    async function toggleCustomer(id, active) {
+      try { const data = await api('toggle_customer', { id, active }); customers = customers.map(item => item.id === id ? data.customer : item); renderCustomers(); toast('סטטוס הלקוח עודכן.'); } catch { toast('העדכון נכשל.'); }
+    }
+
+    function exportCsv() {
+      const rows = filteredRequests();
+      const headers = ['מספר','לקוח','סוג','כותרת','סטטוס','עדיפות','אחראי','איש קשר','דוא"ל','נפתח','עודכן'];
+      const values = rows.map(item => [item.id,item.customerName,TYPE[item.type]||item.type,item.title,STATUS[item.status]||item.status,PRIORITY[item.priority]||item.priority,item.assignee||'',item.contact?.name||'',item.contact?.email||'',item.createdAt,item.updatedAt]);
+      const csv = '\ufeff' + [headers, ...values].map(row => row.map(cell => `"${String(cell ?? '').replaceAll('"','""')}"`).join(',')).join('\r\n');
+      const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' })); link.download = `smart-dashboard-requests-${new Date().toISOString().slice(0,10)}.csv`; link.click(); URL.revokeObjectURL(link.href);
+    }
+
+    ['search','fCustomer','fType','fStatus','fPriority'].forEach(id => document.getElementById(id).addEventListener(id === 'search' ? 'input' : 'change', render));
+    document.getElementById('clearFilters').addEventListener('click', () => { ['search','fCustomer','fType','fStatus','fPriority'].forEach(id => document.getElementById(id).value = ''); render(); });
+    document.getElementById('refreshBtn').addEventListener('click', loadData); document.getElementById('exportBtn').addEventListener('click', exportCsv);
+    document.getElementById('closeDrawer').addEventListener('click', closeDrawer); document.getElementById('drawerBackdrop').addEventListener('click', closeDrawer);
+    document.getElementById('customersBtn').addEventListener('click', openCustomers); document.getElementById('closeCustomers').addEventListener('click', closeCustomers); document.getElementById('customerBackdrop').addEventListener('click', closeCustomers);
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') { closeDrawer(); closeCustomers(); } });
+    if (token) showApp();
+  </script>
+</body>
+</html>
