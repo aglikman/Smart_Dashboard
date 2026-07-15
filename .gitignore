@@ -1,0 +1,23 @@
+node_modules/
+.netlify/
+proxy.log
+.DS_Store
+*.log
+
+# Local secrets and environment overrides
+.env
+.env.*
+!.env.example
+
+# Claude local runtime state; keep docs, not local permissions/cache
+.claude/
+
+# Generated deployment artifacts
+deploy-*.zip
+*.zip
+
+# Temporary reconstruction/debug artifacts
+netlify_sections.json
+
+# Local migration/archive holding old generated state; not part of source
+_local_archive/
