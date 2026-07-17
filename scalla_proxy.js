@@ -32,6 +32,7 @@ function loadLocalEnv() {
 loadLocalEnv();
 
 const agentHandler = require('./netlify/functions/agent.js').handler;
+const metaHandler = require('./netlify/functions/meta.js').handler;
 
 const PORT = 3001;
 const TARGET = 'https://api.scallacrm.co.il/scallaapi/api';
@@ -260,6 +261,7 @@ const server = http.createServer(async (req, res) => {
         scalla: !!(process.env.SCALLA_USER && process.env.SCALLA_PASS),
         arbox: !!process.env.ARBOX_KEY,
         anthropic: !!process.env.ANTHROPIC_API_KEY,
+        meta: !!(process.env.META_ACCESS_TOKEN && process.env.META_AD_ACCOUNT_ID),
       },
       uptimeSeconds: Math.round((Date.now() - new Date(stats.startedAt).getTime()) / 1000),
     }));
@@ -302,6 +304,24 @@ const server = http.createServer(async (req, res) => {
       } catch (err) {
         res.writeHead(500, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ error: 'Local agent adapter error', detail: err.message }));
+      }
+    });
+    return;
+  }
+
+  // Meta Graph API local adapter. The dashboard calls the same Netlify-style
+  // function path locally, so Meta works when served through this proxy.
+  if (req.url === '/.netlify/functions/meta' && req.method === 'POST') {
+    let metaBody = '';
+    req.on('data', chunk => metaBody += chunk);
+    req.on('end', async () => {
+      try {
+        const result = await metaHandler({ httpMethod: 'POST', headers: req.headers, body: metaBody });
+        res.writeHead(result.statusCode, { 'Content-Type': 'application/json' });
+        res.end(result.body);
+      } catch (err) {
+        res.writeHead(500, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Local Meta adapter error', detail: err.message }));
       }
     });
     return;
@@ -388,5 +408,8 @@ server.listen(PORT, () => {
   console.log('  Stats:      GET  http://localhost:' + PORT + '/stats');
   console.log('  Log file:   ' + LOG_FILE);
   console.log('  AI Agent:   POST http://localhost:' + PORT + '/.netlify/functions/agent');
+  console.log('  Meta:       POST http://localhost:' + PORT + '/.netlify/functions/meta');
   console.log('');
 });
+
+

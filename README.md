@@ -24,10 +24,12 @@ This is a static dashboard plus a small Node proxy.
 
 Local live mode:
 
-1. Start the proxy with `node scalla_proxy.js`.
-2. Open `http://localhost:3001`.
-3. Browser calls `http://localhost:3001/api/scalla`.
-4. Proxy calls Scalla CRM from the local Israeli internet connection.
+1. Start the dashboard with `npm run dashboard`, or double-click `start_dashboard.cmd` on Windows.
+2. The launcher checks `http://localhost:3001/health`, starts `scalla_proxy.js` if needed, waits until the proxy is ready, and only then opens `http://localhost:3001`.
+3. Browser calls `http://localhost:3001/api/scalla`, `http://localhost:3001/api/arbox`, and local Netlify-style function adapters such as `/.netlify/functions/meta`.
+4. Proxy calls Scalla CRM from the local Israeli internet connection and keeps credentials server-side.
+
+Do not open the dashboard HTML file directly for live demos. Opening the file before the proxy is running prevents Scalla and Meta from connecting.
 
 This local/Israeli-egress path is required because Scalla CRM blocks non-Israeli outbound IPs.
 
@@ -35,7 +37,7 @@ This local/Israeli-egress path is required because Scalla CRM blocks non-Israeli
 
 - Scalla CRM: `https://api.scallacrm.co.il/scallaapi/api`
 - Arbox public API: `https://arboxserver.arboxapp.com/api/public/v3`
-- Meta Graph API: through `netlify/functions/meta.js`
+- Meta Graph API: through `netlify/functions/meta.js`; locally, `scalla_proxy.js` adapts the same Netlify function path
 - AI chat: through `netlify/functions/agent.js`
 - Email alerts: EmailJS browser SDK, configured in the dashboard UI and stored in browser `localStorage`
 
@@ -67,3 +69,4 @@ Phase 4 cleaned local project hygiene: the dashboard HTML files no longer contai
 The admin screen requires `CR_ADMIN_PASSWORD` and `CR_AUTH_SECRET` in the Netlify Functions environment. Customer requests are stored centrally and remain available across deployments.
 
 Next phase should address product decisions: whether the AI chat remains Anthropic/Claude-powered, whether Meta should be configured locally, and whether customer docs need a refresh after the cleanup.
+
