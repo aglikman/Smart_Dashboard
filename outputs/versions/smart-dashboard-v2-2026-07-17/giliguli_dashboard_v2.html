@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Dashboard V2 | הבית של גיליגולי</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6B21A8;
+      --primary-light: #9333EA;
+      --primary-lighter: #E9D5FF;
+      --secondary: #0891B2;
+      --secondary-light: #06B6D4;
+      --accent: #EC4899;
+      --accent-light: #FCE7F3;
+      --success: #16A34A;
+      --success-light: #DCFCE7;
+      --warning: #D97706;
+      --warning-light: #FEF3C7;
+      --danger: #DC2626;
+      --danger-light: #FEE2E2;
+      --bg: #F3F0FF;
+      --card: #FFFFFF;
+      --text: #1E1B4B;
+      --text-secondary: #6B7280;
+      --border: #E5E7EB;
+      --shadow: 0 2px 16px rgba(107,33,168,0.08);
+      --shadow-hover: 0 8px 32px rgba(107,33,168,0.18);
+      --radius: 16px;
+      --radius-sm: 8px;
+      --header-start: #581C87;
+      --header-mid: #7C3AED;
+      --header-end: #DB2777;
+      --surface-muted: #F8FAFC;
+      --input-bg: #FFFFFF;
+      --overlay: rgba(15,23,42,.56);
+    }
+    body[data-theme-mode="dark"] {
+      --primary: #A78BFA;
+      --primary-light: #C4B5FD;
+      --primary-lighter: rgba(167,139,250,.18);
+      --secondary: #22D3EE;
+      --secondary-light: #67E8F9;
+      --accent: #F472B6;
+      --accent-light: rgba(244,114,182,.16);
+      --success: #4ADE80;
+      --success-light: rgba(74,222,128,.14);
+      --warning: #FBBF24;
+      --warning-light: rgba(251,191,36,.16);
+      --danger: #F87171;
+      --danger-light: rgba(248,113,113,.16);
+      --bg: #0F172A;
+      --card: #111827;
+      --text: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --border: #334155;
+      --shadow: 0 2px 18px rgba(0,0,0,.34);
+      --shadow-hover: 0 10px 34px rgba(0,0,0,.46);
+      --header-start: #111827;
+      --header-mid: #4338CA;
+      --header-end: #0F766E;
+      --surface-muted: #1E293B;
+      --input-bg: #0B1220;
+      --overlay: rgba(2,6,23,.72);
+    }
+    body[data-theme-palette="giliguli"] {
+      --primary: #6B21A8;
+      --primary-light: #9333EA;
+      --primary-lighter: #E9D5FF;
+      --secondary: #0891B2;
+      --secondary-light: #06B6D4;
+      --accent: #EC4899;
+      --header-start: #581C87;
+      --header-mid: #7C3AED;
+      --header-end: #DB2777;
+    }
+    body[data-theme-palette="cerby"] {
+      --primary: #6B5CF5;
+      --primary-light: #8678FF;
+      --primary-lighter: rgba(107,92,245,.15);
+      --secondary: #0FBFA0;
+      --secondary-light: #2DD4BF;
+      --accent: #F26B3A;
+      --header-start: #0D0D0D;
+      --header-mid: #6B5CF5;
+      --header-end: #0FBFA0;
+    }
+    body[data-theme-palette="executive"] {
+      --primary: #155E75;
+      --primary-light: #0E7490;
+      --primary-lighter: rgba(21,94,117,.13);
+      --secondary: #7C2D12;
+      --secondary-light: #EA580C;
+      --accent: #BE123C;
+      --header-start: #0F172A;
+      --header-mid: #155E75;
+      --header-end: #7C2D12;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Heebo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      direction: rtl;
+    }
+
+    /* ── HEADER ─────────────────────────────────────────── */
+    .header {
+      background: linear-gradient(135deg, var(--header-start) 0%, var(--header-mid) 50%, var(--header-end) 100%);
+      padding: 22px 32px 18px;
+      color: white;
+    }
+    .header-inner {
+      max-width: 1440px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .header-brand { display: flex; align-items: center; gap: 14px; }
+    .brand-icon {
+      width: 50px; height: 50px; background: rgba(255,255,255,0.2);
+      border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 24px;
+    }
+    .brand-title { font-size: 21px; font-weight: 800; }
+    .brand-sub { font-size: 12px; opacity: 0.82; margin-top: 2px; }
+    .header-meta { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .header-date {
+      font-size: 12px; opacity: 0.85; background: rgba(255,255,255,0.15);
+      padding: 5px 12px; border-radius: 20px;
+    }
+    .badge-live {
+      background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.32);
+      color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+      cursor: default; transition: background 0.3s; white-space: nowrap;
+    }
+    .refresh-btn {
+      background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3);
+      color: #fff; padding: 6px 14px; border-radius: 20px; font-family: inherit;
+      font-size: 12px; cursor: pointer; transition: background 0.2s;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.32); }
+    .refresh-btn:disabled { opacity: 0.5; cursor: wait; }
+    .pulse {
+      display: inline-block; width: 7px; height: 7px; background: #4ADE80;
+      border-radius: 50%; margin-left: 6px; animation: pulse 1.8s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.45; transform: scale(0.65); }
+    }
+
+    /* ── KPI GRID ────────────────────────────────────────── */
+    .kpi-grid {
+      display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px;
+      max-width: 1440px; margin: 20px auto; padding: 0 24px;
+    }
+    @media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 600px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    .kpi-card {
+      background: var(--card); border-radius: var(--radius); padding: 18px 14px;
+      box-shadow: var(--shadow); text-align: center; border-top: 4px solid var(--border);
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+    }
+    .kpi-card[data-href] { cursor: pointer; }
+    .kpi-card[data-href]:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+    .kpi-card[data-href]:hover .kpi-link-icon { opacity: 1; }
+    .kpi-link-icon {
+      position: absolute; top: 7px; left: 10px; font-size: 11px;
+      opacity: 0; transition: opacity 0.2s; color: var(--text-secondary);
+      pointer-events: none;
+    }
+    .kpi-card:not([data-href]):hover { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+    .kpi-card.purple { border-top-color: var(--primary); }
+    .kpi-card.teal   { border-top-color: var(--secondary); }
+    .kpi-card.pink   { border-top-color: var(--accent); }
+    .kpi-card.green  { border-top-color: var(--success); }
+    .kpi-card.orange { border-top-color: var(--warning); }
+
+    /* ── THRESHOLD ALERT UI ───────────────────────────────── */
+    .kpi-settings-btn {
+      position: absolute; top: 6px; right: 7px;
+      background: none; border: none; cursor: pointer;
+      font-size: 12px; opacity: 0; transition: opacity 0.2s;
+      padding: 2px 4px; border-radius: 4px; line-height: 1;
+      color: var(--text-secondary); z-index: 2;
+    }
+    .kpi-card:hover .kpi-settings-btn { opacity: 0.65; }
+    .kpi-settings-btn:hover { opacity: 1 !important; background: rgba(0,0,0,0.06); }
+    .threshold-dot {
+      position: absolute; bottom: 6px; right: 8px;
+      width: 7px; height: 7px; border-radius: 50%; display: none;
+    }
+    .threshold-dot.active  { display: block; background: #6B21A8; }
+    .threshold-dot.breached { display: block; background: #DC2626; animation: pulse-dot 1s infinite; }
+    @keyframes pulse-dot { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.6);opacity:.6} }
+    /* ── MODALS ───────────────────────────────────────────── */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.45); z-index: 1000;
+      backdrop-filter: blur(2px);
+    }
+    .modal-overlay.open { display: block; }
+    .threshold-modal {
+      display: none; position: fixed; z-index: 1001;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      background: #fff; border-radius: 16px;
+      width: min(390px, 93vw);
+      box-shadow: 0 20px 60px rgba(0,0,0,.22);
+      font-family: 'Heebo', sans-serif;
+    }
+    .threshold-modal.open { display: block; }
+    .tmodal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 18px 20px 14px; border-bottom: 1px solid #F3F4F6;
+      font-size: 15px; font-weight: 700; color: #1F2937;
+    }
+    .tmodal-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 18px; color: #9CA3AF; padding: 0 4px; line-height: 1;
+    }
+    .tmodal-close:hover { color: #374151; }
+    .tmodal-body { padding: 12px 20px; display: flex; flex-direction: column; gap: 5px; }
+    .tmodal-body label { font-size: 12px; font-weight: 600; color: #374151; margin-top: 8px; }
+    .tmodal-body label em { font-weight: 700; font-style: normal; color: var(--primary); }
+    .tmodal-body input[type="number"],
+    .tmodal-body input[type="email"],
+    .tmodal-body input[type="text"] {
+      border: 1.5px solid #E5E7EB; border-radius: 8px;
+      padding: 8px 12px; font-size: 14px; font-family: 'Heebo', sans-serif;
+      outline: none; transition: border-color .15s; width: 100%; box-sizing: border-box;
+    }
+    .tmodal-body input:focus { border-color: var(--primary); }
+    .toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer;
+      font-size: 14px; font-weight: 500; color: #374151; margin-top: 6px; }
+    .tmodal-footer {
+      padding: 12px 20px 16px; display: flex; gap: 8px; justify-content: flex-end;
+      border-top: 1px solid #F3F4F6;
+    }
+    .btn-save { background: var(--primary); color: #fff; border: none; padding: 8px 18px;
+      border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif;
+      font-weight: 600; font-size: 13px; }
+    .btn-save:hover { background: var(--primary-light); }
+    .btn-clear { background: #F3F4F6; color: #374151; border: none; padding: 8px 14px;
+      border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 13px; }
+    .btn-clear:hover { background: #E5E7EB; }
+    .btn-test { background: var(--secondary); color: #fff; border: none; padding: 8px 14px;
+      border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 13px; }
+    .emailjs-help { font-size: 12px; color: #6B7280; line-height: 1.6; margin: 0; }
+    .emailjs-help a { color: var(--primary); }
+    .emailjs-help code { background: #F3F4F6; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+    /* ── ALERTS BUTTON IN HEADER ──────────────────────────── */
+    .alert-config-btn {
+      min-height: 32px; display: inline-flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,.96); border: 1px solid rgba(255,255,255,.82);
+      color: #5B21B6; padding: 5px 13px; border-radius: 20px;
+      cursor: pointer; font-size: 12px; font-weight: 700;
+      font-family: 'Heebo',sans-serif; transition: all .2s;
+      box-shadow: 0 1px 4px rgba(49,20,89,.18);
+    }
+    .alert-config-btn:hover { background: #fff; color: #3B0764; transform: translateY(-1px); }
+    .alert-config-btn:focus-visible { outline: 3px solid rgba(255,255,255,.55); outline-offset: 2px; }
+    .service-link { display: inline-flex; align-items: center; text-decoration: none; white-space: nowrap; }
+    .kpi-card.red    { border-top-color: var(--danger); }
+    .kpi-icon { font-size: 22px; margin-bottom: 6px; }
+    .kpi-value { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
+    .kpi-value.purple { color: var(--primary); }
+    .kpi-value.teal   { color: var(--secondary); }
+    .kpi-value.pink   { color: var(--accent); }
+    .kpi-value.green  { color: var(--success); }
+    .kpi-value.orange { color: var(--warning); }
+    .kpi-label { font-size: 11px; color: var(--text-secondary); font-weight: 600; }
+    .kpi-sub   { font-size: 10px; color: var(--text-secondary); margin-top: 3px; opacity: 0.75; }
+
+    /* ── TAB NAV ─────────────────────────────────────────── */
+    .tab-nav { max-width: 1440px; margin: 0 auto; padding: 0 24px; }
+    .tab-nav-inner {
+      display: flex; gap: 4px; background: var(--card);
+      border-radius: 14px 14px 0 0; padding: 8px 8px 0;
+      box-shadow: var(--shadow); border-bottom: 2px solid var(--border);
+    }
+    .tab-btn {
+      background: none; border: none; font-family: inherit; font-size: 13px; font-weight: 600;
+      color: var(--text-secondary); padding: 10px 18px; border-radius: 10px 10px 0 0;
+      cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+      border-bottom: 3px solid transparent;
+    }
+    .tab-btn:hover { background: var(--primary-lighter); color: var(--primary); }
+    .tab-btn.active { background: var(--primary-lighter); color: var(--primary); border-bottom: 3px solid var(--primary); }
+    .tab-badge {
+      background: var(--primary); color: white; font-size: 10px; font-weight: 700;
+      padding: 1px 7px; border-radius: 10px; min-width: 20px; text-align: center;
+    }
+    .tab-badge.warn { background: var(--warning); }
+
+    /* ── TAB CONTENT ─────────────────────────────────────── */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* ── MAIN LAYOUT ─────────────────────────────────────── */
+    .main { max-width: 1440px; margin: 0 auto; padding: 20px 24px; }
+
+    /* ── SECTION TITLE ───────────────────────────────────── */
+    .section-title {
+      font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 14px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── GRIDS ───────────────────────────────────────────── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
+    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; }
+    @media (max-width: 1100px) {
+      .grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .grid-5 { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 900px) {
+      .grid-2, .grid-3, .grid-2-1 { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .grid-4, .grid-5 { grid-template-columns: 1fr 1fr; }
+    }
+
+    /* ── MINI KPI (in-tab) ──────────────────────────────────── */
+    .mini-kpi { padding: 14px 12px; }
+    .mini-kpi .kpi-icon { font-size: 18px; margin-bottom: 6px; }
+    .mini-kpi .kpi-value { font-size: 24px; }
+    .mini-kpi .kpi-label { font-size: 11.5px; }
+    .mini-kpi .kpi-sub { font-size: 10.5px; }
+    .pending-note {
+      font-size: 10px; color: var(--warning); background: var(--warning-light);
+      border-radius: 6px; padding: 2px 6px; margin-top: 4px; display: inline-block; font-weight: 600;
+    }
+
+    /* ── CARD ────────────────────────────────────────────── */
+    .card {
+      background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+    }
+    .card-title {
+      font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px;
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 4px;
+    }
+    .card-subtitle { font-size: 11px; font-weight: 400; color: var(--text-secondary); }
+
+    /* ── INFO NOTE ───────────────────────────────────────── */
+    .info-note {
+      border-radius: 10px; padding: 11px 14px; font-size: 12px; font-weight: 500;
+      display: flex; align-items: center; gap: 8px; margin-bottom: 16px;
+    }
+    .info-note.purple { background: var(--primary-lighter); color: var(--primary); }
+    .info-note.pink   { background: var(--accent-light);    color: var(--accent); }
+    .alert-box {
+      background: var(--danger-light); border: 1px solid #FCA5A5; border-radius: 10px;
+      padding: 12px 14px; font-size: 13px; color: var(--danger); font-weight: 600;
+      margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── MEMBERSHIP CARDS ────────────────────────────────── */
+    .membership-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px;
+    }
+    @media (max-width: 700px) { .membership-grid { grid-template-columns: 1fr; } }
+    .membership-card {
+      background: var(--card); border-radius: var(--radius); padding: 20px;
+      box-shadow: var(--shadow); text-align: center; border-top: 4px solid var(--border);
+    }
+    .membership-card.fh { border-top-color: var(--primary); }
+    .membership-card.ih { border-top-color: var(--secondary); }
+    .membership-card.kr { border-top-color: var(--accent); }
+    .membership-number { font-size: 48px; font-weight: 900; line-height: 1; margin: 6px 0; }
+    .membership-card.fh .membership-number { color: var(--primary); }
+    .membership-card.ih .membership-number { color: var(--secondary); }
+    .membership-card.kr .membership-number { color: var(--accent); }
+    .membership-name { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+    .membership-sub  { font-size: 11px; color: var(--text-secondary); }
+    .cap-bar { margin-top: 10px; background: var(--border); border-radius: 4px; height: 5px; overflow: hidden; }
+    .cap-fill { height: 100%; border-radius: 4px; transition: width 0.6s; }
+    .fh .cap-fill { background: var(--primary); }
+    .ih .cap-fill { background: var(--secondary); }
+    .kr .cap-fill { background: var(--accent); }
+    .cap-label { font-size: 10px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* ── EXPIRY ALERTS ───────────────────────────────────── */
+    .expiry-list { display: flex; flex-direction: column; gap: 10px; }
+    .expiry-item {
+      display: flex; align-items: center; gap: 10px; padding: 11px 13px;
+      background: var(--warning-light); border-radius: 10px; border-right: 3px solid var(--warning);
+    }
+    .expiry-avatar {
+      width: 34px; height: 34px; background: var(--warning); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 13px; font-weight: 700; flex-shrink: 0;
+    }
+    .expiry-info { flex: 1; }
+    .expiry-name  { font-size: 13px; font-weight: 600; }
+    .expiry-meta  { font-size: 11px; color: var(--warning); font-weight: 600; }
+    .expiry-days  {
+      background: var(--warning); color: white; font-size: 11px; font-weight: 700;
+      padding: 3px 8px; border-radius: 10px;
+    }
+
+    /* ── WORKSHOPS ───────────────────────────────────────── */
+    .workshop-list { display: flex; flex-direction: column; gap: 10px; }
+    .workshop-item { padding: 13px; background: var(--bg); border-radius: 10px; border-right: 3px solid var(--secondary); }
+    .workshop-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 7px; }
+    .workshop-name { font-size: 13px; font-weight: 700; }
+    .workshop-date { font-size: 11px; color: var(--text-secondary); }
+    .workshop-progress { display: flex; align-items: center; gap: 10px; }
+    .workshop-bar-wrap { flex: 1; background: var(--border); border-radius: 4px; height: 7px; overflow: hidden; }
+    .workshop-bar-fill { height: 100%; background: var(--secondary); border-radius: 4px; transition: width 0.6s; }
+    .workshop-bar-fill.hot { background: var(--danger); }
+    .workshop-count { font-size: 12px; font-weight: 700; color: var(--secondary); white-space: nowrap; }
+
+    /* ── RANKINGS ────────────────────────────────────────── */
+    .ranking-list { display: flex; flex-direction: column; gap: 8px; }
+    .ranking-item {
+      display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+      border-radius: 10px; background: var(--bg);
+    }
+    .rank-num {
+      width: 24px; height: 24px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 800; flex-shrink: 0; color: white;
+    }
+    .rank-1 { background: #F59E0B; }
+    .rank-2 { background: #9CA3AF; }
+    .rank-3 { background: #92400E; }
+    .rank-4, .rank-5 { background: var(--primary-light); }
+    .ranking-name  { flex: 1; font-size: 13px; font-weight: 600; }
+    .ranking-score { font-size: 13px; font-weight: 700; color: var(--primary); }
+    .ranking-score.danger { color: var(--danger); }
+
+    /* ── ONE-TIME BUYERS ─────────────────────────────────── */
+    .onetime-list { display: flex; flex-direction: column; gap: 8px; }
+    .onetime-item {
+      display: flex; align-items: center; gap: 12px; padding: 11px 13px;
+      background: var(--bg); border-radius: 10px; border-right: 3px solid var(--secondary);
+    }
+    .onetime-name  { flex: 1; font-size: 13px; font-weight: 600; }
+    .onetime-date  { font-size: 11px; color: var(--text-secondary); }
+    .upsell-btn {
+      background: var(--secondary-light); color: white; font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 10px; cursor: pointer; border: none;
+      font-family: inherit;
+    }
+
+    /* ── MARKETING: GOALS ────────────────────────────────── */
+    .goal-card { background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .goal-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; flex-wrap: wrap; gap: 6px; }
+    .goal-label  { font-size: 13px; font-weight: 700; }
+    .goal-numbers { font-size: 12px; color: var(--text-secondary); }
+    .goal-numbers strong { font-size: 18px; font-weight: 900; }
+    .goal-bar-wrap { background: var(--border); border-radius: 6px; height: 10px; overflow: hidden; margin-bottom: 6px; }
+    .goal-bar-fill { height: 100%; border-radius: 6px; transition: width 0.8s; }
+    .on-track { background: var(--success); }
+    .behind   { background: var(--warning); }
+    .at-risk  { background: var(--danger); }
+    .goal-pct { font-size: 11px; color: var(--text-secondary); }
+
+    /* ── CAMPAIGN TABLE ──────────────────────────────────── */
+    .tbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .tbl th {
+      background: var(--bg); padding: 9px 11px; text-align: right; font-weight: 700;
+      font-size: 11px; color: var(--text-secondary); border-bottom: 2px solid var(--border);
+    }
+    .tbl td { padding: 9px 11px; border-bottom: 1px solid var(--border); }
+    .tbl tr:last-child td { border-bottom: none; }
+    .tbl tr:hover td { background: var(--bg); }
+
+    /* ── SOURCE BADGES ───────────────────────────────────── */
+    .src-badge { display: inline-flex; align-items: center; gap: 5px; padding: 2px 9px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+    .src-badge.paid     { background: var(--primary-lighter); color: var(--primary); }
+    .src-badge.organic  { background: var(--success-light); color: var(--success); }
+    .src-badge.referral { background: var(--accent-light); color: var(--accent); }
+    .src-badge.other    { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+
+    /* ── ORGANIC SOCIAL ──────────────────────────────────── */
+    .social-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .social-stat { background: var(--bg); border-radius: 10px; padding: 12px; text-align: center; }
+    .social-stat-val   { font-size: 22px; font-weight: 800; color: var(--primary); }
+    .social-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+    /* ── LEADS TABLE ─────────────────────────────────────── */
+    .leads-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    .leads-table th {
+      background: var(--bg); padding: 9px 11px; text-align: right; font-weight: 700;
+      font-size: 11px; color: var(--text-secondary); border-bottom: 2px solid var(--border);
+    }
+    .leads-table td { padding: 9px 11px; border-bottom: 1px solid var(--border); }
+    .leads-table tr:last-child td { border-bottom: none; }
+    .leads-table tr:hover td { background: var(--primary-lighter); }
+    .status-badge { display: inline-block; padding: 3px 9px; border-radius: 12px; font-size: 11px; font-weight: 700; }
+    .status-new          { background: #DBEAFE; color: #1D4ED8; }
+    .status-in-progress  { background: var(--primary-lighter); color: var(--primary); }
+    .status-calling      { background: var(--warning-light); color: var(--warning); }
+    .status-irrelevant   { background: var(--bg); color: var(--text-secondary); border: 1px solid var(--border); }
+    .status-chronic      { background: #EDE9FE; color: #7C3AED; }
+    .status-location     { background: var(--success-light); color: var(--success); }
+    .status-purchased    { background: var(--success-light); color: var(--success); }
+    .status-return       { background: var(--accent-light); color: var(--accent); }
+    .source-chip {
+      display: inline-flex; align-items: center; gap: 5px; font-size: 11px;
+      background: var(--bg); padding: 2px 7px; border-radius: 8px; border: 1px solid var(--border);
+    }
+    .source-chip .dot { color: var(--secondary); font-size: 9px; }
+    .age-tag { font-size: 11px; background: var(--accent-light); color: var(--accent); padding: 2px 7px; border-radius: 8px; }
+    .filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
+    .filter-btn {
+      padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: white; font-family: inherit; font-size: 12px; font-weight: 600;
+      cursor: pointer; color: var(--text-secondary); transition: all 0.15s;
+    }
+    .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
+    .show-more-btn {
+      display: block; width: 100%; margin-top: 14px; padding: 11px;
+      background: var(--bg); border: 1.5px dashed var(--border); border-radius: var(--radius-sm);
+      font-family: inherit; font-size: 13px; font-weight: 600; color: var(--text-secondary);
+      cursor: pointer; transition: all 0.2s;
+    }
+    .show-more-btn:hover { background: var(--primary-lighter); color: var(--primary); border-color: var(--primary); }
+
+    /* ── CHARTS ──────────────────────────────────────────── */
+    .chart-wrap  { position: relative; height: 210px; }
+    .donut-wrap  { position: relative; height: 215px; }
+    .donut-center {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      text-align: center; pointer-events: none;
+    }
+    .donut-center-val   { font-size: 28px; font-weight: 900; color: var(--primary); }
+    .donut-center-label { font-size: 11px; color: var(--text-secondary); }
+    .chart-sub { font-size: 11px; color: var(--text-secondary); text-align: center; margin-top: 6px; }
+    .legend-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 5px 10px; margin-top: 10px;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; }
+    .legend-dot  { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .legend-label { color: var(--text-secondary); flex: 1; }
+    .legend-count { font-weight: 700; color: var(--text); }
+
+    /* ── CONVERSION TIME ─────────────────────────────────── */
+    .conv-card {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: var(--radius); padding: 20px; color: white; text-align: center;
+    }
+    .conv-card[data-href] { cursor: pointer; }
+    .conv-card[data-href]:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
+    .conv-val   { font-size: 52px; font-weight: 900; }
+    .conv-unit  { font-size: 15px; opacity: 0.85; }
+    .conv-label { font-size: 12px; opacity: 0.75; margin-top: 4px; }
+
+    /* ── FOOTER ──────────────────────────────────────────── */
+    .footer {
+      max-width: 1440px; margin: 20px auto 28px; padding: 18px 24px;
+      background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 10px;
+    }
+    .footer p { font-size: 12px; color: var(--text-secondary); }
+    .freshness { display: flex; gap: 14px; flex-wrap: wrap; }
+    .fr-item   { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-secondary); }
+    .fr-dot    { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+    .fr-dot.live    { background: var(--success); }
+    .fr-dot.sample  { background: var(--warning); }
+    .fr-dot.pending { background: var(--text-secondary); }
+    .fr-dot.manual  { background: var(--accent); }
+
+    /* ── AI INSIGHTS CHAT ───────────────────────────────────── */
+    .ai-chat-fab {
+      position: fixed; bottom: 24px; left: 24px; z-index: 900;
+      width: 58px; height: 58px; border-radius: 50%; border: none; cursor: pointer;
+      background: linear-gradient(135deg, var(--header-start) 0%, var(--header-mid) 50%, var(--header-end) 100%);
+      color: #fff; font-size: 24px; box-shadow: var(--shadow-hover);
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s;
+    }
+    .ai-chat-fab:hover { transform: scale(1.06); }
+    .ai-chat-fab .ai-chat-fab-dot {
+      position: absolute; top: 4px; left: 4px; width: 10px; height: 10px;
+      border-radius: 50%; background: #4ADE80; border: 2px solid #fff;
+    }
+    .ai-chat-panel {
+      position: fixed; bottom: 92px; left: 24px; z-index: 900;
+      width: min(380px, 92vw); height: min(560px, 78vh);
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow-hover); display: none;
+      flex-direction: column; overflow: hidden; font-family: 'Heebo', sans-serif;
+    }
+    .ai-chat-panel.open { display: flex; }
+    .ai-chat-header {
+      background: linear-gradient(135deg, var(--header-start) 0%, var(--header-mid) 50%, var(--header-end) 100%);
+      color: #fff; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center;
+      flex-shrink: 0;
+    }
+    .ai-chat-header-title { font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .ai-chat-header-sub { font-size: 10px; opacity: 0.8; font-weight: 400; }
+    .ai-chat-close { background: none; border: none; color: #fff; font-size: 18px; cursor: pointer; opacity: 0.85; line-height: 1; }
+    .ai-chat-close:hover { opacity: 1; }
+    .ai-chat-messages {
+      flex: 1; overflow-y: auto; padding: 14px; display: flex; flex-direction: column; gap: 10px;
+      background: var(--bg);
+    }
+    .ai-chat-msg { max-width: 85%; padding: 9px 13px; border-radius: 14px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+    .ai-chat-msg.bot  { align-self: flex-start; background: var(--card); color: var(--text); box-shadow: var(--shadow); border-bottom-left-radius: 4px; }
+    .ai-chat-msg.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 4px; }
+    .ai-chat-msg.error { align-self: flex-start; background: var(--danger-light); color: var(--danger); box-shadow: var(--shadow); }
+    .ai-chat-msg.typing { align-self: flex-start; background: var(--card); box-shadow: var(--shadow); display: flex; gap: 4px; padding: 12px 15px; }
+    .ai-chat-typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-secondary); animation: ai-typing-bounce 1.2s infinite; }
+    .ai-chat-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+    .ai-chat-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes ai-typing-bounce { 0%, 60%, 100% { opacity: 0.3; transform: translateY(0); } 30% { opacity: 1; transform: translateY(-3px); } }
+    .ai-chat-suggestions { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 14px 10px; flex-shrink: 0; }
+    .ai-chat-suggestion {
+      font-size: 11px; background: var(--primary-lighter); color: var(--primary); border: none;
+      border-radius: 14px; padding: 5px 10px; cursor: pointer; font-family: inherit;
+    }
+    .ai-chat-suggestion:hover { background: var(--accent-light); color: var(--accent); }
+    .ai-chat-input-row {
+      display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); flex-shrink: 0; background: var(--card);
+    }
+    .ai-chat-input {
+      flex: 1; resize: none; border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 9px 12px; font-family: 'Heebo', sans-serif; font-size: 13px; outline: none;
+      max-height: 80px; direction: rtl;
+    }
+    .ai-chat-input:focus { border-color: var(--primary); }
+    .ai-chat-send {
+      background: var(--primary); color: #fff; border: none; border-radius: 10px;
+      width: 40px; flex-shrink: 0; cursor: pointer; font-size: 16px;
+    }
+    .ai-chat-send:hover { background: var(--primary-light); }
+    .ai-chat-send:disabled { opacity: 0.5; cursor: wait; }
+
+    /* ── V2 AUTH, THEMES & MANAGEMENT ─────────────────────── */
+    .v2-auth-gate {
+      display: none; position: fixed; inset: 0; z-index: 3000;
+      align-items: center; justify-content: center; padding: 24px;
+      background: var(--overlay); backdrop-filter: blur(10px);
+    }
+    .v2-auth-gate.open { display: flex; }
+    .v2-auth-card {
+      width: min(520px, 96vw); background: var(--card); color: var(--text);
+      border: 1px solid var(--border); border-radius: 14px; box-shadow: 0 24px 80px rgba(0,0,0,.28);
+      padding: 24px; display: flex; flex-direction: column; gap: 14px;
+    }
+    .v2-auth-title { font-size: 22px; font-weight: 900; }
+    .v2-auth-sub { color: var(--text-secondary); font-size: 13px; line-height: 1.65; }
+    .v2-form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .v2-field { display: flex; flex-direction: column; gap: 5px; }
+    .v2-field.full { grid-column: 1 / -1; }
+    .v2-field label { font-size: 12px; color: var(--text-secondary); font-weight: 800; }
+    .v2-field input, .v2-field select, .v2-top-select {
+      background: var(--input-bg); color: var(--text); border: 1px solid var(--border);
+      border-radius: 8px; padding: 8px 10px; font-family: inherit; min-height: 36px;
+    }
+    .v2-field input:focus, .v2-field select:focus, .v2-top-select:focus { outline: 2px solid var(--primary-lighter); border-color: var(--primary); }
+    .v2-btn {
+      border: none; border-radius: 8px; padding: 9px 14px; font-family: inherit; font-weight: 800;
+      background: var(--primary); color: #fff; cursor: pointer; min-height: 36px;
+    }
+    .v2-btn:hover { background: var(--primary-light); }
+    .v2-btn.secondary { background: var(--surface-muted); color: var(--text); border: 1px solid var(--border); }
+    .v2-btn.secondary:hover { background: var(--primary-lighter); color: var(--primary); }
+    .v2-auth-note { font-size: 12px; color: var(--text-secondary); background: var(--surface-muted); border: 1px solid var(--border); border-radius: 8px; padding: 10px; }
+    .v2-session-pill {
+      display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 5px 12px;
+      border-radius: 20px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.28);
+      color: #fff; font-size: 12px; font-weight: 700; white-space: nowrap;
+    }
+    .v2-top-select {
+      min-height: 32px; max-width: 145px; padding: 5px 9px; border-radius: 20px;
+      background: rgba(255,255,255,.96); color: #1E1B4B; font-size: 12px; font-weight: 700;
+    }
+    .v2-theme-toggle { min-width: 74px; }
+    .v2-hidden { display: none !important; }
+    .v2-management-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 18px; }
+    @media (max-width: 900px) { .v2-management-grid { grid-template-columns: 1fr; } .v2-form-grid { grid-template-columns: 1fr; } }
+    .v2-management-card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 16px; min-height: 118px;
+    }
+    .v2-management-card strong { display: block; font-size: 28px; color: var(--primary); line-height: 1; margin-bottom: 6px; }
+    .v2-management-card span { color: var(--text-secondary); font-size: 12px; font-weight: 700; }
+    .v2-admin-actions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin: 12px 0 16px; }
+    @media (max-width: 900px) { .v2-admin-actions { grid-template-columns: 1fr; } }
+    .v2-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+    .v2-table th, .v2-table td { border-bottom: 1px solid var(--border); padding: 10px 8px; text-align: right; font-size: 12px; }
+    .v2-table th { color: var(--text-secondary); background: var(--surface-muted); font-weight: 900; }
+    .v2-table td select { max-width: 150px; }
+    .v2-status-chip { display: inline-flex; align-items: center; padding: 3px 9px; border-radius: 999px; background: var(--primary-lighter); color: var(--primary); font-weight: 900; font-size: 11px; margin: 1px; }
+    body[data-theme-mode="dark"] .threshold-modal,
+    body[data-theme-mode="dark"] .tmodal-header,
+    body[data-theme-mode="dark"] .tmodal-footer { background: var(--card); color: var(--text); border-color: var(--border); }
+    body[data-theme-mode="dark"] .tmodal-body label,
+    body[data-theme-mode="dark"] .toggle-label { color: var(--text-secondary); }
+    body[data-theme-mode="dark"] input,
+    body[data-theme-mode="dark"] textarea,
+    body[data-theme-mode="dark"] select { background: var(--input-bg); color: var(--text); border-color: var(--border); }
+  </style>
+</head>
+<body>
+
+<div class="v2-auth-gate" id="v2AuthGate" dir="rtl">
+  <div class="v2-auth-card">
+    <div>
+      <div class="v2-auth-title">כניסה לגרסת Smart Dashboard V2</div>
+      <div class="v2-auth-sub">שער כניסה תפעולי לגרסת preview. זה מדגים הרשאות, לקוחות ומשתמשים על בסיס localStorage בלבד; לפני production נדרש Auth Provider ושרת שמאמת session.</div>
+    </div>
+    <div class="v2-form-grid">
+      <div class="v2-field full">
+        <label for="v2LoginEmail">מייל משתמש</label>
+        <input id="v2LoginEmail" type="email" value="admin@smartdash.local" autocomplete="email">
+      </div>
+      <div class="v2-field">
+        <label for="v2LoginRole">Role</label>
+        <select id="v2LoginRole" onchange="v2SyncLoginRole()">
+          <option value="super_admin">Super Admin</option>
+          <option value="customer_admin">Customer Admin</option>
+          <option value="customer_user">Customer User</option>
+          <option value="viewer">Viewer</option>
+        </select>
+      </div>
+      <div class="v2-field">
+        <label for="v2LoginTenant">לקוח / Tenant</label>
+        <select id="v2LoginTenant"></select>
+      </div>
+    </div>
+    <button class="v2-btn" type="button" onclick="v2Login()">כניסה לדשבורד</button>
+    <div class="v2-auth-note">הערת אבטחה: הגרסה הזו מיועדת להדגמת UX בלבד. אין בה סיסמאות, API keys או הרשאות production.</div>
+  </div>
+</div>
+
+<!-- ── HEADER ─────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="header-brand">
+      <div class="brand-icon">🌸</div>
+      <div>
+        <div class="brand-title">הבית של גיליגולי</div>
+        <div class="brand-sub">Smart Dashboard V2 | Theme + Auth preview | חיבור API חי ל-ScallaCRM</div>
+      </div>
+    </div>
+    <div class="header-meta">
+      <div class="header-date" id="currentDate"></div>
+      <div class="v2-session-pill" id="v2SessionPill">V2 · לא מחובר</div>
+      <select class="v2-top-select" id="v2PaletteSelect" onchange="v2SetPalette(this.value)" title="תבנית צבע">
+        <option value="giliguli">GiliGuli</option>
+        <option value="cerby">Cerby</option>
+        <option value="executive">Executive</option>
+      </select>
+      <button class="alert-config-btn v2-theme-toggle" id="v2ThemeToggle" onclick="v2ToggleMode()">Dark</button>
+      <button class="alert-config-btn" onclick="v2Logout()">יציאה</button>
+      <div class="badge-live" id="crmBadge"><span class="pulse"></span> מתחבר ל-ScallaCRM...</div>
+      <div class="badge-live" id="arboxBadge">⟳ בודק Arbox...</div>
+      <a class="alert-config-btn service-link" href="DashBoard_CR_Form.html">בקשת שירות</a>
+      <button class="alert-config-btn" onclick="openEmailJSModal()">🔔 התראות</button>
+      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()">🔄 רענן נתונים</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── KPI GRID ────────────────────────────────────────────── -->
+<div class="kpi-grid">
+  <div class="kpi-card purple" data-href="https://manage.arboxapp.com/reports-v5/all-clients-report" data-label="כל הלידים ב-Arbox">
+    <span class="kpi-link-icon">↗</span>
+    <div class="kpi-icon">📋</div>
+    <div class="kpi-value purple" id="kpiTotalLeads">—</div>
+    <div class="kpi-label">סה"כ לידים</div>
+    <div class="kpi-sub" id="kpiTotalLeadsSub">ScallaCRM</div>
+  </div>
+  <div class="kpi-card teal" data-href="https://manage.arboxapp.com/reports-v5/leads-in-process-report" data-label="לידים חדשים ובטיפול ב-Arbox">
+    <span class="kpi-link-icon">↗</span>
+    <div class="kpi-icon">🆕</div>
+    <div class="kpi-value teal" id="kpiNewLeads">—</div>
+    <div class="kpi-label">לידים חדשים</div>
+    <div class="kpi-sub">ממתינים לטיפול</div>
+  </div>
+  <div class="kpi-card green" data-href="https://manage.arboxapp.com/reports-v5/active-members-report" data-label="מנויי Full House ב-Arbox">
+    <span class="kpi-link-icon">↗</span>
+    <div class="kpi-icon">🏡</div>
+    <div class="kpi-value green" id="kpiFH">—</div>
+    <div class="kpi-label">Full House</div>
+    <div class="kpi-sub">מנויים פעילים</div>
+  </div>
+  <div class="kpi-card pink" data-href="https://manage.arboxapp.com/" data-label="מנויי In House ב-Arbox">
+    <span class="kpi-link-icon">↗</span>
+    <div class="kpi-icon">🏠</div>
+    <div class="kpi-value pink" id="kpiIH">—</div>
+    <div class="kpi-label">In House</div>
+    <div class="kpi-sub">מנויים פעילים</div>
+  </div>
+  <div class="kpi-card purple" data-href="https://manage.arboxapp.com/reports-v5/sessions-report" data-label="כרטיסיות פעילות ב-Arbox">
+    <span class="kpi-link-icon">↗</span>
+    <div class="kpi-icon">🎫</div>
+    <div class="kpi-value purple" id="kpiKR">—</div>
+    <div class="kpi-label">כרטיסיות</div>
+    <div class="kpi-sub">פעילות</div>
+  </div>
+  <div class="kpi-card orange" data-href="https://manage.arboxapp.com/reports-v5/expiring-sessions-report" data-label="מנויים פגים ב-Arbox">
+    <span class="kpi-link-icon">↗</span>
+    <div class="kpi-icon">⚠️</div>
+    <div class="kpi-value orange" id="kpiExp">—</div>
+    <div class="kpi-label">פגים השבוע</div>
+    <div class="kpi-sub">דורשים חידוש</div>
+  </div>
+</div>
+
+<!-- ── TABS ────────────────────────────────────────────────── -->
+<div class="tab-nav">
+  <div class="tab-nav-inner">
+    <button class="tab-btn active" id="tab-btn-leads" onclick="switchTab('leads')">
+      📋 לידים <span class="tab-badge" id="badge-leads">—</span>
+    </button>
+    <button class="tab-btn" id="tab-btn-studio" onclick="switchTab('studio')">
+      🏢 סטודיו <span class="tab-badge">—</span>
+    </button>
+    <button class="tab-btn" id="tab-btn-marketing" onclick="switchTab('marketing')">
+      📈 שיווק
+    </button>
+    <button class="tab-btn v2-role-super-admin" id="tab-btn-admin" onclick="switchTab('admin')">
+      🛡 Admin <span class="tab-badge" id="badge-admin">V2</span>
+    </button>
+    <button class="tab-btn v2-role-customer-admin" id="tab-btn-users" onclick="switchTab('users')">
+      👥 משתמשים <span class="tab-badge" id="badge-users">V2</span>
+    </button>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 1 - LEADS                                           -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="tab-leads" class="tab-content active">
+<main class="main">
+
+  <div class="info-note purple" id="leadsInfoNote">
+    ⟳ מתחבר ל-ScallaCRM API...
+  </div>
+
+  <!-- Leads Funnel KPIs -->
+  <div class="section-title">🎯 מדדי לידים - החודש הנוכחי</div>
+  <div class="grid-4" style="margin-bottom:14px;">
+    <div class="kpi-card mini-kpi purple" data-href="https://manage.arboxapp.com/reports-v5/all-clients-report" data-label="כל הלידים ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">📋</div>
+      <div class="kpi-value purple" id="kpiAllLeadsPeriod">—</div>
+      <div class="kpi-label">כל הלידים</div>
+      <div class="kpi-sub" id="kpiAllLeadsPeriodSub">סה"כ לידים החודש</div>
+    </div>
+    <div class="kpi-card mini-kpi teal" data-href="https://manage.arboxapp.com/reports-v5/leads-in-process-report" data-label="לידים בטיפול ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">⏳</div>
+      <div class="kpi-value teal" id="kpiInProgress">—</div>
+      <div class="kpi-label">לידים בטיפול</div>
+      <div class="kpi-sub">לידים בטיפול פעיל</div>
+    </div>
+    <div class="kpi-card mini-kpi green" data-href="https://manage.arboxapp.com/reports-v5/trial-classes-report?date=2026-06-01%2C2026-07-31" data-label="רכשו שיעור ניסיון ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">✅</div>
+      <div class="kpi-value green" id="kpiTrialClosed">—</div>
+      <div class="kpi-label">שיעורי ניסיון שנסגרו</div>
+      <div class="kpi-sub">נסגרו לשיעור ניסיון</div>
+    </div>
+    <div class="kpi-card mini-kpi red" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%90+%D7%A8%D7%9C%D7%95%D7%95%D7%A0%D7%98%D7%99" data-label="לידים לא רלוונטיים ב-ScallaCRM">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">❌</div>
+      <div class="kpi-value red" id="kpiLostLeads">—</div>
+      <div class="kpi-label">לידים אבודים</div>
+      <div class="kpi-sub" id="kpiLostLeadsSub">סיבה מובילה: —</div>
+    </div>
+  </div>
+
+  <!-- Closures by salesperson -->
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-title">
+      <span>🏆 סגירות שיעור ניסיון לפי איש/אשת מכירות</span>
+      <span class="card-subtitle">מבוסס שדה "מוקצה אל" ב-ScallaCRM | החודש</span>
+    </div>
+    <div class="ranking-list" id="ownerCloseList"></div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-title">
+        <span>📊 התפלגות לפי סטטוס</span>
+        <span class="card-subtitle" id="statusChartSub">טוען...</span>
+      </div>
+      <div class="donut-wrap">
+        <canvas id="statusDonut"></canvas>
+        <div class="donut-center">
+          <div class="donut-center-val" id="donutCenterVal">—</div>
+          <div class="donut-center-label">לידים</div>
+        </div>
+      </div>
+      <p class="chart-sub" id="statusChartNote">טוען נתונים...</p>
+      <div class="legend-grid" id="legendGrid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📡 מקורות ליד</span>
+        <span class="card-subtitle" id="sourceChartSub">טוען...</span>
+      </div>
+      <div class="chart-wrap">
+        <canvas id="sourceBar"></canvas>
+      </div>
+      <p class="chart-sub" id="sourceChartNote">טוען נתונים...</p>
+    </div>
+  </div>
+
+  <!-- Conversion Time + Leads Table -->
+  <div style="display:grid; grid-template-columns:160px 1fr; gap:18px; margin-bottom:18px; align-items:start;">
+    <div class="conv-card">
+      <div class="conv-val">~14</div>
+      <div class="conv-unit">ימים</div>
+      <div class="conv-label">זמן המרה ממוצע<br>ליד ← לקוח</div>
+    </div>
+    <div class="card" style="padding-bottom:10px;">
+      <div class="card-title">
+        <span>📋 רשומות לידים</span>
+        <span class="card-subtitle" id="leadsTableSub">טוען...</span>
+      </div>
+      <div class="filter-row" id="filtersRow"></div>
+      <div style="overflow-x:auto;">
+        <table class="leads-table">
+          <thead>
+            <tr>
+              <th>#</th><th>שם</th><th>סטטוס</th><th>מקור</th><th>גיל</th><th>סיבת ליד</th><th>טלפון</th><th>תאריך</th>
+            </tr>
+          </thead>
+          <tbody id="leadsTableBody">
+            <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-secondary);">⟳ טוען לידים מ-ScallaCRM...</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <button class="show-more-btn" onclick="toggleLeads()">הצג עוד לידים ▼</button>
+    </div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 2 - STUDIO (ARBOX)                                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="tab-studio" class="tab-content">
+<main class="main">
+
+  <div class="info-note purple" id="studioInfoNote">
+    ⟳ טוען נתונים מ-Arbox...
+  </div>
+
+  <div class="section-title">🎟 תמונת מצב מנויים פעילים</div>
+  <div class="membership-grid">
+    <div class="membership-card fh">
+      <div class="membership-name">Full House</div>
+      <div class="membership-number" id="fhNum">—</div>
+      <div class="membership-sub">מנויים פעילים</div>
+      <div class="cap-bar"><div class="cap-fill" style="width:0%"></div></div>
+      <div class="cap-label">— מנויים פעילים</div>
+    </div>
+    <div class="membership-card ih">
+      <div class="membership-name">In House</div>
+      <div class="membership-number" id="ihNum">—</div>
+      <div class="membership-sub">מנויים פעילים</div>
+      <div class="cap-bar"><div class="cap-fill" style="width:0%"></div></div>
+      <div class="cap-label">— מנויים פעילים</div>
+    </div>
+    <div class="membership-card kr">
+      <div class="membership-name">כרטיסיות</div>
+      <div class="membership-number" id="krNum">—</div>
+      <div class="membership-sub">כרטיסיות פעילות</div>
+      <div class="cap-bar"><div class="cap-fill" style="width:0%"></div></div>
+      <div class="cap-label">— כרטיסיות פעילות</div>
+    </div>
+  </div>
+
+  <!-- Extended membership metrics -->
+  <div class="section-title">📋 מדדי מנויים מורחבים</div>
+  <div class="grid-4" style="margin-bottom:18px;">
+    <div class="kpi-card mini-kpi purple" data-href="https://manage.arboxapp.com/" data-label="כל תוכניות המנוי הפעילות ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">🎟</div>
+      <div class="kpi-value purple" id="kpiActivePlans">—</div>
+      <div class="kpi-label">מנויים פעילים</div>
+      <div class="kpi-sub" id="kpiActivePlansSub">סה"כ מנויים פעילים</div>
+    </div>
+    <div class="kpi-card mini-kpi teal" data-href="https://manage.arboxapp.com/" data-label="כרטיסיות שנמכרו ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">🧾</div>
+      <div class="kpi-value teal" id="kpiPacksSold">—</div>
+      <div class="kpi-label">כרטיסיות שנמכרו</div>
+      <div class="kpi-sub">נמכרו ב-90 יום | <span id="kpiPacksActiveSub">— פעילות</span></div>
+    </div>
+    <div class="kpi-card mini-kpi orange" data-href="https://manage.arboxapp.com/reports-v5/inactive-members-report" data-label="מנויים לא פעילים ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">💤</div>
+      <div class="kpi-value orange" id="kpiInactive">—</div>
+      <div class="kpi-label">מנויים לא פעילים</div>
+      <div class="kpi-sub" id="kpiInactiveSub">ללא מנוי פעיל</div>
+    </div>
+    <div class="kpi-card mini-kpi red" data-href="https://manage.arboxapp.com/reports-v5/expiring-memberships-report?end=2026-05-01%2C2026-07-31" data-label="מנויים שפג תוקפם ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">⏱</div>
+      <div class="kpi-value red" id="kpiExpiredPlans">—</div>
+      <div class="kpi-label">מנויים שפג תוקפם</div>
+      <div class="kpi-sub" id="kpiExpiredPlansSub">פג תוקף | 30 יום</div>
+    </div>
+    <div class="kpi-card mini-kpi green" data-href="https://manage.arboxapp.com/reports-v5/renewals-report" data-label="חידושי מנוי ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">🔁</div>
+      <div class="kpi-value green" id="kpiRenewals">—</div>
+      <div class="kpi-label">חידושי מנוי</div>
+      <div class="kpi-sub" id="kpiRenewalsSub">חודשו | 30 יום</div>
+    </div>
+    <div class="kpi-card mini-kpi red" data-href="https://manage.arboxapp.com/reports-v5/cancelled-memberships-report" data-label="ביטולי מנוי ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">🚫</div>
+      <div class="kpi-value red" id="kpiCancellations">—</div>
+      <div class="kpi-label">ביטולי מנוי</div>
+      <div class="kpi-sub" id="kpiCancellationsSub">בוטלו | 30 יום</div>
+    </div>
+    <div class="kpi-card mini-kpi pink" data-href="https://manage.arboxapp.com/reports-v5/expiring-sessions-report" data-label="כרטיסיות שעומדות לפוג ב-Arbox">
+      <span class="kpi-link-icon">↗</span>
+      <div class="kpi-icon">🎫</div>
+      <div class="kpi-value pink" id="kpiPunchExpKPI">—</div>
+      <div class="kpi-label">כרטיסיות שעומדות לפוג</div>
+      <div class="kpi-sub">ב-30 הימים הקרובים ↓</div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-title">
+        <span>⚠️ מנויים פגים השבוע</span>
+        <span style="font-size:11px; background:var(--warning-light); color:var(--warning); padding:2px 9px; border-radius:10px; font-weight:700;" id="expiryCount">טוען...</span>
+      </div>
+      <div class="expiry-list" id="expiryList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📅 חוגים עתידיים - מצב הרשמות</span>
+        <span class="card-subtitle">Live</span>
+      </div>
+      <div class="workshop-list" id="workshopList"></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-title">
+      <span>🎫 כרטיסיות - פגות ב-30 הימים הקרובים</span>
+      <span style="font-size:11px; background:rgba(107,33,168,.1); color:var(--primary); padding:2px 9px; border-radius:10px; font-weight:700;" id="punchExpCount">טוען...</span>
+    </div>
+    <div id="punchExpList"><div style="padding:16px;text-align:center;color:var(--text-secondary);font-size:12px;">⟳ טוען נתוני כרטיסיות...</div></div>
+  </div>
+
+  <!-- Courses & engagement -->
+  <div class="section-title">🎓 סדנאות ומעורבות</div>
+  <div class="grid-3" style="margin-bottom:18px; align-items:start;">
+    <div class="conv-card" data-href="https://manage.arboxapp.com/reports-v5/active-hugim-report" data-label="סדנאות פעילות ב-Arbox" style="grid-column:span 1;">
+      <div class="conv-val" id="kpiActiveCourses">—</div>
+      <div class="conv-unit">סדנאות</div>
+      <div class="conv-label">סדנאות פעילות<br>ב-30 הימים הקרובים</div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span>📚 הרשמות לסדנאות לפי סדנה</span>
+        <span class="card-subtitle">הרשמות לסדנאות | 30 יום <a href="https://manage.arboxapp.com/reports-v5/hugim-bookings-report" target="_blank" rel="noopener" style="margin-right:6px;">↗ Arbox</a></span>
+      </div>
+      <div class="ranking-list" id="courseBookingList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span>😴 מנויים ללא הרשמה לשיעור/סדנה</span>
+        <span class="card-subtitle">ללא רישום | 30 יום</span>
+      </div>
+      <div class="ranking-list" id="nonEngagedList"></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-title">
+        <span>⭐ Top 5 - לקוחות מצטיינים</span>
+        <span class="card-subtitle">לפי שיעורים | החודש האחרון</span>
+      </div>
+      <div class="ranking-list" id="topList"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">
+        <span>🚨 Top 5 - ביטולים ואי-הגעה</span>
+        <span class="card-subtitle">החודש האחרון <a href="https://manage.arboxapp.com/reports-v5/booking-cancellation-report" target="_blank" rel="noopener" style="margin-right:6px;">↗ Arbox</a></span>
+      </div>
+      <div class="ranking-list" id="noShowList"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>💡 רכשו שיעור ניסיון (99₪ / 220₪) - הזדמנויות Upsell</span>
+      <span style="font-size:11px; background:rgba(107,33,168,.1); color:var(--primary); padding:2px 9px; border-radius:10px; font-weight:700;" id="onetimeCount">טוען...</span>
+    </div>
+    <div class="alert-box">🔍 זיהוי רוכשי שיעור ניסיון ללא מנוי - דורש השוואה Arbox ↔ ScallaCRM</div>
+    <div class="onetime-list" id="onetimeList"></div>
+  </div>
+
+</main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 3 - MARKETING                                       -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="tab-marketing" class="tab-content">
+<main class="main">
+
+  <div class="info-note pink" id="marketingInfoNote">
+    ✏️ נתוני שיווק - הזן ערכים בשדות הכחולים | חיבור Meta Ads יאפשר נתונים אוטומטיים בעתיד
+  </div>
+
+  <div class="section-title">🎯 יעדים מול ביצוע - יוני 2026</div>
+  <div class="grid-3" style="margin-bottom:18px;">
+    <div class="goal-card">
+      <div class="goal-header">
+        <div class="goal-label">💰 הכנסות חודשיות</div>
+        <div class="goal-numbers"><strong style="color:var(--warning);">38,500</strong>₪ / <span style="color:var(--text-secondary);">50,000₪</span></div>
+      </div>
+      <div class="goal-bar-wrap"><div class="goal-bar-fill behind" style="width:77%"></div></div>
+      <div class="goal-pct">77% מהיעד החודשי - פיגור של 11,500₪</div>
+    </div>
+    <div class="goal-card">
+      <div class="goal-header">
+        <div class="goal-label">📣 תקציב שיווק</div>
+        <div class="goal-numbers"><strong style="color:var(--warning);">6,400</strong>₪ / <span style="color:var(--text-secondary);">8,000₪</span></div>
+      </div>
+      <div class="goal-bar-wrap"><div class="goal-bar-fill behind" style="width:80%"></div></div>
+      <div class="goal-pct">80% ניצול | 1,600₪ נותרו לחודש</div>
+    </div>
+    <div class="goal-card">
+      <div class="goal-header">
+        <div class="goal-label">📋 לידים חודשיים</div>
+        <div class="goal-numbers"><strong style="color:var(--warning);" id="goalLeadsActual">—</strong> / <span style="color:var(--text-secondary);">60</span></div>
+      </div>
+      <div class="goal-bar-wrap"><div class="goal-bar-fill behind" id="goalLeadsBar" style="width:0%"></div></div>
+      <div class="goal-pct" id="goalLeadsPct">טוען...</div>
+    </div>
+  </div>
+
+  <div class="grid-2-1" style="margin-bottom:18px;">
+    <div class="card">
+      <div class="card-title">
+        <span>📣 ביצועי קמפיינים - יוני 2026</span>
+        <span class="card-subtitle">ScallaCRM + הזנה ידנית</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="tbl">
+          <thead><tr><th>מקור</th><th>סוג</th><th>לידים</th><th>הוצאה</th><th>CPL</th><th>המרות</th></tr></thead>
+          <tbody id="campBody"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span>📱 סושיאל אורגני</span></div>
+      <div class="social-grid" style="margin-bottom:12px;">
+        <div class="social-stat"><div class="social-stat-val" id="metaImpressions">12.4K</div><div class="social-stat-label">חשיפות</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaEngagementRate">8.2%</div><div class="social-stat-label">מעורבות</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaFans">1,020</div><div class="social-stat-label">עוקבים</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaEngaged">45</div><div class="social-stat-label">משתמשים מעורבים</div></div>
+      </div>
+      <div class="chart-wrap" style="height:100px;"><canvas id="socialChart"></canvas></div>
+      <div style="font-size:10px; color:var(--text-secondary); text-align:center; margin-top:5px;" id="metaSourceNote">* חיבור Meta API יאפשר עדכון אוטומטי</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>📈 מבט-על שיווקי - לידים לפי שבוע</span>
+      <span class="card-subtitle">יוני 2026 | יעד שבועי: 15 לידים</span>
+    </div>
+    <div class="chart-wrap"><canvas id="weeklyChart"></canvas></div>
+  </div>
+
+</main>
+</div>
+
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 4 - V2 ADMIN                                        -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="tab-admin" class="tab-content">
+<main class="main">
+  <div class="info-note purple">V2 Admin · ניהול לקוחות, תבניות והרשאות בסיסיות לגרסת preview.</div>
+
+  <div class="section-title">🛡 ניהול לקוחות</div>
+  <div class="v2-management-grid">
+    <div class="v2-management-card"><strong id="v2TenantCount">—</strong><span>לקוחות במערכת</span></div>
+    <div class="v2-management-card"><strong id="v2ActiveTenantCount">—</strong><span>לקוחות פעילים</span></div>
+    <div class="v2-management-card"><strong id="v2ManagedUserCount">—</strong><span>משתמשים מנוהלים</span></div>
+  </div>
+
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-title"><span>➕ הוספת לקוח</span><span class="card-subtitle">Preview store: localStorage</span></div>
+    <div class="v2-admin-actions">
+      <div class="v2-field"><label>שם לקוח</label><input id="v2TenantName" type="text" placeholder="לדוגמה: Studio North"></div>
+      <div class="v2-field"><label>איש קשר</label><input id="v2TenantContact" type="email" placeholder="ops@example.com"></div>
+      <div class="v2-field"><label>סטטוס</label><select id="v2TenantStatus"><option value="trial">trial</option><option value="active">active</option><option value="paused">paused</option><option value="archived">archived</option></select></div>
+      <div class="v2-field"><label>Theme</label><select id="v2TenantTheme"><option value="giliguli">GiliGuli</option><option value="cerby">Cerby</option><option value="executive">Executive</option></select></div>
+    </div>
+    <button class="v2-btn" type="button" onclick="v2AddTenant()">הוסף לקוח</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📋 לקוחות</span><span class="card-subtitle">סטטוס, theme ואינטגרציות</span></div>
+    <div style="overflow-x:auto;"><table class="v2-table"><thead><tr><th>לקוח</th><th>Tenant ID</th><th>איש קשר</th><th>סטטוס</th><th>Theme</th><th>אינטגרציות</th><th>פעולה</th></tr></thead><tbody id="v2TenantTableBody"></tbody></table></div>
+  </div>
+</main>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 5 - V2 CUSTOMER USERS                               -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="tab-users" class="tab-content">
+<main class="main">
+  <div class="info-note purple" id="v2UsersInfoNote">V2 Customer Admin · ניהול משתמשים לפי לקוח.</div>
+
+  <div class="section-title">👥 ניהול משתמשי לקוח</div>
+  <div class="card" style="margin-bottom:18px;">
+    <div class="card-title"><span>➕ הזמנת משתמש</span><span class="card-subtitle" id="v2CurrentTenantLabel">—</span></div>
+    <div class="v2-admin-actions">
+      <div class="v2-field"><label>שם מלא</label><input id="v2UserName" type="text" placeholder="שם המשתמש"></div>
+      <div class="v2-field"><label>מייל</label><input id="v2UserEmail" type="email" placeholder="user@example.com"></div>
+      <div class="v2-field"><label>Role</label><select id="v2UserRole"><option value="customer_user">customer_user</option><option value="customer_admin">customer_admin</option><option value="viewer">viewer</option></select></div>
+      <div class="v2-field"><label>סטטוס</label><select id="v2UserStatus"><option value="invited">invited</option><option value="active">active</option><option value="blocked">blocked</option></select></div>
+    </div>
+    <button class="v2-btn" type="button" onclick="v2InviteUser()">הוסף / הזמן משתמש</button>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>משתמשים</span><span class="card-subtitle">מבודד לפי tenant בגרסת preview</span></div>
+    <div style="overflow-x:auto;"><table class="v2-table"><thead><tr><th>שם</th><th>מייל</th><th>Role</th><th>סטטוס</th><th>Tenant</th><th>פעולה</th></tr></thead><tbody id="v2UsersTableBody"></tbody></table></div>
+  </div>
+</main>
+</div>
+<!-- ── FOOTER ──────────────────────────────────────────────── -->
+<footer class="footer">
+  <p>הבית של גיליגולי | Smart Dashboard V2 | Theme + Auth preview | Scalla API v2.0</p>
+  <div class="freshness">
+    <div class="fr-item"><div class="fr-dot pending" id="crmDot"></div><span id="crmStatus">ScallaCRM - מתחבר...</span></div>
+    <div class="fr-item"><div class="fr-dot pending" id="arboxDot"></div><span id="arboxStatus">Arbox - בודק...</span></div>
+    <div class="fr-item"><div class="fr-dot manual" id="metaDot"></div><span id="metaStatus">שיווק - נתונים ידניים</span></div>
+  </div>
+</footer>
+
+<!-- ── THRESHOLD MODAL ──────────────────────────────────────── -->
+<div id="thresholdOverlay" class="modal-overlay" onclick="closeThresholdModal()"></div>
+<div id="thresholdModal" class="threshold-modal" dir="rtl">
+  <div class="tmodal-header">
+    <span id="tmodalTitle">🔔 הגדר התראה</span>
+    <button onclick="closeThresholdModal()" class="tmodal-close">✕</button>
+  </div>
+  <div class="tmodal-body">
+    <label>סף מינימום — שלח התראה אם הערך יורד <em>מתחת ל</em></label>
+    <input type="number" id="tLower" placeholder="ריק = לא פעיל">
+    <label>סף מקסימום — שלח התראה אם הערך עולה <em>מעל ל</em></label>
+    <input type="number" id="tUpper" placeholder="ריק = לא פעיל">
+    <label>שלח התראה אל</label>
+    <input type="email" id="tEmail" value="arye.glikman@gmail.com">
+    <label class="toggle-label">
+      <input type="checkbox" id="tEnabled" checked>
+      <span>התראות מופעלות</span>
+    </label>
+  </div>
+  <div class="tmodal-footer">
+    <button onclick="clearThreshold()" class="btn-clear">🗑 נקה</button>
+    <button onclick="saveThresholdFromModal()" class="btn-save">💾 שמור</button>
+  </div>
+</div>
+
+<!-- ── EMAILJS SETUP MODAL ───────────────────────────────────── -->
+<div id="emailjsOverlay" class="modal-overlay" onclick="closeEmailJSModal()"></div>
+<div id="emailjsModal" class="threshold-modal" dir="rtl">
+  <div class="tmodal-header">
+    <span>⚙️ הגדרת שליחת מיילים (EmailJS)</span>
+    <button onclick="closeEmailJSModal()" class="tmodal-close">✕</button>
+  </div>
+  <div class="tmodal-body">
+    <p class="emailjs-help">כדי לשלוח מיילים אוטומטיים נדרש חשבון EmailJS חינמי (200 מיילים/חודש).<br>
+    <a href="https://emailjs.com" target="_blank" rel="noopener">emailjs.com</a> → Create account → Add Email Service → Create Template</p>
+    <label>Public Key</label>
+    <input type="text" id="ejsPublicKey" placeholder="user_XXXXXXXXXX">
+    <label>Service ID</label>
+    <input type="text" id="ejsServiceId" placeholder="service_XXXXXXX">
+    <label>Template ID</label>
+    <input type="text" id="ejsTemplateId" placeholder="template_XXXXXXX">
+    <p class="emailjs-help" style="margin-top:10px;">בתבנית EmailJS השתמש במשתנים:<br>
+    <code>{{kpi_name}}</code> <code>{{current_value}}</code> <code>{{threshold_type}}</code> <code>{{threshold_value}}</code> <code>{{to_email}}</code></p>
+  </div>
+  <div class="tmodal-footer">
+    <button onclick="testEmailJS()" class="btn-test">📧 שלח בדיקה</button>
+    <button onclick="saveEmailJSConfig()" class="btn-save">💾 שמור</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!-- SCRIPTS                                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+// ═══════════════════════════════════════════════════════════════
+// CONFIGURATION
+// ═══════════════════════════════════════════════════════════════
+const SCALLA = {
+  API: 'https://api.scallacrm.co.il/scallaapi/api',
+  TENANT: '',  // Overwritten by unique_id from server-side login
+  // Auto-detect: local dev -> local proxy, Netlify -> serverless function
+  PROXY: location.hostname === 'localhost'
+    ? '/api/scalla'
+    : '/.netlify/functions/scalla',
+};
+
+const ARBOX = {
+  // Server-side proxy keeps the Arbox API key out of browser-visible code
+  ENDPOINT: location.hostname === 'localhost'
+    ? '/api/arbox'
+    : '/.netlify/functions/arbox',
+};
+
+const META = {
+  // Server-side proxy (netlify/functions/meta.js) - holds the System User token, never exposed client-side
+  ENDPOINT: '/.netlify/functions/meta',
+};
+
+// ═══════════════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════════════
+let scallaSession = null;
+let scallaDataSource = 'none'; // 'live', 'cached', 'none'
+let leadsData = [];
+let statusData = [];
+let sourceData = [];
+let statusDonutChart = null;
+let sourceBarChart = null;
+let activeFilter = 'הכל';
+let showAll = false;
+
+
+// ═══════════════════════════════════════════════════════════════
+// V2 AUTH, THEME AND TENANT MANAGEMENT PREVIEW
+// ═══════════════════════════════════════════════════════════════
+const V2_SESSION_KEY = 'smart_dashboard_v2_session';
+const V2_THEME_KEY = 'smart_dashboard_v2_theme';
+const V2_TENANTS_KEY = 'smart_dashboard_v2_tenants';
+const V2_USERS_KEY = 'smart_dashboard_v2_users';
+let v2DashboardStarted = false;
+
+const V2_DEFAULT_TENANTS = [
+  { id: 'giliguli', name: 'הבית של גיליגולי', contact: 'ops@giliguli.local', status: 'active', theme: 'giliguli', integrations: ['Scalla', 'Arbox', 'Meta', 'AI Chat'] },
+  { id: 'pilot-north', name: 'Pilot North Studio', contact: 'owner@pilot-north.local', status: 'trial', theme: 'executive', integrations: ['Arbox', 'AI Chat'] },
+];
+const V2_DEFAULT_USERS = [
+  { id: 'u-admin', tenantId: 'all', name: 'SmartDash Admin', email: 'admin@smartdash.local', role: 'super_admin', status: 'active' },
+  { id: 'u-gili-admin', tenantId: 'giliguli', name: 'GiliGuli Admin', email: 'admin@giliguli.local', role: 'customer_admin', status: 'active' },
+  { id: 'u-gili-viewer', tenantId: 'giliguli', name: 'GiliGuli Viewer', email: 'viewer@giliguli.local', role: 'viewer', status: 'active' },
+];
+
+function v2ReadJson(key, fallback) {
+  try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; }
+}
+function v2WriteJson(key, value) { localStorage.setItem(key, JSON.stringify(value)); }
+function v2Tenants() { return v2ReadJson(V2_TENANTS_KEY, V2_DEFAULT_TENANTS); }
+function v2Users() { return v2ReadJson(V2_USERS_KEY, V2_DEFAULT_USERS); }
+function v2Session() { return v2ReadJson(V2_SESSION_KEY, null); }
+function v2Escape(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, ch => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' }[ch]));
+}
+function v2RoleLabel(role) {
+  return ({ super_admin: 'Super Admin', customer_admin: 'Customer Admin', customer_user: 'Customer User', viewer: 'Viewer' })[role] || role;
+}
+function v2CurrentTenant() {
+  const session = v2Session();
+  const tenants = v2Tenants();
+  return tenants.find(t => t.id === session?.tenantId) || tenants[0];
+}
+
+function v2SeedData() {
+  if (!localStorage.getItem(V2_TENANTS_KEY)) v2WriteJson(V2_TENANTS_KEY, V2_DEFAULT_TENANTS);
+  if (!localStorage.getItem(V2_USERS_KEY)) v2WriteJson(V2_USERS_KEY, V2_DEFAULT_USERS);
+}
+function v2PopulateTenantSelect() {
+  const select = document.getElementById('v2LoginTenant');
+  if (!select) return;
+  select.innerHTML = v2Tenants().map(t => `<option value="${v2Escape(t.id)}">${v2Escape(t.name)}</option>`).join('');
+}
+function v2SyncLoginRole() {
+  const role = document.getElementById('v2LoginRole')?.value;
+  const email = document.getElementById('v2LoginEmail');
+  if (!email) return;
+  if (role === 'super_admin') email.value = 'admin@smartdash.local';
+  if (role === 'customer_admin') email.value = 'admin@giliguli.local';
+  if (role === 'customer_user') email.value = 'user@giliguli.local';
+  if (role === 'viewer') email.value = 'viewer@giliguli.local';
+}
+function v2Login() {
+  const role = document.getElementById('v2LoginRole').value;
+  const tenantId = role === 'super_admin' ? 'all' : document.getElementById('v2LoginTenant').value;
+  const tenant = v2Tenants().find(t => t.id === tenantId) || v2Tenants()[0];
+  const email = document.getElementById('v2LoginEmail').value.trim() || 'user@smartdash.local';
+  v2WriteJson(V2_SESSION_KEY, { email, role, tenantId, tenantName: role === 'super_admin' ? 'All Tenants' : tenant.name, startedAt: new Date().toISOString() });
+  const theme = v2ReadJson(V2_THEME_KEY, { mode: 'light', palette: tenant?.theme || 'giliguli' });
+  theme.palette = tenant?.theme || theme.palette || 'giliguli';
+  v2WriteJson(V2_THEME_KEY, theme);
+  v2ApplyTheme();
+  v2ApplySessionUI();
+  v2StartDashboard();
+}
+function v2Logout() {
+  localStorage.removeItem(V2_SESSION_KEY);
+  v2DashboardStarted = false;
+  v2ApplySessionUI();
+}
+function v2RequireSession() {
+  const session = v2Session();
+  document.body.classList.toggle('v2-locked', !session);
+  document.getElementById('v2AuthGate')?.classList.toggle('open', !session);
+  return Boolean(session);
+}
+function v2CanOpenTab(name) {
+  const session = v2Session();
+  if (!session) return false;
+  if (name === 'admin') return session.role === 'super_admin';
+  if (name === 'users') return session.role === 'super_admin' || session.role === 'customer_admin';
+  return true;
+}
+function v2ApplySessionUI() {
+  const session = v2Session();
+  const pill = document.getElementById('v2SessionPill');
+  if (pill) pill.textContent = session ? `${v2RoleLabel(session.role)} · ${session.tenantName}` : 'V2 · לא מחובר';
+  document.querySelectorAll('.v2-role-super-admin').forEach(el => el.classList.toggle('v2-hidden', session?.role !== 'super_admin'));
+  document.querySelectorAll('.v2-role-customer-admin').forEach(el => el.classList.toggle('v2-hidden', !(session?.role === 'super_admin' || session?.role === 'customer_admin')));
+  v2RequireSession();
+  v2RenderAdmin();
+  v2RenderCustomerUsers();
+}
+function v2ApplyTheme() {
+  const theme = v2ReadJson(V2_THEME_KEY, { mode: 'light', palette: 'giliguli' });
+  document.body.dataset.themeMode = theme.mode || 'light';
+  document.body.dataset.themePalette = theme.palette || 'giliguli';
+  const paletteSelect = document.getElementById('v2PaletteSelect');
+  const toggle = document.getElementById('v2ThemeToggle');
+  if (paletteSelect) paletteSelect.value = theme.palette || 'giliguli';
+  if (toggle) toggle.textContent = theme.mode === 'dark' ? 'Light' : 'Dark';
+}
+function v2SetPalette(palette) {
+  const theme = v2ReadJson(V2_THEME_KEY, { mode: 'light', palette: 'giliguli' });
+  theme.palette = palette;
+  v2WriteJson(V2_THEME_KEY, theme);
+  v2ApplyTheme();
+}
+function v2ToggleMode() {
+  const theme = v2ReadJson(V2_THEME_KEY, { mode: 'light', palette: 'giliguli' });
+  theme.mode = theme.mode === 'dark' ? 'light' : 'dark';
+  v2WriteJson(V2_THEME_KEY, theme);
+  v2ApplyTheme();
+}
+function v2TenantStatusLabel(status) {
+  return ({ active: 'פעיל', trial: 'Trial', paused: 'מושהה', archived: 'ארכיון' })[status] || status;
+}
+function v2RenderAdmin() {
+  const tenants = v2Tenants();
+  const users = v2Users();
+  const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+  setText('v2TenantCount', tenants.length);
+  setText('v2ActiveTenantCount', tenants.filter(t => t.status === 'active').length);
+  setText('v2ManagedUserCount', users.length);
+  const body = document.getElementById('v2TenantTableBody');
+  if (!body) return;
+  body.innerHTML = tenants.map(t => `
+    <tr>
+      <td><strong>${v2Escape(t.name)}</strong></td>
+      <td><code>${v2Escape(t.id)}</code></td>
+      <td>${v2Escape(t.contact)}</td>
+      <td><select onchange="v2UpdateTenant('${v2Escape(t.id)}','status',this.value)">
+        ${['active','trial','paused','archived'].map(s => `<option value="${s}" ${s === t.status ? 'selected' : ''}>${v2TenantStatusLabel(s)}</option>`).join('')}
+      </select></td>
+      <td><select onchange="v2UpdateTenant('${v2Escape(t.id)}','theme',this.value)">
+        ${['giliguli','cerby','executive'].map(p => `<option value="${p}" ${p === t.theme ? 'selected' : ''}>${p}</option>`).join('')}
+      </select></td>
+      <td>${(t.integrations || []).map(x => `<span class="v2-status-chip">${v2Escape(x)}</span>`).join(' ')}</td>
+      <td><button class="v2-btn secondary" type="button" onclick="v2ImpersonateTenant('${v2Escape(t.id)}')">פתח כלקוח</button></td>
+    </tr>`).join('');
+}
+function v2AddTenant() {
+  const name = document.getElementById('v2TenantName').value.trim();
+  if (!name) { alert('יש להזין שם לקוח'); return; }
+  const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `tenant-${Date.now()}`;
+  const tenants = v2Tenants();
+  if (tenants.some(t => t.id === id)) { alert('לקוח עם Tenant ID דומה כבר קיים'); return; }
+  tenants.push({
+    id,
+    name,
+    contact: document.getElementById('v2TenantContact').value.trim() || 'contact@customer.local',
+    status: document.getElementById('v2TenantStatus').value,
+    theme: document.getElementById('v2TenantTheme').value,
+    integrations: ['Arbox', 'AI Chat'],
+  });
+  v2WriteJson(V2_TENANTS_KEY, tenants);
+  v2PopulateTenantSelect();
+  v2RenderAdmin();
+  document.getElementById('v2TenantName').value = '';
+  document.getElementById('v2TenantContact').value = '';
+}
+function v2UpdateTenant(id, field, value) {
+  const tenants = v2Tenants().map(t => t.id === id ? { ...t, [field]: value } : t);
+  v2WriteJson(V2_TENANTS_KEY, tenants);
+  v2PopulateTenantSelect();
+  v2RenderAdmin();
+}
+function v2ImpersonateTenant(id) {
+  const tenant = v2Tenants().find(t => t.id === id);
+  if (!tenant) return;
+  v2WriteJson(V2_SESSION_KEY, { email: 'admin@smartdash.local', role: 'customer_admin', tenantId: tenant.id, tenantName: tenant.name, startedAt: new Date().toISOString() });
+  v2WriteJson(V2_THEME_KEY, { ...v2ReadJson(V2_THEME_KEY, { mode: 'light' }), palette: tenant.theme || 'giliguli' });
+  v2ApplyTheme();
+  v2ApplySessionUI();
+  switchTab('users');
+}
+function v2UsersForSession() {
+  const session = v2Session();
+  const users = v2Users();
+  if (!session) return [];
+  return session.role === 'super_admin' ? users : users.filter(u => u.tenantId === session.tenantId);
+}
+function v2RenderCustomerUsers() {
+  const session = v2Session();
+  const tenant = v2CurrentTenant();
+  const label = document.getElementById('v2CurrentTenantLabel');
+  const note = document.getElementById('v2UsersInfoNote');
+  if (label) label.textContent = session?.role === 'super_admin' ? 'כל הלקוחות' : tenant?.name || '—';
+  if (note) note.textContent = session ? `V2 Customer Admin · ${session.role === 'super_admin' ? 'תצוגת Super Admin' : 'ניהול משתמשים עבור ' + session.tenantName}` : 'V2 Customer Admin';
+  const body = document.getElementById('v2UsersTableBody');
+  if (!body) return;
+  body.innerHTML = v2UsersForSession().map(u => `
+    <tr>
+      <td><strong>${v2Escape(u.name)}</strong></td>
+      <td>${v2Escape(u.email)}</td>
+      <td><span class="v2-status-chip">${v2Escape(u.role)}</span></td>
+      <td><select onchange="v2UpdateUser('${v2Escape(u.id)}','status',this.value)">${['invited','active','blocked'].map(s => `<option value="${s}" ${s === u.status ? 'selected' : ''}>${s}</option>`).join('')}</select></td>
+      <td>${v2Escape(u.tenantId)}</td>
+      <td><button class="v2-btn secondary" type="button" onclick="v2RemoveUser('${v2Escape(u.id)}')">הסר</button></td>
+    </tr>`).join('') || '<tr><td colspan="6" style="text-align:center;color:var(--text-secondary);padding:18px;">אין משתמשים להצגה</td></tr>';
+}
+function v2InviteUser() {
+  const session = v2Session();
+  if (!session) return;
+  const name = document.getElementById('v2UserName').value.trim();
+  const email = document.getElementById('v2UserEmail').value.trim();
+  if (!name || !email) { alert('יש להזין שם ומייל'); return; }
+  const role = document.getElementById('v2UserRole').value;
+  if (role === 'super_admin') { alert('לא ניתן ליצור Super Admin ממסך לקוח'); return; }
+  const users = v2Users();
+  users.push({ id: `u-${Date.now()}`, tenantId: session.role === 'super_admin' ? (v2CurrentTenant()?.id || 'giliguli') : session.tenantId, name, email, role, status: document.getElementById('v2UserStatus').value });
+  v2WriteJson(V2_USERS_KEY, users);
+  document.getElementById('v2UserName').value = '';
+  document.getElementById('v2UserEmail').value = '';
+  v2RenderCustomerUsers();
+  v2RenderAdmin();
+}
+function v2UpdateUser(id, field, value) {
+  const users = v2Users().map(u => u.id === id ? { ...u, [field]: value } : u);
+  v2WriteJson(V2_USERS_KEY, users);
+  v2RenderCustomerUsers();
+}
+function v2RemoveUser(id) {
+  const users = v2Users().filter(u => u.id !== id);
+  v2WriteJson(V2_USERS_KEY, users);
+  v2RenderCustomerUsers();
+  v2RenderAdmin();
+}
+function v2InitShell() {
+  v2SeedData();
+  v2PopulateTenantSelect();
+  v2ApplyTheme();
+  v2ApplySessionUI();
+  v2SyncLoginRole();
+}
+// ═══════════════════════════════════════════════════════════════
+// DATE & TABS
+// ═══════════════════════════════════════════════════════════════
+document.getElementById('currentDate').textContent =
+  new Date().toLocaleDateString('he-IL', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+function switchTab(name) {
+  if (!v2CanOpenTab(name)) name = 'leads';
+  const content = document.getElementById('tab-' + name);
+  const button = document.getElementById('tab-btn-' + name);
+  if (!content || !button) return;
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  content.classList.add('active');
+  button.classList.add('active');
+  if (name === 'admin') v2RenderAdmin();
+  if (name === 'users') v2RenderCustomerUsers();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// SCALLA CRM API
+// ═══════════════════════════════════════════════════════════════
+async function scallaPost(params) {
+  const url = SCALLA.PROXY;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams(params).toString(),
+    signal: AbortSignal.timeout(15000),
+  });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
+}
+
+async function scallaLogin() {
+  const data = await scallaPost({
+    _operation: 'loginAndFetchModules',
+  });
+  if (!data.result || !data.result.login) throw new Error('Login failed');
+  scallaSession = data.result.login.session;
+  // tenant_id is the unique_id returned at login (validated live 05/07). Use it dynamically.
+  if (data.result.login.unique_id) {
+    SCALLA.TENANT = data.result.login.unique_id;
+  }
+  return scallaSession;
+}
+
+async function scallaFetchLeads() {
+  if (!scallaSession) await scallaLogin();
+  const data = await scallaPost({
+    _operation: 'Listrecordsbymodule',
+    _session: scallaSession,
+    module: 'Leads',
+    tenant_id: SCALLA.TENANT,
+  });
+  if (!data.result) throw new Error('No result in response');
+  return data.result;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// STATUS MAPPING (Hebrew status labels to CSS classes)
+// ═══════════════════════════════════════════════════════════════
+const STATUS_MAP = {
+  'ליד חדש':           { css: 'new',         color: '#0EA5E9' },
+  'ליד בטיפול':        { css: 'in-progress', color: '#6B21A8' },
+  'נסיונות חיוג':      { css: 'calling',     color: '#FCD34D' },
+  'לא רלוונטי':        { css: 'irrelevant',  color: '#9CA3AF' },
+  'מסננת כרונית':      { css: 'chronic',     color: '#818CF8' },
+  'מיקום':             { css: 'location',    color: '#34D399' },
+  'מספר לא תקין':      { css: 'irrelevant',  color: '#FCA5A5' },
+  'סיבוב נוסף':        { css: 'return',      color: '#A78BFA' },
+  'לחזור בעתיד':       { css: 'return',      color: '#F9A8D4' },
+  'רכשה שיעור ניסיון': { css: 'purchased',   color: '#16A34A' },
+  'תואמה שיחה':        { css: 'scheduled',   color: '#F59E0B' },
+  'קיבלה שובר':        { css: 'voucher',     color: '#10B981' },
+  'כפול':              { css: 'irrelevant',  color: '#6B7280' },
+  'שתפ':               { css: 'return',      color: '#EC4899' },
+  'מיקום - מתאימה לסדנאות בלוקיישן אחר של גיליגולי': { css: 'location', color: '#34D399' },
+};
+const DEFAULT_STATUS = { css: 'irrelevant', color: '#E5E7EB' };
+
+function getStatusInfo(label) {
+  return STATUS_MAP[label] || DEFAULT_STATUS;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PARSE API RESPONSE INTO DASHBOARD DATA
+// ═══════════════════════════════════════════════════════════════
+function parseScallaLeads(records) {
+  const parsed = [];
+  const statusCounts = {};
+  const sourceCounts = {};
+
+  // Records can be in different formats depending on the API response
+  const recordList = Array.isArray(records) ? records : Object.values(records);
+
+  recordList.forEach(rec => {
+    // Extract fields - try multiple possible field names
+    const firstName = rec.firstname || rec.first_name || '';
+    const lastName = rec.lastname || rec.last_name || '';
+    const name = (firstName + ' ' + lastName).trim() || rec.label || rec.leadname || 'ללא שם';
+    const status = rec.leadstatus || rec.status || '';
+    const source = rec.leadsource || rec.source || 'לא ידוע';
+    const phone = rec.phone || rec.mobile || '';
+    const created = rec.createdtime || rec.created_time || rec.modifiedtime || '';
+    const babyAge = rec.cf_potentials_babyage || rec.cf_leads_babyage || '';
+    // cf_1267 = "סיבה שלא התקדם" (reason lead didn't progress) - confirmed via GetModuleFields 07/07/2026
+    const reason = rec.cf_1267 || rec.lead_source_reason || rec.cf_leads_leadreason || rec.cf_lead_reason || rec.description || '';
+    // assigned_user_id = "מוקצה אל" (owner/salesperson) - confirmed via GetModuleFields 07/07/2026
+    const ownerRaw = rec.assigned_user_id;
+    const owner = (ownerRaw && typeof ownerRaw === 'object') ? (ownerRaw.label || ownerRaw.name || '') : (ownerRaw || '');
+
+    // Format date
+    let dateStr = '';
+    if (created) {
+      try {
+        const d = new Date(created);
+        dateStr = d.toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit', year:'numeric' });
+      } catch { dateStr = created.split(' ')[0] || ''; }
+    }
+
+    // Mask phone for privacy
+    let phoneMasked = phone;
+    if (phone && phone.length > 6) {
+      phoneMasked = phone.substring(0, 5) + 'XXXXX' + phone.slice(-1);
+    }
+
+    // Count statuses
+    const statusLabel = status || 'אחר';
+    statusCounts[statusLabel] = (statusCounts[statusLabel] || 0) + 1;
+
+    // Count sources
+    const sourceLabel = source || 'לא ידוע';
+    sourceCounts[sourceLabel] = (sourceCounts[sourceLabel] || 0) + 1;
+
+    parsed.push({
+      name,
+      status: getStatusInfo(statusLabel).css,
+      statusLabel,
+      source: sourceLabel,
+      age: babyAge || 'לא ידוע',
+      reason: reason || '-',
+      owner: owner || '',
+      phone: phoneMasked,
+      date: dateStr,
+      rawDate: created,
+    });
+  });
+
+  // Sort by date descending
+  parsed.sort((a, b) => (b.rawDate || '').localeCompare(a.rawDate || ''));
+
+  // Build status data for donut chart
+  const totalLeads = parsed.length;
+  const statusArr = Object.entries(statusCounts)
+    .map(([label, count]) => ({
+      label,
+      count,
+      pct: totalLeads > 0 ? (count / totalLeads * 100) : 0,
+      color: getStatusInfo(label).color,
+    }))
+    .sort((a, b) => b.count - a.count);
+
+  // Build source data for bar chart
+  const sourceArr = Object.entries(sourceCounts)
+    .map(([label, count]) => ({ label, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 8);
+
+  return { leads: parsed, statuses: statusArr, sources: sourceArr };
+}
+
+// ═══════════════════════════════════════════════════════════════
+// CACHED FALLBACK DATA (scraped 01/07/2026 - live from ScallaCRM AmCharts widget 63)
+// Total leads: 1,311 | Active pipeline (excl. לא רלוונטי): 503
+// ═══════════════════════════════════════════════════════════════
+const CACHED_STATUS = [
+  { label: 'לא רלוונטי',   pct: 61.63, count: 808, color: '#9CA3AF' },
+  { label: 'מסננת כרונית', pct: 26.55, count: 348, color: '#818CF8' },
+  { label: 'מיקום',        pct:  6.64, count:  87, color: '#34D399' },
+  { label: 'ליד בטיפול',   pct:  1.53, count:  20, color: '#6B21A8' },
+  { label: 'מספר לא תקין', pct:  1.30, count:  17, color: '#FCA5A5' },
+  { label: 'סיבוב נוסף',   pct:  0.61, count:   8, color: '#A78BFA' },
+  { label: 'לחזור בעתיד',  pct:  0.53, count:   7, color: '#F9A8D4' },
+  { label: 'נסיונות חיוג', pct:  0.46, count:   6, color: '#FCD34D' },
+  { label: 'ליד חדש',      pct:  0.23, count:   3, color: '#0EA5E9' },
+  { label: 'כפול',         pct:  0.23, count:   3, color: '#6B7280' },
+  { label: 'תואמה שיחה',   pct:  0.08, count:   1, color: '#F59E0B' },
+  { label: 'רכשה שיעור ניסיון', pct: 0.08, count: 1, color: '#16A34A' },
+  { label: 'קיבלה שובר',   pct:  0.08, count:   1, color: '#10B981' },
+  { label: 'שתפ',          pct:  0.08, count:   1, color: '#EC4899' },
+];
+
+const CACHED_SOURCES = [
+  { label: 'קמפיינים ממומנים',  count: 22 },
+  { label: 'פייסבוק/אינסטגרם',  count:  5 },
+  { label: 'הגיעה מגיליגולי',   count:  4 },
+  { label: 'לא ידוע',           count:  4 },
+  { label: 'אתר אינטרנט',       count:  3 },
+  { label: 'WhatsApp',          count:  2 },
+];
+
+const CACHED_LEADS = [
+  { name: 'שירלי ביניאשוילי',  status: 'new',        statusLabel: 'ליד חדש',           source: 'אתר אינטרנט',     age: 'לא ידוע', reason: '-',      phone: '052-5XXXXXX', date: '01/07/2026' },
+  { name: 'אליס',               status: 'new',        statusLabel: 'ליד חדש',           source: 'הגיעה מגיליגולי', age: 'לא ידוע', reason: '-',      phone: '050-7XXXXXX', date: '01/07/2026' },
+  { name: 'Sivan Shitrit',      status: 'new',        statusLabel: 'ליד חדש',           source: 'קמפיינים',        age: 'שנה-2.5 שנים', reason: '-', phone: '054-4XXXXXX', date: '22/06/2026' },
+  { name: 'Elinor Cohen',       status: 'new',        statusLabel: 'ליד חדש',           source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '050-7XXXXXX', date: '22/06/2026' },
+  { name: 'חן בוגין',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-4XXXXXX', date: '22/06/2026' },
+  { name: 'הדסה לוי',           status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '050-9XXXXXX', date: '22/06/2026' },
+  { name: 'לי',                 status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '4-8 חודשים', reason: '-',   phone: '050-8XXXXXX', date: '21/06/2026' },
+  { name: 'גיא דוד',           status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '21/06/2026' },
+  { name: 'Odelia Graff',       status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '055-9XXXXXX', date: '21/06/2026' },
+  { name: 'אור שושני',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '21/06/2026' },
+  { name: 'דנה שלו',            status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-2XXXXXX', date: '21/06/2026' },
+  { name: 'אריאל בן חשל',      status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-8XXXXXX', date: '21/06/2026' },
+  { name: 'הילה אורה',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-9XXXXXX', date: '21/06/2026' },
+  { name: 'אניטה גולדמן',      status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '052-8XXXXXX', date: '20/06/2026' },
+  { name: 'רותם מנחם',          status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'הגיעה מגיליגולי', age: 'לא ידוע', reason: '-',      phone: '052-7XXXXXX', date: '20/06/2026' },
+  { name: 'שירז',               status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '052-3XXXXXX', date: '19/06/2026' },
+  { name: 'הודיה מויאל',        status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '052-6XXXXXX', date: '19/06/2026' },
+  { name: 'מיכל גולן',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '19/06/2026' },
+  { name: 'בנדטה קזנטיני',     status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'אתר אינטרנט',     age: 'לא ידוע', reason: '-',      phone: '058-7XXXXXX', date: '18/06/2026' },
+  { name: 'ירדן אסרף',          status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-2XXXXXX', date: '17/06/2026' },
+  { name: 'לירון טלקר',         status: 'location',   statusLabel: 'מיקום',             source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '050-2XXXXXX', date: '17/06/2026' },
+  { name: 'לירון צדיק',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'קמפיינים',        age: 'שנה-2.5 שנים', reason: '-', phone: '052-8XXXXXX', date: '17/06/2026' },
+  { name: 'יעל גייבר',          status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '052-5XXXXXX', date: '17/06/2026' },
+  { name: 'עדן אלמליח',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'לא ידוע',         age: '1-4 חודשים', reason: '-',   phone: '053-3XXXXXX', date: '17/06/2026' },
+  { name: 'פז',                 status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '052-6XXXXXX', date: '16/06/2026' },
+  { name: 'מאי בר לב',          status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '050-9XXXXXX', date: '15/06/2026' },
+  { name: 'מאי ברנדר',          status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'WhatsApp',        age: '4-8 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '15/06/2026' },
+  { name: "פאולינה מג'אר",     status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '054-4XXXXXX', date: '15/06/2026' },
+  { name: 'אלן חיים',           status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '054-6XXXXXX', date: '15/06/2026' },
+  { name: 'טוהר לוין',          status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-7XXXXXX', date: '14/06/2026' },
+  { name: 'יובל בסד',           status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: '1-4 חודשים', reason: '-',   phone: '054-7XXXXXX', date: '09/06/2026' },
+  { name: 'ליאל רוכמן',         status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'WhatsApp',        age: 'לא ידוע', reason: '-',      phone: '054-6XXXXXX', date: '07/06/2026' },
+  { name: 'אביטל',              status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'אתר אינטרנט',     age: 'לא ידוע', reason: '-',      phone: '058-5XXXXXX', date: '07/06/2026' },
+  { name: 'מיכל הובר',          status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '054-5XXXXXX', date: '04/06/2026' },
+  { name: 'בתאל קופלוביץ ממן',  status: 'irrelevant', statusLabel: 'לא רלוונטי',       source: 'הגיעה מגיליגולי', age: 'לא ידוע', reason: '-',      phone: '052-8XXXXXX', date: '02/06/2026' },
+  { name: 'לייה',               status: 'purchased',  statusLabel: 'רכשה שיעור ניסיון', source: 'לא ידוע',         age: '1-4 חודשים', reason: '-',   phone: '052-8XXXXXX', date: '20/05/2026' },
+  { name: 'שחר אבנעים',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '058-6XXXXXX', date: '18/05/2026' },
+  { name: 'נהיר אורן',          status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '054-7XXXXXX', date: '28/04/2026' },
+  { name: 'הילה האוסמן',        status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'קמפיינים',        age: 'שנה-2.5 שנים', reason: '-', phone: '054-3XXXXXX', date: '18/09/2025' },
+  { name: 'שני שם טוב',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-2XXXXXX', date: '28/03/2026' },
+];
+
+// ═══════════════════════════════════════════════════════════════
+// LOAD SCALLA DATA (live or fallback)
+// ═══════════════════════════════════════════════════════════════
+async function loadScallaData() {
+  const badge = document.getElementById('crmBadge');
+  const dot = document.getElementById('crmDot');
+  const txt = document.getElementById('crmStatus');
+  const note = document.getElementById('leadsInfoNote');
+
+  try {
+    badge.innerHTML = '<span class="pulse"></span> מתחבר ל-ScallaCRM...';
+
+    // Step 1: Login
+    await scallaLogin();
+
+    // Step 2: Fetch leads
+    const rawLeads = await scallaFetchLeads();
+    // API returns { records: [...] } - extract the array
+    const recordsArray = rawLeads.records || rawLeads;
+    const parsed = parseScallaLeads(recordsArray);
+
+    leadsData = parsed.leads;
+    statusData = parsed.statuses;
+    sourceData = parsed.sources;
+    scallaDataSource = 'live';
+
+    const now = new Date().toLocaleString('he-IL');
+    badge.innerHTML = '<span class="pulse"></span> ScallaCRM חי ✓';
+    badge.style.background = 'rgba(74,222,128,0.22)';
+    if (dot) dot.className = 'fr-dot live';
+    if (txt) txt.textContent = `ScallaCRM - נתונים חיים | ${now}`;
+    if (note) {
+      note.innerHTML = `✅ <strong>נתונים חיים מ-ScallaCRM API</strong> - ${leadsData.length} לידים | עודכן ${now}`;
+      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+    console.log(`[ScallaCRM] Live data loaded: ${leadsData.length} leads`);
+
+  } catch (err) {
+    console.warn('[ScallaCRM] Live fetch failed, using cached data:', err.message);
+
+    // Fallback to cached data
+    leadsData = CACHED_LEADS;
+    statusData = CACHED_STATUS;
+    sourceData = CACHED_SOURCES;
+    scallaDataSource = 'cached';
+
+    badge.innerHTML = '⚠ ScallaCRM - נתונים שמורים';
+    badge.style.background = 'rgba(251,191,36,0.2)';
+    if (dot) dot.className = 'fr-dot sample';
+    if (txt) txt.textContent = 'ScallaCRM - נתונים שמורים | 01/07/2026';
+    if (note) {
+      note.innerHTML = `⚠️ חיבור API נכשל - מציג נתונים שמורים מ-01/07/2026 (${CACHED_LEADS.length} רשומות)
+        <span style="font-size:10px;opacity:0.7;margin-right:8px;">שגיאה: ${err.message}</span>`;
+      note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;';
+    }
+  }
+
+  // Render with whatever data we have
+  renderKPIs();
+  renderCharts();
+  renderFilters();
+  renderTable();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER: KPIs
+// ═══════════════════════════════════════════════════════════════
+function renderKPIs() {
+  const total = statusData.reduce((sum, d) => sum + d.count, 0);
+  const newLeads = statusData.find(d => d.label === 'ליד חדש');
+  const inProgress = statusData.find(d => d.label === 'ליד בטיפול');
+
+  document.getElementById('kpiTotalLeads').textContent = total;
+  document.getElementById('kpiTotalLeadsSub').textContent =
+    scallaDataSource === 'live' ? 'ScallaCRM חי' : 'נתונים שמורים';
+  document.getElementById('kpiNewLeads').textContent =
+    (newLeads ? newLeads.count : 0) + (inProgress ? inProgress.count : 0);
+  document.getElementById('badge-leads').textContent = newLeads ? newLeads.count : 0;
+
+  // Update marketing tab leads goal
+  const thisMonth = new Date().getMonth();
+  const thisYear = new Date().getFullYear();
+  const monthLeadsArr = [];
+  leadsData.forEach(l => {
+    if (l.date) {
+      const parts = l.date.split('/');
+      if (parts.length === 3) {
+        const m = parseInt(parts[1]) - 1;
+        const y = parseInt(parts[2]);
+        if (m === thisMonth && y === thisYear) monthLeadsArr.push(l);
+      }
+    }
+  });
+  const monthLeads = monthLeadsArr.length;
+  const goalEl = document.getElementById('goalLeadsActual');
+  const barEl = document.getElementById('goalLeadsBar');
+  const pctEl = document.getElementById('goalLeadsPct');
+  if (goalEl) goalEl.textContent = monthLeads;
+  const pct = Math.min(100, Math.round(monthLeads / 60 * 100));
+  if (barEl) barEl.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = `${pct}% מהיעד - ${monthLeads > 0 ? 'חסרים ' + (60 - monthLeads) + ' לידים' : 'טוען...'}`;
+
+  renderLeadsExtraKPIs(monthLeadsArr);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER: LEADS TAB - EXTRA KPI CARDS (All/In-Progress/Trial/Lost/Owner)
+// ═══════════════════════════════════════════════════════════════
+// Status buckets - aligned with STATUS_MAP css classes already used for the donut/table
+const LOST_STATUSES = ['לא רלוונטי', 'מספר לא תקין', 'כפול'];
+const IN_PROGRESS_STATUSES = ['ליד בטיפול', 'נסיונות חיוג', 'תואמה שיחה', 'לחזור בעתיד'];
+const TRIAL_CLOSED_STATUS = 'רכשה שיעור ניסיון';
+const NO_REASON_PLACEHOLDER = 'בחר לאחר שינוי סטטוס';
+
+function renderLeadsExtraKPIs(periodLeads) {
+  const set = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+  set('kpiAllLeadsPeriod', periodLeads.length);
+  set('kpiAllLeadsPeriodSub', `סה"כ לידים החודש | ${leadsData.length} מכל הזמנים`);
+
+  const inProgress = periodLeads.filter(l => IN_PROGRESS_STATUSES.includes(l.statusLabel));
+  set('kpiInProgress', inProgress.length);
+
+  const trialClosed = periodLeads.filter(l => l.statusLabel === TRIAL_CLOSED_STATUS);
+  set('kpiTrialClosed', trialClosed.length);
+
+  const lost = periodLeads.filter(l => LOST_STATUSES.includes(l.statusLabel));
+  set('kpiLostLeads', lost.length);
+  const reasonCounts = {};
+  lost.forEach(l => {
+    const r = (l.reason || '').trim();
+    if (!r || r === '-' || r === NO_REASON_PLACEHOLDER) return;
+    reasonCounts[r] = (reasonCounts[r] || 0) + 1;
+  });
+  const topReason = Object.entries(reasonCounts).sort((a, b) => b[1] - a[1])[0];
+  set('kpiLostLeadsSub', topReason ? `סיבה מובילה: ${topReason[0]} (${topReason[1]})` : 'אין נתוני סיבה החודש');
+
+  // Closures by salesperson (owner) - among trial-closed leads this month
+  const ownerMap = {};
+  trialClosed.forEach(l => {
+    const name = l.owner || 'לא משויך';
+    ownerMap[name] = (ownerMap[name] || 0) + 1;
+  });
+  const ownerArr = Object.entries(ownerMap).sort((a, b) => b[1] - a[1]);
+  const ownerListEl = document.getElementById('ownerCloseList');
+  if (ownerListEl) {
+    ownerListEl.innerHTML = ownerArr.length
+      ? ownerArr.map(([name, count], i) => `
+          <div class="ranking-item"><div class="rank-num rank-${Math.min(i+1,3)}">${i+1}</div><div class="ranking-name">${name}</div><div class="ranking-score">${count} סגירות</div></div>`).join('')
+      : '<div style="padding:16px;text-align:center;color:var(--text-secondary);">אין סגירות שיעור ניסיון החודש</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER: CHARTS
+// ═══════════════════════════════════════════════════════════════
+function renderCharts() {
+  if (typeof Chart === 'undefined') { console.warn('Chart.js not loaded'); return; }
+
+  const total = statusData.reduce((sum, d) => sum + d.count, 0);
+  const sourceLabel = scallaDataSource === 'live' ? 'נתונים חיים' : 'מדגם 40 רשומות';
+  const dateLabel = scallaDataSource === 'live'
+    ? new Date().toLocaleDateString('he-IL')
+    : '01/07/2026';
+
+  // Update subtitles
+  document.getElementById('statusChartSub').textContent = `מתוך ${total} לידים`;
+  document.getElementById('statusChartNote').textContent =
+    `אחוזים מחושבים לפי כלל ${total} הלידים | ${sourceLabel}`;
+  document.getElementById('donutCenterVal').textContent = total;
+  document.getElementById('sourceChartSub').textContent = sourceLabel;
+  document.getElementById('sourceChartNote').textContent =
+    `מקור לפי ${sourceLabel} | ${dateLabel}`;
+  document.getElementById('leadsTableSub').textContent =
+    `${leadsData.length} רשומות | עודכן ${dateLabel}`;
+
+  // Destroy existing charts before re-creating
+  if (statusDonutChart) { statusDonutChart.destroy(); statusDonutChart = null; }
+  if (sourceBarChart) { sourceBarChart.destroy(); sourceBarChart = null; }
+
+  // Status donut
+  const donutCtx = document.getElementById('statusDonut').getContext('2d');
+  statusDonutChart = new Chart(donutCtx, {
+    type: 'doughnut',
+    data: {
+      labels: statusData.map(d => d.label),
+      datasets: [{ data: statusData.map(d => d.pct || d.count), backgroundColor: statusData.map(d => d.color), borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '68%',
+      plugins: {
+        legend: { display: false },
+        tooltip: { rtl: true, callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed.toFixed(1)}% (${statusData[ctx.dataIndex].count})` } }
+      }
+    }
+  });
+
+  // Legend
+  const legendGrid = document.getElementById('legendGrid');
+  legendGrid.innerHTML = '';
+  statusData.forEach(d => {
+    legendGrid.innerHTML += `<div class="legend-item"><div class="legend-dot" style="background:${d.color}"></div><span class="legend-label">${d.label}</span><span class="legend-count">${d.count}</span></div>`;
+  });
+
+  // Source bar
+  const barColors = ['#6B21A8','#0891B2','#EC4899','#9CA3AF','#34D399','#FCD34D','#F97316','#818CF8'];
+  const srcCtx = document.getElementById('sourceBar').getContext('2d');
+  sourceBarChart = new Chart(srcCtx, {
+    type: 'bar',
+    data: {
+      labels: sourceData.map(d => d.label),
+      datasets: [{ data: sourceData.map(d => d.count), backgroundColor: barColors.slice(0, sourceData.length), borderRadius: 6 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, indexAxis: 'y',
+      plugins: { legend: { display: false }, tooltip: { rtl: true } },
+      scales: {
+        x: { grid: { color: '#F3F0FF' }, ticks: { font: { family: 'Heebo' } } },
+        y: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 } } }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER: LEADS TABLE
+// ═══════════════════════════════════════════════════════════════
+function renderFilters() {
+  const statuses = ['הכל', ...new Set(leadsData.map(l => l.statusLabel))];
+  const row = document.getElementById('filtersRow');
+  row.innerHTML = '';
+  statuses.forEach(s => {
+    const btn = document.createElement('button');
+    btn.className = 'filter-btn' + (s === activeFilter ? ' active' : '');
+    btn.textContent = s;
+    btn.onclick = () => { activeFilter = s; renderFilters(); renderTable(); };
+    row.appendChild(btn);
+  });
+}
+
+function renderTable() {
+  const filtered = activeFilter === 'הכל' ? leadsData : leadsData.filter(l => l.statusLabel === activeFilter);
+  const rows = showAll ? filtered : filtered.slice(0, 12);
+  document.getElementById('leadsTableBody').innerHTML = rows.length > 0
+    ? rows.map((l, i) => `
+      <tr>
+        <td style="color:var(--text-secondary);font-size:11px;">${i+1}</td>
+        <td style="font-weight:600;">${l.name}</td>
+        <td><span class="status-badge status-${l.status}">${l.statusLabel}</span></td>
+        <td><span class="source-chip"><span class="dot">●</span>${l.source}</span></td>
+        <td><span class="age-tag">👶 ${l.age}</span></td>
+        <td style="color:var(--text-secondary);font-size:12px;max-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" title="${l.reason}">${l.reason}</td>
+        <td style="color:var(--text-secondary);font-size:12px;">${l.phone}</td>
+        <td style="color:var(--text-secondary);font-size:12px;">${l.date}</td>
+      </tr>`).join('')
+    : '<tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-secondary);">אין רשומות להצגה</td></tr>';
+}
+
+function toggleLeads() {
+  showAll = !showAll;
+  renderTable();
+  document.querySelector('.show-more-btn').textContent = showAll ? 'הצג פחות ▲' : 'הצג עוד לידים ▼';
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ARBOX - LIVE STUDIO DATA
+// ═══════════════════════════════════════════════════════════════
+function fmtDateHeb(isoStr) { return isoStr ? isoStr.split('-').reverse().join('/') : ''; }
+function isoDate(offsetDays = 0) {
+  const d = new Date(); d.setDate(d.getDate() + offsetDays);
+  return d.toISOString().slice(0, 10);
+}
+function dateOnly(value) {
+  return value ? String(value).slice(0, 10) : '';
+}
+function inDateRange(value, fromDate, toDate) {
+  const d = dateOnly(value);
+  return !!d && d >= fromDate && d <= toDate;
+}
+
+let arboxQueue = Promise.resolve();
+
+async function arboxProxy(path) {
+  const run = async () => {
+    for (let attempt = 0; attempt < 3; attempt++) {
+      const r = await fetch(ARBOX.ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ path }),
+        signal: AbortSignal.timeout(18000)
+      });
+      const j = await r.json().catch(() => ({}));
+      if (r.ok) return j;
+      if (r.status === 429 && attempt < 2) {
+        await new Promise(resolve => setTimeout(resolve, 900 * (attempt + 1)));
+        continue;
+      }
+      throw new Error(j.detail || j.error?.message || j.error || ('Arbox HTTP ' + r.status));
+    }
+  };
+
+  const previous = arboxQueue.catch(() => {});
+  const task = previous.then(run);
+  arboxQueue = task;
+  return task;
+}
+
+async function arboxGet(path) {
+  const j = await arboxProxy(path);
+  return j.data || [];
+}
+
+// Safe variant for endpoints not yet confirmed to exist on this Arbox account/plan
+// (inactive members, expired plans, renewals, cancellations - see DashBoard_CR notes 07/07/2026).
+// Returns null (not []) on any failure so the UI can distinguish "confirmed zero" from "unverified".
+async function arboxGetSafe(path) {
+  try {
+    const j = await arboxProxy(path);
+    return j.data || [];
+  } catch {
+    return null;
+  }
+}
+
+async function loadStudioData() {
+  const loading = '<div style="padding:18px;text-align:center;color:var(--text-secondary);font-size:12px;">⟳ טוען נתונים מ-Arbox...</div>';
+  ['expiryList','workshopList','topList','noShowList','punchExpList'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.innerHTML = loading;
+  });
+
+  try {
+    const today = isoDate(0), minus30 = isoDate(-30), plus30 = isoDate(30), plus7 = isoDate(7);
+
+    const [members, schedule, lateCancels, bookings, transactions] = await Promise.all([
+      arboxGet(`/reports/activeMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGet(`/schedule?from_date=${today}&to_date=${plus30}`),
+      arboxGet(`/reports/lateCancellationReport?fromDate=${minus30}&toDate=${today}`),
+      arboxGet(`/reports/bookingsReport?fromDate=${minus30}&toDate=${today}`),
+      arboxGetSafe(`/reports/transactionsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+    ]);
+
+    const [inactiveMembers, expiredMemberships, renewals, cancellations] = await Promise.all([
+      arboxGetSafe(`/reports/inactiveMembersReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/renewalsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/canceledMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+    ]);
+
+    let fh = 0, ih = 0, kr = 0;
+    const expiring = [], punchExpiring = [];
+    members.forEach(m => {
+      const n = (m.membership_type_name || '').toLowerCase();
+      const isPunch = n.includes('כרטיסי') || n.includes('punch') || n.includes('כניסות') || n.includes('כרטיס');
+      if (n.includes('full house') || n.includes('פול האוס'))       fh++;
+      else if (n.includes('in house') || n.includes('אין האוס'))    ih++;
+      else if (isPunch)                                               kr++;
+      const days = m.end_date ? Math.max(0, Math.ceil((new Date(m.end_date) - new Date()) / 86400000)) : null;
+      if (m.end_date && m.end_date >= today && m.end_date <= plus7 && !isPunch) {
+        expiring.push({ name: m.full_name, type: m.membership_type_name, expires: fmtDateHeb(m.end_date), days });
+      }
+      if (m.end_date && m.end_date >= today && m.end_date <= plus30 && isPunch) {
+        punchExpiring.push({ name: m.full_name, type: m.membership_type_name, expires: fmtDateHeb(m.end_date), days });
+      }
+    });
+    const total = (fh + ih + kr) || 1;
+
+    ['kpiFH','kpiIH','kpiKR'].forEach((id, i) => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = [fh, ih, kr][i];
+    });
+    document.getElementById('kpiExp').textContent = expiring.length;
+    document.getElementById('fhNum').textContent = fh;
+    document.getElementById('ihNum').textContent = ih;
+    document.getElementById('krNum').textContent = kr;
+    document.getElementById('expiryCount').textContent = expiring.length + ' מנויים';
+    const studioBadge = document.querySelector('#tab-btn-studio .tab-badge');
+    if (studioBadge) studioBadge.textContent = members.length;
+
+    [['fh',fh],['ih',ih],['kr',kr]].forEach(([cls, n]) => {
+      const pct = Math.round(n / total * 100);
+      const card = document.querySelector(`.membership-card.${cls}`);
+      if (card) {
+        card.querySelector('.cap-fill').style.width = pct + '%';
+        card.querySelector('.cap-label').textContent = `${pct}% מסה"כ ${total} מנויים פעילים`;
+      }
+    });
+
+    // ── Extended membership metrics ──────────────────────────────
+    const setTxt = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+    const setPending = (valId, subId, label) => {
+      const valEl = document.getElementById(valId);
+      if (valEl) valEl.innerHTML = '?<span class="pending-note">לא מאומת</span>';
+      setTxt(subId, label);
+    };
+
+    // 1. Active Membership Plans - breakdown by plan name (all active, not just FH/IH/כרטיסיות)
+    const planCounts = {};
+    members.forEach(m => {
+      const planName = (m.membership_type_name || 'לא ידוע').split('|')[0].trim();
+      planCounts[planName] = (planCounts[planName] || 0) + 1;
+    });
+    const topPlan = Object.entries(planCounts).sort((a, b) => b[1] - a[1])[0];
+    setTxt('kpiActivePlans', members.length);
+    setTxt('kpiActivePlansSub', topPlan ? `הגדול ביותר: ${topPlan[0]} (${topPlan[1]})` : 'סה"כ מנויים פעילים');
+
+    // 2. Session Packs Sold - transaction lines matching card/session-pack products, last 30 days
+    const packReceipts = (transactions || []).filter(r => {
+      const desc = (r.description || r.product_name || r.item_name || '').toLowerCase();
+      const amount = Number.parseFloat(r.amount || r.price || r.total || 0);
+      return amount > 0 && (desc.includes('כרטיסי') || desc.includes('כרטיסיה') || desc.includes('lucky') || desc.includes('מיני האוס'));
+    });
+    setTxt('kpiPacksSold', transactions ? packReceipts.length : '?');
+    setTxt('kpiPacksActiveSub', `${kr} פעילות | 30 יום`);
+
+    // 3. Expiring session packs KPI entry-point (full breakdown already below in punchExpList)
+    setTxt('kpiPunchExpKPI', punchExpiring.length);
+
+    const renewalsInRange = (renewals || []).filter(r => inDateRange(r.created_at || r.date || r.purchase_date, minus30, today));
+    const cancellationsInRange = (cancellations || []).filter(c => inDateRange(c.cancelled_time || c.cancel_date || c.created_at || c.date, minus30, today));
+
+    if (inactiveMembers) {
+      setTxt('kpiInactive', inactiveMembers.length);
+      setTxt('kpiInactiveSub', 'ללא פעילות ב-30 יום');
+    }
+    else setPending('kpiInactive', 'kpiInactiveSub', 'נדרש אימות מול Arbox');
+
+    if (expiredMemberships) {
+      setTxt('kpiExpiredPlans', expiredMemberships.length);
+      setTxt('kpiExpiredPlansSub', 'פגו ב-30 הימים האחרונים');
+    }
+    else setPending('kpiExpiredPlans', 'kpiExpiredPlansSub', 'נדרש אימות מול Arbox');
+
+    if (renewals) {
+      setTxt('kpiRenewals', renewalsInRange.length);
+      setTxt('kpiRenewalsSub', '30 הימים האחרונים');
+    }
+    else setPending('kpiRenewals', 'kpiRenewalsSub', 'נדרש אימות מול Arbox');
+
+    if (cancellations) {
+      setTxt('kpiCancellations', cancellationsInRange.length);
+      setTxt('kpiCancellationsSub', 'לפי תאריך ביטול');
+    }
+    else setPending('kpiCancellations', 'kpiCancellationsSub', 'נדרש אימות מול Arbox');
+
+    // 8. Active Courses (upcoming, next 30 days) - distinct course/session names
+    const courseNames = new Set((schedule || []).filter(s => s.date >= today).map(s => s.session_name).filter(Boolean));
+    setTxt('kpiActiveCourses', courseNames.size);
+
+    // 9. Course Bookings by course (last 30 days)
+    const courseBookingMap = {};
+    (bookings || []).forEach(b => {
+      const courseName = b.session_name || b.class_name || 'לא ידוע';
+      courseBookingMap[courseName] = (courseBookingMap[courseName] || 0) + 1;
+    });
+    const courseBookingArr = Object.entries(courseBookingMap).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const courseBookingEl = document.getElementById('courseBookingList');
+    if (courseBookingEl) {
+      courseBookingEl.innerHTML = courseBookingArr.length
+        ? courseBookingArr.map(([name, count], i) => `
+            <div class="ranking-item"><div class="rank-num rank-${Math.min(i+1,3)}">${i+1}</div><div class="ranking-name">${name}</div><div class="ranking-score">${count} הרשמות</div></div>`).join('')
+        : '<div style="padding:16px;text-align:center;color:var(--text-secondary);">אין נתוני הרשמות</div>';
+    }
+
+    // 10. Members with an active plan who have NOT booked any class/course in the last 30 days
+    const bookedNames = new Set((bookings || []).map(b => (b.full_name || '').trim().toLowerCase()).filter(Boolean));
+    const nonEngaged = members.filter(m => m.full_name && !bookedNames.has(m.full_name.trim().toLowerCase()));
+    const nonEngagedEl = document.getElementById('nonEngagedList');
+    if (nonEngagedEl) {
+      nonEngagedEl.innerHTML = nonEngaged.length
+        ? nonEngaged.slice(0, 8).map(m => `
+            <div class="ranking-item"><div class="ranking-name">${m.full_name}</div><div class="ranking-score" style="color:var(--warning);">${(m.membership_type_name||'').split('|')[0].trim()}</div></div>`).join('')
+          + (nonEngaged.length > 8 ? `<div style="padding:6px;text-align:center;font-size:11px;color:var(--text-secondary);">ועוד ${nonEngaged.length - 8}...</div>` : '')
+        : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ כל המנויים הפעילים הגיעו לפחות פעם אחת</div>';
+    }
+
+    // Punch card expiry (30 days)
+    punchExpiring.sort((a, b) => a.days - b.days);
+    const punchExpCountEl = document.getElementById('punchExpCount');
+    if (punchExpCountEl) punchExpCountEl.textContent = punchExpiring.length + ' כרטיסיות';
+    document.getElementById('punchExpList').innerHTML = punchExpiring.length > 0
+      ? punchExpiring.map(e => `
+          <div class="expiry-item" style="border-right-color:#f59e0b;">
+            <div class="expiry-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">${e.name.charAt(0)}</div>
+            <div class="expiry-info">
+              <div class="expiry-name">${e.name}</div>
+              <div class="expiry-meta">${(e.type||'').split('|')[0].trim()} | פגה: ${e.expires}</div>
+            </div>
+            <div class="expiry-days" style="color:${e.days <= 7 ? 'var(--danger)' : e.days <= 14 ? '#f59e0b' : 'var(--text-secondary)'};">${e.days === 0 ? 'היום!' : e.days + ' ימים'}</div>
+          </div>`).join('')
+      : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין כרטיסיות הפגות ב-30 יום הקרובים</div>';
+
+expiring.sort((a, b) => a.days - b.days);
+    document.getElementById('expiryList').innerHTML = expiring.length > 0
+      ? expiring.slice(0, 6).map(e => `
+          <div class="expiry-item">
+            <div class="expiry-avatar">${e.name.charAt(0)}</div>
+            <div class="expiry-info">
+              <div class="expiry-name">${e.name}</div>
+              <div class="expiry-meta">${(e.type||'').split('|')[0].trim()} | פגה: ${e.expires}</div>
+            </div>
+            <div class="expiry-days">${e.days === 0 ? 'היום!' : e.days + ' ימים'}</div>
+          </div>`).join('')
+      : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין מנויים הפגים השבוע</div>';
+
+    const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
+    const seen = {}, upcoming = [];
+    schedule
+      .filter(s => s.date >= today)
+      .sort((a, b) => (a.date + a.start_time).localeCompare(b.date + b.start_time))
+      .forEach(s => { const k = s.session_name + '|' + s.date; if (!seen[k]) { seen[k] = 1; upcoming.push(s); } });
+
+    document.getElementById('workshopList').innerHTML = upcoming.slice(0, 6).map(s => `
+      <div class="workshop-item">
+        <div class="workshop-header">
+          <div class="workshop-name">📌 ${s.session_name || 'שיעור'}</div>
+          <div class="workshop-date">יום ${dayNames[new Date(s.date).getDay()]} ${fmtDateHeb(s.date)} | ${s.start_time}-${s.end_time}</div>
+        </div>
+        <div class="workshop-progress">
+          <div style="flex:1;font-size:11px;color:var(--text-secondary);">👤 ${s.staff_member?.name || ''}</div>
+          <div class="workshop-count">עד ${s.max_participants} משתתפות</div>
+        </div>
+      </div>`).join('') || '<div style="padding:16px;text-align:center;color:var(--text-secondary);">אין שיעורים מתוכננים</div>';
+
+    const custMap = {};
+    bookings.forEach(b => {
+      if (!b.user_id || !b.full_name) return;
+      if (!custMap[b.user_id]) custMap[b.user_id] = { name: b.full_name, count: 0 };
+      if (b.check_in === 'Yes') custMap[b.user_id].count++;
+    });
+    const topCust = Object.values(custMap).sort((a, b) => b.count - a.count).slice(0, 5);
+    document.getElementById('topList').innerHTML = topCust.length
+      ? topCust.map((c, i) => `
+          <div class="ranking-item"><div class="rank-num rank-${i+1}">${i+1}</div><div class="ranking-name">${c.name}</div><div class="ranking-score">${c.count} שיעורים</div></div>`).join('')
+      : '<div style="padding:16px;text-align:center;color:var(--text-secondary);">אין נתונים</div>';
+
+    const lcMap = {};
+    lateCancels.forEach(b => { if (b.full_name) lcMap[b.full_name] = (lcMap[b.full_name] || 0) + 1; });
+    const topLC = Object.entries(lcMap).sort((a, b) => b[1] - a[1]).slice(0, 5);
+    document.getElementById('noShowList').innerHTML = topLC.length
+      ? topLC.map(([name, count], i) => `
+          <div class="ranking-item"><div class="rank-num rank-${i+1}">${i+1}</div><div class="ranking-name">${name}</div><div class="ranking-score danger">${count} ביטולים</div></div>`).join('')
+      : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין ביטולים מאוחרים</div>';
+
+        // Single lesson buyers: transactions for 99₪ or 220₪ — cross-ref Arbox ↔ ScallaCRM
+    const TRIAL_PRICES = [99, 220];
+    const activeNames = new Set(members.map(m => (m.full_name || '').trim().toLowerCase()));
+    // Build ScallaCRM name lookup (full name + first name fallback)
+    const scallaNameMap = {};
+    (leadsData || []).forEach(l => {
+      const key = (l.name || '').trim().toLowerCase();
+      if (key) scallaNameMap[key] = l;
+      const firstName = key.split(' ')[0];
+      if (firstName && !scallaNameMap[firstName]) scallaNameMap[firstName] = l;
+    });
+    const onetimeMap = {};
+    (transactions || []).forEach(r => {
+      const price = Number.parseFloat(r.amount || r.price || r.total || 0);
+      if (!TRIAL_PRICES.includes(price)) return;
+      const name = (r.full_name || r.client_name || r.name || '').trim();
+      if (!name) return;
+      const transactionDate = r.transaction_date || r.date || r.created_at || '';
+      if (!onetimeMap[name] || transactionDate > onetimeMap[name].date) {
+        const nameKey = name.toLowerCase();
+        const firstName = nameKey.split(' ')[0];
+        const scallaMatch = scallaNameMap[nameKey] || scallaNameMap[firstName] || null;
+        onetimeMap[name] = {
+          name, price,
+          date: transactionDate,
+          isActive: activeNames.has(nameKey),
+          inScalla: !!scallaMatch,
+          scallaStatus: scallaMatch ? (scallaMatch.statusLabel || '') : '',
+        };
+      }
+    });
+    const onetimeList = Object.values(onetimeMap)
+      .filter(o => !o.isActive)
+      .sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+    const onetimeCountEl = document.getElementById('onetimeCount');
+    if (onetimeCountEl) onetimeCountEl.textContent = onetimeList.length + ' לידים חמים';
+    document.getElementById('onetimeList').innerHTML = onetimeList.length > 0
+      ? onetimeList.slice(0, 8).map((o, i) => `
+          <div class="ranking-item" style="gap:6px;">
+            <div class="rank-num rank-${Math.min(i+1,3)}" style="background:linear-gradient(135deg,#f59e0b,#d97706);min-width:28px;font-size:11px;">${o.price}₪</div>
+            <div class="ranking-name" style="flex:1;">${o.name}</div>
+            <div style="font-size:10px;padding:2px 6px;border-radius:8px;font-weight:700;white-space:nowrap;
+              ${o.inScalla
+                ? 'background:rgba(74,222,128,0.15);color:var(--success);'
+                : 'background:rgba(251,146,60,0.15);color:#f97316;'}">
+              ${o.inScalla ? '📋 ' + (o.scallaStatus || 'ב-CRM') : '➕ חדש ב-CRM'}
+            </div>
+            <div class="ranking-score" style="color:var(--warning);font-size:11px;">${o.date ? fmtDateHeb(o.date.slice(0,10)) : ''}</div>
+          </div>`).join('')
+      : `<div style="padding:14px;background:var(--bg);border-radius:10px;font-size:12px;color:var(--text-secondary);text-align:center;">
+          ${transactions && transactions.length > 0 ? '✓ אין רוכשי שיעור ניסיון ללא מנוי פעיל' : '🔍 נתוני עסקאות לא זמינים מ-Arbox (יש לבדוק הרשאות API)'}
+        </div>`;
+
+const note = document.getElementById('studioInfoNote');
+    if (note) {
+      note.innerHTML = `✅ נתוני Arbox <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | ${members.length} מנויים פעילים`;
+      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+
+    const arboxBadge = document.getElementById('arboxBadge');
+    const arboxDot = document.getElementById('arboxDot');
+    const arboxTxt = document.getElementById('arboxStatus');
+    if (arboxBadge) { arboxBadge.innerHTML = '<span class="pulse"></span> Arbox מחובר ✓'; arboxBadge.style.background = 'rgba(74,222,128,0.22)'; }
+    if (arboxDot) arboxDot.className = 'fr-dot live';
+    if (arboxTxt) arboxTxt.textContent = 'Arbox - נתונים חיים ✓';
+
+  } catch (err) {
+    console.error('Arbox load error:', err);
+    const note = document.getElementById('studioInfoNote');
+    if (note) { note.innerHTML = '⚠️ שגיאת חיבור ל-Arbox - מציג נתוני הדגמה'; note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;'; }
+    const arboxBadge = document.getElementById('arboxBadge');
+    if (arboxBadge) { arboxBadge.innerHTML = '⚠ Arbox - שגיאת חיבור'; arboxBadge.style.background = 'rgba(251,191,36,0.2)'; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RENDER: MARKETING TAB
+// ═══════════════════════════════════════════════════════════════
+// Non-Meta lead sources - Meta API has no visibility into these (referrals, direct, WhatsApp).
+// Kept as manual entries alongside whatever Meta returns live for the paid/organic rows.
+const MANUAL_CAMPAIGN_ROWS = [
+  { source: 'הפניות מגיליגולי', type: 'referral', leads: 4, spend: 0, conv: 1 },
+  { source: 'אתר אינטרנט',      type: 'other',    leads: 3, spend: 600, conv: 0 },
+  { source: 'WhatsApp',         type: 'referral', leads: 2, spend: 0, conv: 0 },
+  { source: 'לא ידוע',          type: 'other',    leads: 4, spend: 0, conv: 0 },
+];
+
+const DEMO_CAMPAIGN_ROWS = [
+  { source: 'קמפיין פייסבוק - שיינקין', type: 'paid',     leads: 22, spend: 5800, conv: 1 },
+  { source: 'פייסבוק / אינסטגרם אורגני', type: 'organic', leads:  5, spend:    0, conv: 0 },
+  ...MANUAL_CAMPAIGN_ROWS,
+];
+
+function renderCampaignTable(campaignData) {
+  const labelMap = { paid: 'ממומן', organic: 'אורגני', referral: 'הפניה', other: 'אחר' };
+  document.getElementById('campBody').innerHTML = campaignData.map(c => {
+    const cpl = c.spend > 0 && c.leads > 0 ? `<strong>${Math.round(c.spend/c.leads)}₪</strong>` : '-';
+    const conv = c.conv > 0 ? `<span style="color:var(--success);font-weight:700;">✓ ${c.conv}</span>` : '-';
+    const spendFmt = c.spend > 0 ? c.spend.toLocaleString() + '₪' : '-';
+    return `<tr>
+      <td style="font-weight:600;">${c.source}</td>
+      <td><span class="src-badge ${c.type}">${labelMap[c.type]}</span></td>
+      <td style="font-weight:700;color:var(--primary);">${c.leads}</td>
+      <td style="color:var(--text-secondary);">${spendFmt}</td>
+      <td>${cpl}</td>
+      <td>${conv}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function metaPost(action, params = {}) {
+  const res = await fetch(META.ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ action, ...params }),
+  });
+  const json = await res.json();
+  if (!res.ok || json.error) throw new Error((json.error && json.error.message) || json.error || 'Meta API error');
+  return json;
+}
+
+function extractLeadCount(actions) {
+  if (!Array.isArray(actions)) return 0;
+  const leadAction = actions.find(a => a.action_type === 'lead')
+    || actions.find(a => a.action_type === 'onsite_conversion.lead_grouped');
+  return leadAction ? parseInt(leadAction.value, 10) : 0;
+}
+
+async function loadMetaData() {
+  try {
+    const [campaignsRes, fansRes, socialRes] = await Promise.all([
+      metaPost('campaigns', { date_preset: 'this_month' }),
+      metaPost('page_fans').catch(() => null),
+      metaPost('social').catch(() => null),
+    ]);
+
+    const metaRows = (campaignsRes.data || []).map(c => ({
+      source: c.campaign_name,
+      type: 'paid',
+      leads: extractLeadCount(c.actions),
+      spend: Math.round(parseFloat(c.spend || 0)),
+      conv: 0, // Meta has no close/conversion data - that lives in ScallaCRM, not merged here yet
+    }));
+
+    renderCampaignTable([...metaRows, ...MANUAL_CAMPAIGN_ROWS]);
+
+    if (fansRes && fansRes.data) {
+      const fans = fansRes.data.fan_count ?? fansRes.data.followers_count;
+      const fansEl = document.getElementById('metaFans');
+      if (fansEl && fans != null) fansEl.textContent = Number(fans).toLocaleString();
+    }
+    if (socialRes && Array.isArray(socialRes.data)) {
+      const latestOf = (name) => {
+        const m = socialRes.data.find(x => x.name === name);
+        const vals = m && m.values;
+        return vals && vals.length ? vals[vals.length - 1].value : null;
+      };
+      const impressions = latestOf('page_impressions');
+      const engaged = latestOf('page_engaged_users');
+      if (impressions != null) {
+        const impEl = document.getElementById('metaImpressions');
+        if (impEl) impEl.textContent = impressions >= 1000 ? (impressions / 1000).toFixed(1) + 'K' : String(impressions);
+      }
+      if (engaged != null) {
+        const engEl = document.getElementById('metaEngaged');
+        if (engEl) engEl.textContent = String(engaged);
+      }
+    }
+
+    const note = document.getElementById('marketingInfoNote');
+    if (note) {
+      note.innerHTML = `✅ נתוני Meta Ads <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | קמפיינים ממומנים בלבד, שאר המקורות עדיין ידניים`;
+      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+    const dot = document.getElementById('metaDot');
+    const status = document.getElementById('metaStatus');
+    if (dot) dot.className = 'fr-dot live';
+    if (status) status.textContent = 'שיווק - Meta Ads חי ✓';
+    const srcNote = document.getElementById('metaSourceNote');
+    if (srcNote) srcNote.textContent = '✓ מחובר ל-Meta API';
+
+  } catch (err) {
+    console.error('Meta load error:', err);
+    // Table already shows DEMO_CAMPAIGN_ROWS from renderMarketingTab() - leave it, just flag the failure.
+    const note = document.getElementById('marketingInfoNote');
+    if (note) {
+      note.innerHTML = '⚠️ שגיאת חיבור ל-Meta Ads - מציג נתוני הדגמה עבור קמפיינים ממומנים';
+      note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+  }
+}
+
+function renderMarketingTab() {
+  if (typeof Chart === 'undefined') return;
+
+  renderCampaignTable(DEMO_CAMPAIGN_ROWS);
+
+  const wkCtx = document.getElementById('weeklyChart').getContext('2d');
+  new Chart(wkCtx, {
+    type: 'bar',
+    data: {
+      labels: ['שבוע 1 (1-7/6)', 'שבוע 2 (8-14/6)', 'שבוע 3 (15-21/6)', 'שבוע 4 (22-28/6)'],
+      datasets: [
+        { label: 'לידים בפועל', data: [9, 11, 14, 4], backgroundColor: 'rgba(107,33,168,0.8)', borderRadius: 6 },
+        { label: 'יעד שבועי', data: [15, 15, 15, 15], type: 'line', borderColor: '#EC4899', borderDash: [5,5], borderWidth: 2, pointRadius: 0, fill: false }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'top', rtl: true, labels: { font: { family: 'Heebo' } } }, tooltip: { rtl: true } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 } } },
+        y: { grid: { color: '#F3F0FF' }, ticks: { font: { family: 'Heebo' } } }
+      }
+    }
+  });
+
+  const socCtx = document.getElementById('socialChart').getContext('2d');
+  new Chart(socCtx, {
+    type: 'line',
+    data: {
+      labels: ['שבוע 1', 'שבוע 2', 'שבוע 3', 'שבוע 4'],
+      datasets: [{ label: 'חשיפות', data: [2800, 3100, 3500, 3000], borderColor: '#EC4899', backgroundColor: 'rgba(236,72,153,0.1)', fill: true, tension: 0.4, pointRadius: 3 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 10 } } },
+        y: { display: false }
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════
+// THRESHOLD ALERT SYSTEM
+// ═══════════════════════════════════════════════════════════════
+
+const KPI_META = {
+  kpiTotalLeads: { label: 'סה"כ לידים' },
+  kpiNewLeads:   { label: 'לידים חדשים' },
+  kpiFH:         { label: 'Full House' },
+  kpiIH:         { label: 'In House' },
+  kpiKR:         { label: 'כרטיסיות' },
+  kpiExp:        { label: 'פגים השבוע' },
+};
+const ALERT_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours
+
+function getThresholds() {
+  try { return JSON.parse(localStorage.getItem('kpi_thresholds') || '{}'); } catch { return {}; }
+}
+function saveThresholds(t) { localStorage.setItem('kpi_thresholds', JSON.stringify(t)); }
+
+function getEmailJSCfg() {
+  try { return JSON.parse(localStorage.getItem('emailjs_config') || 'null'); } catch { return null; }
+}
+
+function initEmailJS() {
+  const cfg = getEmailJSCfg();
+  if (cfg && cfg.publicKey && window.emailjs) {
+    emailjs.init(cfg.publicKey);
+  }
+}
+
+async function sendAlertEmail(kpiId, value, thresholdType, thresholdValue, toEmail) {
+  const cfg = getEmailJSCfg();
+  if (!cfg || !cfg.publicKey) { openEmailJSModal(); return; }
+  const meta = KPI_META[kpiId] || { label: kpiId };
+  const typeLabel = thresholdType === 'lower' ? `ירד מתחת ל-${thresholdValue}` : `עלה מעל ל-${thresholdValue}`;
+  try {
+    await emailjs.send(cfg.serviceId, cfg.templateId, {
+      kpi_name: meta.label,
+      current_value: String(value),
+      threshold_type: typeLabel,
+      threshold_value: String(thresholdValue),
+      to_email: toEmail,
+      dashboard_url: window.location.href,
+    });
+    console.log(`📧 התראה נשלחה: ${meta.label} = ${value} (${typeLabel})`);
+  } catch(e) {
+    console.error('EmailJS error:', e);
+  }
+}
+
+function checkThresholds(kpiId, value) {
+  const t = getThresholds();
+  const cfg = t[kpiId];
+  if (!cfg || !cfg.enabled) return;
+  const num = Number(value);
+  if (isNaN(num)) return;
+
+  // Check cooldown
+  const ck = `alert_last_${kpiId}`;
+  if (Date.now() - Number(localStorage.getItem(ck) || 0) < ALERT_COOLDOWN) return;
+
+  const email = cfg.email || 'arye.glikman@gmail.com';
+  let breached = false;
+
+  if (cfg.lower !== '' && cfg.lower !== null && cfg.lower !== undefined && num < Number(cfg.lower)) {
+    sendAlertEmail(kpiId, num, 'lower', cfg.lower, email);
+    breached = true;
+  } else if (cfg.upper !== '' && cfg.upper !== null && cfg.upper !== undefined && num > Number(cfg.upper)) {
+    sendAlertEmail(kpiId, num, 'upper', cfg.upper, email);
+    breached = true;
+  }
+
+  if (breached) {
+    localStorage.setItem(ck, String(Date.now()));
+    updateThresholdDot(kpiId, 'breached');
+  }
+}
+
+function checkAllThresholds() {
+  Object.keys(KPI_META).forEach(kpiId => {
+    const el = document.getElementById(kpiId);
+    if (!el) return;
+    const raw = el.textContent.replace(/[^\d]/g, '');
+    if (raw) checkThresholds(kpiId, parseInt(raw, 10));
+  });
+}
+
+function renderThresholdDots() {
+  const t = getThresholds();
+  Object.keys(KPI_META).forEach(kpiId => {
+    const el = document.getElementById(kpiId);
+    const card = el && el.closest('.kpi-card');
+    const dot = card && card.querySelector('.threshold-dot');
+    if (!dot) return;
+    const cfg = t[kpiId];
+    const hasThreshold = cfg && cfg.enabled && (cfg.lower !== '' || cfg.upper !== '');
+    dot.className = 'threshold-dot' + (hasThreshold ? ' active' : '');
+    dot.title = hasThreshold
+      ? `התראה: ${cfg.lower !== '' ? '↓' + cfg.lower + ' ' : ''}${cfg.upper !== '' ? '↑' + cfg.upper : ''}`
+      : '';
+  });
+}
+
+function updateThresholdDot(kpiId, state) {
+  const el = document.getElementById(kpiId);
+  const card = el && el.closest('.kpi-card');
+  const dot = card && card.querySelector('.threshold-dot');
+  if (dot) dot.className = `threshold-dot ${state}`;
+}
+
+// ── Modal: per-tile threshold settings ──────────────────────
+let _activeKpiId = null;
+
+function openThresholdModal(kpiId) {
+  _activeKpiId = kpiId;
+  const meta = KPI_META[kpiId] || {};
+  document.getElementById('tmodalTitle').textContent = `🔔 התראה: ${meta.label || kpiId}`;
+  const cfg = (getThresholds()[kpiId]) || { lower: '', upper: '', email: 'arye.glikman@gmail.com', enabled: true };
+  document.getElementById('tLower').value   = cfg.lower ?? '';
+  document.getElementById('tUpper').value   = cfg.upper ?? '';
+  document.getElementById('tEmail').value   = cfg.email || 'arye.glikman@gmail.com';
+  document.getElementById('tEnabled').checked = cfg.enabled !== false;
+  document.getElementById('thresholdOverlay').classList.add('open');
+  document.getElementById('thresholdModal').classList.add('open');
+}
+function closeThresholdModal() {
+  document.getElementById('thresholdOverlay').classList.remove('open');
+  document.getElementById('thresholdModal').classList.remove('open');
+  _activeKpiId = null;
+}
+function saveThresholdFromModal() {
+  if (!_activeKpiId) return;
+  const t = getThresholds();
+  t[_activeKpiId] = {
+    lower:   document.getElementById('tLower').value.trim(),
+    upper:   document.getElementById('tUpper').value.trim(),
+    email:   document.getElementById('tEmail').value.trim(),
+    enabled: document.getElementById('tEnabled').checked,
+  };
+  saveThresholds(t);
+  renderThresholdDots();
+  closeThresholdModal();
+}
+function clearThreshold() {
+  if (!_activeKpiId) return;
+  const t = getThresholds();
+  delete t[_activeKpiId];
+  saveThresholds(t);
+  localStorage.removeItem(`alert_last_${_activeKpiId}`);
+  renderThresholdDots();
+  closeThresholdModal();
+}
+
+// ── Modal: EmailJS config ────────────────────────────────────
+function openEmailJSModal() {
+  const cfg = getEmailJSCfg();
+  document.getElementById('ejsPublicKey').value  = cfg?.publicKey  || '';
+  document.getElementById('ejsServiceId').value  = cfg?.serviceId  || '';
+  document.getElementById('ejsTemplateId').value = cfg?.templateId || '';
+  document.getElementById('emailjsOverlay').classList.add('open');
+  document.getElementById('emailjsModal').classList.add('open');
+}
+function closeEmailJSModal() {
+  document.getElementById('emailjsOverlay').classList.remove('open');
+  document.getElementById('emailjsModal').classList.remove('open');
+}
+function saveEmailJSConfig() {
+  const cfg = {
+    publicKey:  document.getElementById('ejsPublicKey').value.trim(),
+    serviceId:  document.getElementById('ejsServiceId').value.trim(),
+    templateId: document.getElementById('ejsTemplateId').value.trim(),
+  };
+  if (!cfg.publicKey || !cfg.serviceId || !cfg.templateId) { alert('יש למלא את כל השדות'); return; }
+  localStorage.setItem('emailjs_config', JSON.stringify(cfg));
+  if (window.emailjs) emailjs.init(cfg.publicKey);
+  closeEmailJSModal();
+  alert('✅ הגדרות EmailJS נשמרו');
+}
+async function testEmailJS() {
+  const cfg = getEmailJSCfg();
+  if (!cfg) { alert('יש לשמור הגדרות EmailJS קודם'); return; }
+  if (window.emailjs) emailjs.init(cfg.publicKey);
+  try {
+    await emailjs.send(cfg.serviceId, cfg.templateId, {
+      kpi_name: 'סה"כ לידים (בדיקה)', current_value: '42',
+      threshold_type: 'עלה מעל ל-40', threshold_value: '40',
+      to_email: 'arye.glikman@gmail.com', dashboard_url: window.location.href,
+    });
+    alert('✅ מייל בדיקה נשלח לarye.glikman@gmail.com');
+  } catch(e) { alert('❌ שגיאה: ' + (e?.text || JSON.stringify(e))); }
+}
+
+// ── Inject settings UI into each KPI tile ───────────────────
+function initThresholdUI() {
+  initEmailJS();
+  Object.keys(KPI_META).forEach(kpiId => {
+    const el = document.getElementById(kpiId);
+    const card = el && el.closest('.kpi-card');
+    if (!card) return;
+    if (!card.querySelector('.kpi-settings-btn')) {
+      const btn = document.createElement('button');
+      btn.className = 'kpi-settings-btn';
+      btn.textContent = '⚙';
+      btn.title = 'הגדר התראת סף';
+      btn.addEventListener('click', e => { e.stopPropagation(); openThresholdModal(kpiId); });
+      card.appendChild(btn);
+    }
+    if (!card.querySelector('.threshold-dot')) {
+      const dot = document.createElement('div');
+      dot.className = 'threshold-dot';
+      card.appendChild(dot);
+    }
+  });
+  renderThresholdDots();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MAIN INIT
+// ═══════════════════════════════════════════════════════════════
+async function refreshDashboard() {
+  const btn = document.getElementById('refreshBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '⟳ מרענן...'; }
+  await Promise.all([loadScallaData(), loadStudioData(), loadMetaData()]);
+  if (btn) { btn.disabled = false; btn.textContent = '🔄 רענן נתונים'; }
+  checkAllThresholds();
+}
+
+async function v2StartDashboard() {
+  if (v2DashboardStarted) { refreshDashboard(); return; }
+  v2DashboardStarted = true;
+  v2ApplySessionUI();
+  // Set up threshold UI (gear buttons + dots on each KPI tile)
+  initThresholdUI();
+  // Start data loading in parallel
+  const dataPromise = Promise.all([loadScallaData(), loadStudioData(), loadMetaData()]);
+  // Render marketing tab (static data, needs Chart.js)
+  if (typeof Chart !== 'undefined') {
+    renderMarketingTab();
+  } else {
+    window.addEventListener('load', renderMarketingTab);
+  }
+  await dataPromise;
+  // Check all thresholds after data is loaded
+  checkAllThresholds();
+}
+
+// Initialize
+(async function init() {
+  v2InitShell();
+  if (!v2RequireSession()) return;
+  await v2StartDashboard();
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// KPI TILE CLICK HANDLER — always opens target system in a new tab
+// ═══════════════════════════════════════════════════════════════
+const REPORT_TILE_SELECTOR = '.kpi-card[data-href], .conv-card[data-href]';
+const REPORT_TILE_INTERACTIVE_SELECTOR = 'a, button, input, select, textarea, label';
+
+function openReportTileInNewTab(tile) {
+  const targetUrl = tile && tile.dataset && tile.dataset.href;
+  if (!targetUrl) return;
+  const tab = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  if (tab) tab.opener = null;
+}
+
+document.addEventListener('click', event => {
+  const tile = event.target.closest(REPORT_TILE_SELECTOR);
+  if (!tile || event.target.closest(REPORT_TILE_INTERACTIVE_SELECTOR)) return;
+  event.preventDefault();
+  openReportTileInNewTab(tile);
+});
+
+document.querySelectorAll(REPORT_TILE_SELECTOR).forEach(card => {
+  card.setAttribute('role', 'link');
+  card.setAttribute('tabindex', '0');
+  card.setAttribute('title', card.dataset.label || '');
+  card.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openReportTileInNewTab(card);
+  });
+});
+
+// ═══════════════════════════════════════════════════════════════
+// AI INSIGHTS CHAT — Hebrew Q&A agent (Claude + live Scalla/Arbox tools)
+// ═══════════════════════════════════════════════════════════════
+const AI_CHAT = {
+  ENDPOINT: '/.netlify/functions/agent',
+  history: [],   // Anthropic-format message history, echoed back by the server each turn
+  busy: false,
+};
+
+const AI_CHAT_SUGGESTIONS = [
+  'כמה לידים חדשים נכנסו החודש?',
+  'מה הסיבה הכי נפוצה שלידים לא התקדמו?',
+  'איך מתחלקות המכירות בין אנשי הצוות?',
+  'כמה מנויים פעילים יש כרגע בסטודיו?',
+];
+
+function aiChatToggle(forceOpen) {
+  const panel = document.getElementById('aiChatPanel');
+  const shouldOpen = forceOpen !== undefined ? forceOpen : !panel.classList.contains('open');
+  panel.classList.toggle('open', shouldOpen);
+  if (shouldOpen) {
+    const input = document.getElementById('aiChatInput');
+    if (input) input.focus();
+  }
+}
+
+function aiChatAppendMessage(text, role) {
+  const list = document.getElementById('aiChatMessages');
+  const bubble = document.createElement('div');
+  bubble.className = 'ai-chat-msg ' + role;
+  bubble.textContent = text;
+  list.appendChild(bubble);
+  list.scrollTop = list.scrollHeight;
+  return bubble;
+}
+
+function aiChatShowTyping() {
+  const list = document.getElementById('aiChatMessages');
+  const el = document.createElement('div');
+  el.className = 'ai-chat-msg typing';
+  el.id = 'aiChatTypingIndicator';
+  el.innerHTML = '<span class="ai-chat-typing-dot"></span><span class="ai-chat-typing-dot"></span><span class="ai-chat-typing-dot"></span>';
+  list.appendChild(el);
+  list.scrollTop = list.scrollHeight;
+}
+
+function aiChatHideTyping() {
+  const el = document.getElementById('aiChatTypingIndicator');
+  if (el) el.remove();
+}
+
+async function aiChatSend(text) {
+  const question = (text !== undefined ? text : document.getElementById('aiChatInput').value).trim();
+  if (!question || AI_CHAT.busy) return;
+
+  document.getElementById('aiChatInput').value = '';
+  const suggestionsEl = document.getElementById('aiChatSuggestions');
+  if (suggestionsEl) suggestionsEl.style.display = 'none';
+  aiChatAppendMessage(question, 'user');
+  aiChatShowTyping();
+  AI_CHAT.busy = true;
+  document.getElementById('aiChatSend').disabled = true;
+
+  try {
+    const res = await fetch(AI_CHAT.ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: question, history: AI_CHAT.history }),
+    });
+    const data = await res.json();
+    aiChatHideTyping();
+
+    if (!res.ok) {
+      aiChatAppendMessage('שגיאה: ' + (data.error || 'לא ניתן היה לקבל תשובה כרגע.'), 'error');
+      return;
+    }
+    AI_CHAT.history = data.history || AI_CHAT.history;
+    aiChatAppendMessage(data.reply, 'bot');
+  } catch (err) {
+    aiChatHideTyping();
+    aiChatAppendMessage('שגיאת תקשורת - בדוק את החיבור ונסה שוב. (' + err.message + ')', 'error');
+  } finally {
+    AI_CHAT.busy = false;
+    document.getElementById('aiChatSend').disabled = false;
+  }
+}
+
+function initAiChat() {
+  const input = document.getElementById('aiChatInput');
+  const suggestionsEl = document.getElementById('aiChatSuggestions');
+  if (suggestionsEl) {
+    suggestionsEl.innerHTML = AI_CHAT_SUGGESTIONS
+      .map(q => `<button class="ai-chat-suggestion" type="button">${q}</button>`)
+      .join('');
+    suggestionsEl.querySelectorAll('.ai-chat-suggestion').forEach(btn => {
+      btn.addEventListener('click', () => aiChatSend(btn.textContent));
+    });
+  }
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      aiChatSend();
+    }
+  });
+  document.getElementById('aiChatSend').addEventListener('click', () => aiChatSend());
+  document.getElementById('aiChatFab').addEventListener('click', () => aiChatToggle());
+  document.getElementById('aiChatCloseBtn').addEventListener('click', () => aiChatToggle(false));
+}
+// Deferred: the chat widget markup (button/panel) is written to the DOM *after* this
+// inline <script> block, so calling initAiChat() immediately would hit null elements.
+// DOMContentLoaded guarantees the whole document (including that later markup) is parsed first.
+document.addEventListener('DOMContentLoaded', initAiChat);
+
+</script>
+
+<!-- ── AI INSIGHTS CHAT WIDGET ─────────────────────────────── -->
+<button class="ai-chat-fab" id="aiChatFab" title="שאלו את הדשבורד" type="button">
+  💬<span class="ai-chat-fab-dot"></span>
+</button>
+<div class="ai-chat-panel" id="aiChatPanel">
+  <div class="ai-chat-header">
+    <div class="ai-chat-header-title">
+      🤖 שאלו את הדשבורד
+      <span class="ai-chat-header-sub">&nbsp;· נתונים חיים מ-Scalla ו-Arbox</span>
+    </div>
+    <button class="ai-chat-close" id="aiChatCloseBtn" type="button">✕</button>
+  </div>
+  <div class="ai-chat-messages" id="aiChatMessages">
+    <div class="ai-chat-msg bot">שלום! אפשר לשאול אותי שאלות על הלידים, המכירות והמנויים בסטודיו - אני אבדוק את הנתונים החיים ואענה בעברית.</div>
+  </div>
+  <div class="ai-chat-suggestions" id="aiChatSuggestions"></div>
+  <div class="ai-chat-input-row">
+    <textarea class="ai-chat-input" id="aiChatInput" rows="1" placeholder="שאל/י שאלה..."></textarea>
+    <button class="ai-chat-send" id="aiChatSend" type="button">➤</button>
+  </div>
+</div>
+</body>
+</html>
+
+
