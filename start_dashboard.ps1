@@ -1,11 +1,13 @@
 param(
-  [switch]$NoBrowser
+  [switch]$NoBrowser,
+  [switch]$Classic
 )
 
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Port = 3001
-$DashboardUrl = "http://localhost:$Port/"
+$DashboardPath = if ($Classic) { "/" } else { "/outputs/versions/smart-dashboard-v2-2026-07-17/giliguli_dashboard_v2.html" }
+$DashboardUrl = "http://localhost:$Port$DashboardPath"
 $HealthUrl = "http://localhost:$Port/health"
 $LogDir = Join-Path $Root 'logs'
 $OutLog = Join-Path $LogDir 'dashboard-proxy.out.log'
@@ -47,10 +49,9 @@ if (-not (Test-DashboardProxy)) {
 
 Write-Host "Smart Dashboard proxy is running: $HealthUrl" -ForegroundColor Green
 if (-not $NoBrowser) {
-  Write-Host "Opening dashboard: $DashboardUrl" -ForegroundColor Green
+  Write-Host "Opening Smart Dashboard: $DashboardUrl" -ForegroundColor Green
   Start-Process $DashboardUrl
 } else {
-  Write-Host "Dashboard URL: $DashboardUrl" -ForegroundColor Green
+  Write-Host "Smart Dashboard URL: $DashboardUrl" -ForegroundColor Green
 }
-
 
