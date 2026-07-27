@@ -15,7 +15,7 @@ const http = require('http');
 const https = require('https');
 const fs = require('fs');
 const path = require('path');
-const { URL } = require('url');
+const { URL, pathToFileURL } = require('url');
 
 function loadLocalEnv() {
   const envPath = path.join(__dirname, '.env');
@@ -33,6 +33,7 @@ loadLocalEnv();
 
 const agentHandler = require('./netlify/functions/agent.js').handler;
 const metaHandler = require('./netlify/functions/meta.js').handler;
+const localNetlifyHandlers = new Map();
 
 const PORT = 3001;
 const TARGET = 'https://api.scallacrm.co.il/scallaapi/api';
@@ -243,6 +244,55 @@ function arboxRequest(apiPath) {
   });
 }
 
+async function loadLocalNetlifyHandler(relativePath) {
+  if (!localNetlifyHandlers.has(relativePath)) {
+    const moduleUrl = pathToFileURL(path.join(__dirname, relativePath)).href;
+    localNetlifyHandlers.set(relativePath, import(moduleUrl).then(mod => mod.default));
+  }
+  return localNetlifyHandlers.get(relativePath);
+}
+
+function readRequestBody(req) {
+  return new Promise((resolve, reject) => {
+    let body = '';
+    req.on('data', chunk => {
+      body += chunk;
+      if (body.length > 250000) {
+        reject(new Error('PAYLOAD_TOO_LARGE'));
+        req.destroy();
+      }
+    });
+    req.on('end', () => resolve(body));
+    req.on('error', reject);
+  });
+}
+
+async function runFetchStyleFunction(req, res, relativePath, label) {
+  try {
+    const body = req.method === 'GET' || req.method === 'HEAD' ? undefined : await readRequestBody(req);
+    const handler = await loadLocalNetlifyHandler(relativePath);
+    const requestHeaders = {};
+    for (const [key, value] of Object.entries(req.headers)) {
+      if (value === undefined) continue;
+      requestHeaders[key] = Array.isArray(value) ? value.join(', ') : String(value);
+    }
+    const request = new Request(`http://localhost:${PORT}${req.url}`, {
+      method: req.method,
+      headers: requestHeaders,
+      body,
+    });
+    const response = await handler(request);
+    const headers = {};
+    response.headers.forEach((value, key) => { headers[key] = value; });
+    res.writeHead(response.status, headers);
+    res.end(await response.text());
+  } catch (err) {
+    const status = err.message === 'PAYLOAD_TOO_LARGE' ? 413 : 500;
+    res.writeHead(status, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ error: `Local ${label} adapter error`, detail: err.message }));
+  }
+}
+
 const server = http.createServer(async (req, res) => {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -324,6 +374,16 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ error: 'Local Meta adapter error', detail: err.message }));
       }
     });
+    return;
+  }
+
+  if (req.url.startsWith('/.netlify/functions/cr-admin')) {
+    await runFetchStyleFunction(req, res, 'netlify/functions/cr-admin.mjs', 'CR admin');
+    return;
+  }
+
+  if (req.url.startsWith('/.netlify/functions/cr')) {
+    await runFetchStyleFunction(req, res, 'netlify/functions/cr.mjs', 'CR');
     return;
   }
 
@@ -409,6 +469,7 @@ server.listen(PORT, () => {
   console.log('  Log file:   ' + LOG_FILE);
   console.log('  AI Agent:   POST http://localhost:' + PORT + '/.netlify/functions/agent');
   console.log('  Meta:       POST http://localhost:' + PORT + '/.netlify/functions/meta');
+  console.log('  CR Admin:   POST http://localhost:' + PORT + '/.netlify/functions/cr-admin');
   console.log('');
 });
 

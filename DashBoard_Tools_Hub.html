@@ -58,6 +58,8 @@
   .tool-card.link { cursor: pointer; text-decoration: none; color: inherit; }
   .tool-card.link:hover { transform: translateY(-3px); box-shadow: var(--shadow-hover); }
   .tool-card.dashboard { border-top-color: var(--primary); }
+  .tool-card.control   { border-top-color: #5142D8; }
+  .tool-card.api       { border-top-color: #175CD3; }
   .tool-card.intake    { border-top-color: var(--secondary); }
   .tool-card.cr        { border-top-color: #EC4899; }
   .tool-card.admin     { border-top-color: #0FBFA0; }
@@ -115,6 +117,20 @@
       <div class="tool-name">דשבורד ראשי</div>
       <div class="tool-desc">לוח הבקרה המלא של הבית של גיליגולי - לידים, סטודיו ושיווק.</div>
       <div class="tool-open">פתח את הדשבורד ↗</div>
+    </a>
+
+    <a class="tool-card link control" href="DashBoard_Control_Panel.html">
+      <div class="tool-icon">🎛</div>
+      <div class="tool-name">לוח בקרה לדשבורד</div>
+      <div class="tool-desc">ניהול מודולים, סוכן צ'אט, התראות ותזמון רענון מקורות נתונים.</div>
+      <div class="tool-open">פתח לוח בקרה ↗</div>
+    </a>
+
+    <a class="tool-card link api" href="DashBoard_API_Explorer.html">
+      <div class="tool-icon">🔌</div>
+      <div class="tool-name">API Endpoints</div>
+      <div class="tool-desc">עמוד דינמי לבדיקה ושינוי פרמטרים של Scalla, Arbox, Meta, AI, CR וניטור מקומי.</div>
+      <div class="tool-open">פתח API Explorer ↗</div>
     </a>
 
     <a class="tool-card link intake" href="DashBoard_Client_Intake_Form.html">

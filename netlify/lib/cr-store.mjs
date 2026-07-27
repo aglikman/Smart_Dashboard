@@ -1,13 +1,67 @@
 import crypto from 'node:crypto';
+import { existsSync } from 'node:fs';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import { getStore } from '@netlify/blobs';
 
 const STORE_NAME = 'smart-dashboard-cr';
+const LOCAL_STORE_DIR = path.join(process.cwd(), 'tmp', 'cr-store');
 
 export const REQUEST_TYPES = new Set(['bug', 'change']);
 export const PRIORITIES = new Set(['critical', 'high', 'medium', 'low']);
 export const STATUSES = new Set(['new', 'triage', 'in_progress', 'waiting_customer', 'scheduled', 'resolved', 'closed']);
 
+function useLocalStore() {
+  return process.env.SMART_DASHBOARD_CR_STORE === 'local'
+    || (!process.env.NETLIFY && !process.env.NETLIFY_BLOBS_CONTEXT && !process.env.NETLIFY_SITE_ID);
+}
+
+function localPathForKey(key) {
+  const safeParts = clean(key, 180).split('/').filter(Boolean);
+  const fullPath = path.normalize(path.join(LOCAL_STORE_DIR, ...safeParts));
+  if (fullPath !== LOCAL_STORE_DIR && !fullPath.startsWith(LOCAL_STORE_DIR + path.sep)) throw new Error('INVALID_STORE_KEY');
+  return fullPath;
+}
+
+async function walkLocalFiles(dir, prefix = '') {
+  if (!existsSync(dir)) return [];
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const files = [];
+  for (const entry of entries) {
+    const childPrefix = prefix ? `${prefix}/${entry.name}` : entry.name;
+    const childPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) files.push(...await walkLocalFiles(childPath, childPrefix));
+    else if (entry.isFile()) files.push(childPrefix.replaceAll('\\', '/'));
+  }
+  return files;
+}
+
+function getLocalStore() {
+  return {
+    async get(key, options = {}) {
+      const filePath = localPathForKey(key);
+      if (!existsSync(filePath)) return null;
+      const text = await fs.readFile(filePath, 'utf8');
+      return options.type === 'json' ? JSON.parse(text) : text;
+    },
+    async setJSON(key, value, options = {}) {
+      const filePath = localPathForKey(key);
+      if (options.onlyIfNew && existsSync(filePath)) return { modified: false };
+      await fs.mkdir(path.dirname(filePath), { recursive: true });
+      await fs.writeFile(filePath, JSON.stringify(value, null, 2), 'utf8');
+      return { modified: true };
+    },
+    async list(options = {}) {
+      const prefix = clean(options.prefix || '', 120);
+      const baseDir = prefix ? localPathForKey(prefix) : LOCAL_STORE_DIR;
+      const files = await walkLocalFiles(baseDir);
+      return { blobs: files.map(file => ({ key: `${prefix}${file}` })) };
+    },
+  };
+}
+
 export function store() {
+  if (useLocalStore()) return getLocalStore();
   return getStore({ name: STORE_NAME, consistency: 'strong' });
 }
 

@@ -8,6 +8,7 @@
 - Keep runtime behavior stable unless Arye explicitly approves a behavior change.
 - Use `giliguli_dashboard.html` as the development source of truth.
 - `public/index.html` and `public/giliguli_dashboard.html` are currently synchronized deployed copies of the dashboard.
+- Before any deployment, publish, or production release, use the project-local `$dashboard-qa` skill and run `npm run qa:predeploy`. Do not deploy if it fails unless Arye explicitly overrides the blocker after seeing the failure summary.
 
 ## Architecture Notes
 
@@ -22,6 +23,8 @@
 - Local run: `node scalla_proxy.js`
 - Local dashboard: `http://localhost:3001`
 - Health check: `http://localhost:3001/health`
+- Pre-deploy QA: `npm run qa:predeploy`
+- Live pre-deploy QA: `npm run qa:predeploy:live`
 
 ## Migration Priorities
 

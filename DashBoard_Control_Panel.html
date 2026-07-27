@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>לוח בקרה | Smart Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee9;
+      --canvas: #f3f5f8;
+      --surface: #fff;
+      --purple: #6b5cf5;
+      --purple-dark: #5142d8;
+      --purple-pale: #f0eeff;
+      --teal: #087d69;
+      --teal-pale: #e4f6f1;
+      --orange: #b54708;
+      --orange-pale: #fff2dc;
+      --red: #b42318;
+      --red-pale: #ffebe9;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; color: var(--ink); background: var(--canvas); font-family: Heebo, Arial, sans-serif; }
+    button, input, select { font: inherit; }
+    a { color: inherit; }
+    .topbar {
+      min-height: 66px; padding: 0 24px; display: flex; align-items: center; justify-content: space-between; gap: 18px;
+      color: #fff; background: #16192a; border-bottom: 3px solid var(--purple);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .mark { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 7px; background: var(--purple); font-weight: 800; }
+    .brand strong { display: block; }
+    .brand small { display: block; color: #b8bfd0; font-size: 11px; }
+    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn {
+      min-height: 38px; padding: 8px 13px; border: 1px solid #cbd2de; border-radius: 6px;
+      color: #344054; background: #fff; font-weight: 700; font-size: 12px; text-decoration: none; cursor: pointer;
+    }
+    .btn:hover { border-color: #948af7; color: var(--purple-dark); }
+    .btn.primary { color: #fff; border-color: var(--purple); background: var(--purple); }
+    .btn.primary:hover { background: var(--purple-dark); }
+    .btn.dark { color: #e4e7ec; border-color: #484d63; background: transparent; }
+    .btn.danger { color: var(--red); }
+    .app { max-width: 1280px; margin: 0 auto; padding: 24px; }
+    .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 18px; margin-bottom: 18px; }
+    h1 { margin: 0; font-size: 25px; }
+    .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+    .panel-head { padding: 14px 16px; display: flex; justify-content: space-between; gap: 14px; border-bottom: 1px solid var(--line); background: #fbfcfd; }
+    .panel-head h2 { margin: 0; font-size: 16px; }
+    .panel-head span { color: var(--muted); font-size: 11px; }
+    .panel-body { padding: 16px; }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .module-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .module-row, .source-row {
+      min-height: 74px; padding: 12px; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      border: 1px solid #e4e7ec; border-radius: 8px; background: #fff;
+    }
+    .module-row strong, .source-row strong { display: block; font-size: 13px; }
+    .module-row small, .source-row small { display: block; color: var(--muted); font-size: 10px; }
+    .switch { position: relative; display: inline-block; width: 42px; height: 24px; flex: 0 0 auto; vertical-align: middle; }
+    .switch input { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 2; }
+    .track { position: absolute; inset: 0; border-radius: 999px; background: #cbd5e1; transition: background .16s; pointer-events: none; }
+    .track::after { content: ""; position: absolute; top: 3px; right: 3px; width: 18px; height: 18px; border-radius: 50%; background: #fff; transition: transform .16s; box-shadow: 0 1px 3px rgba(16,24,40,.18); }
+    .switch input:checked + .track { background: var(--purple); }
+    .switch input:checked + .track::after { transform: translateX(-18px); }
+    .switch input:focus-visible + .track { outline: 3px solid rgba(107,92,245,.22); outline-offset: 2px; }
+    .field { display: grid; gap: 6px; }
+    label { color: #344054; font-size: 12px; font-weight: 700; }
+    input, select {
+      width: 100%; min-height: 40px; padding: 8px 10px; color: var(--ink);
+      border: 1px solid #cbd2de; border-radius: 6px; background: #fff; outline: 0;
+    }
+    input:focus, select:focus { border-color: var(--purple); box-shadow: 0 0 0 3px rgba(107,92,245,.16); }
+    .source-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .source-row { align-items: end; }
+    .source-row input { max-width: 110px; direction: ltr; text-align: center; }
+    table { width: 100%; border-collapse: collapse; min-width: 840px; }
+    th { padding: 10px 12px; color: #475467; background: #f8f9fb; border-bottom: 1px solid var(--line); font-size: 11px; text-align: right; white-space: nowrap; }
+    td { padding: 10px 12px; border-bottom: 1px solid #edf0f4; font-size: 12px; vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: 0; }
+    .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; }
+    .threshold-name strong { display: block; font-size: 12px; }
+    .threshold-name small { color: var(--muted); font-size: 10px; }
+    .threshold-input { width: 92px; direction: ltr; text-align: center; }
+    .status-bar {
+      position: sticky; bottom: 0; z-index: 20; margin-top: 18px; padding: 12px 14px;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      background: rgba(255,255,255,.96); border: 1px solid var(--line); border-radius: 8px; box-shadow: 0 -8px 24px rgba(16,24,40,.08);
+    }
+    .status-text { color: var(--muted); font-size: 12px; }
+    .toast { position: fixed; z-index: 100; left: 20px; bottom: 20px; max-width: 360px; padding: 11px 15px; color: #fff; background: #16192a; border-radius: 6px; box-shadow: 0 10px 28px rgba(17,24,39,.24); font-size: 12px; }
+    .toast.ok { background: var(--teal); }
+    .toast.err { background: var(--red); }
+    .hidden { display: none !important; }
+    @media (max-width: 980px) {
+      .module-grid, .source-grid, .split { grid-template-columns: 1fr; }
+      .page-head { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 620px) {
+      .topbar, .app { padding-left: 14px; padding-right: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; padding-top: 14px; padding-bottom: 14px; }
+      .status-bar { align-items: stretch; flex-direction: column; }
+      .actions { width: 100%; }
+      .actions .btn { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="mark">SD</div><div><strong>Smart Dashboard</strong><small>לוח בקרה</small></div></div>
+    <div class="actions">
+      <a class="btn dark" href="DashBoard_API_Explorer.html">API Endpoints</a>
+      <a class="btn dark" href="DashBoard_Tools_Hub.html">מרכז כלים</a>
+      <a class="btn dark" href="giliguli_dashboard.html">דשבורד</a>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="page-head">
+      <div>
+        <h1>לוח בקרה לדשבורד</h1>
+        <p id="settingsScope">הגדרות פעילות בדפדפן זה</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="reloadBtn" type="button">טעינה מחדש</button>
+        <button class="btn danger" id="resetBtn" type="button">איפוס ברירת מחדל</button>
+        <button class="btn primary" id="saveTopBtn" type="button">שמירה</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="panel" aria-labelledby="modulesTitle">
+        <div class="panel-head"><div><h2 id="modulesTitle">מודולים בדשבורד</h2><span>לידים, סטודיו, שיווק ו-AI ביצועים</span></div></div>
+        <div class="panel-body">
+          <div class="module-grid" id="moduleGrid"></div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="agentTitle">
+        <div class="panel-head"><div><h2 id="agentTitle">סוכן צ'אט</h2><span>כפתור הצ'אט הצף בדשבורד הראשי</span></div></div>
+        <div class="panel-body">
+          <label class="module-row" for="chatAgent">
+            <span><strong>הפעלת סוכן צ'אט</strong><small>מוצג או מוסתר בדשבורד</small></span>
+            <span class="switch"><input id="chatAgent" type="checkbox"><span class="track"></span></span>
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="refreshTitle">
+        <div class="panel-head"><div><h2 id="refreshTitle">תזמון רענון נתונים</h2><span>דקות לכל מקור נתונים</span></div></div>
+        <div class="panel-body">
+          <div class="source-grid">
+            <label class="source-row">
+              <span><strong>ScallaCRM</strong><small>לידים ומשפך מכירות</small></span>
+              <input id="refreshScalla" type="number" min="0" max="1440" step="1">
+            </label>
+            <label class="source-row">
+              <span><strong>Arbox</strong><small>מנויים, שיעורים וכרטיסיות</small></span>
+              <input id="refreshArbox" type="number" min="0" max="1440" step="1">
+            </label>
+            <label class="source-row">
+              <span><strong>Meta</strong><small>קמפיינים ושיווק</small></span>
+              <input id="refreshMeta" type="number" min="0" max="1440" step="1">
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="alertsTitle">
+        <div class="panel-head"><div><h2 id="alertsTitle">התראות וספים</h2><span>הגדרות ההתראות הועברו לכאן</span></div></div>
+        <div class="panel-body">
+          <div class="split" style="margin-bottom:14px;">
+            <label class="module-row" for="alertsEnabled">
+              <span><strong>הפעלת התראות</strong><small>בדיקת ספים אחרי רענון נתונים</small></span>
+              <span class="switch"><input id="alertsEnabled" type="checkbox"><span class="track"></span></span>
+            </label>
+            <div class="field">
+              <label for="alertRecipient">דוא"ל ברירת מחדל</label>
+              <input id="alertRecipient" type="email" dir="ltr" autocomplete="email">
+            </div>
+            <div class="field">
+              <label for="alertCooldown">מרווח מינימלי בין התראות</label>
+              <input id="alertCooldown" type="number" min="0" max="168" step="1">
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>מדד</th><th>פעיל</th><th>סף מינימום</th><th>סף מקסימום</th><th>דוא"ל ייעודי</th></tr></thead>
+              <tbody id="thresholdRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="emailTitle">
+        <div class="panel-head"><div><h2 id="emailTitle">EmailJS</h2><span>חיבור שליחת מיילים מהדפדפן</span></div></div>
+        <div class="panel-body">
+          <div class="split">
+            <div class="field"><label for="ejsPublicKey">Public Key</label><input id="ejsPublicKey" type="text" dir="ltr" autocomplete="off"></div>
+            <div class="field"><label for="ejsServiceId">Service ID</label><input id="ejsServiceId" type="text" dir="ltr" autocomplete="off"></div>
+            <div class="field"><label for="ejsTemplateId">Template ID</label><input id="ejsTemplateId" type="text" dir="ltr" autocomplete="off"></div>
+            <div class="field"><label for="testEmail">דוא"ל בדיקה</label><input id="testEmail" type="email" dir="ltr" autocomplete="email"></div>
+          </div>
+          <div class="actions" style="margin-top:12px;">
+            <button class="btn" id="testEmailBtn" type="button">שליחת בדיקה</button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-text" id="statusText">מוכן לשמירה</div>
+      <div class="actions">
+        <button class="btn" id="openApiExplorerBtn" type="button">API Endpoints</button>
+        <button class="btn" id="openDashboardBtn" type="button">פתיחת דשבורד</button>
+        <button class="btn primary" id="saveBottomBtn" type="button">שמירת הגדרות</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+    const CONTROL_SETTINGS_KEY = 'smart_dashboard_control_settings';
+    const AI_CHAT_ENABLED_KEY = 'ai_chat_enabled';
+    const DEFAULT_EMAIL = 'arye.glikman@gmail.com';
+    const MODULES = [
+      { id: 'leads', label: 'לידים', sub: 'ScallaCRM', icon: '📋' },
+      { id: 'studio', label: 'סטודיו', sub: 'Arbox', icon: '🏢' },
+      { id: 'marketing', label: 'שיווק', sub: 'Meta ומקורות ידניים', icon: '📈' },
+      { id: 'performance', label: 'AI ביצועים', sub: 'ניתוח עסקי', icon: '🤖' },
+    ];
+    const KPI_META = {
+      kpiTotalLeads: { label: 'סה"כ לידים', sub: 'ScallaCRM' },
+      kpiNewLeads: { label: 'לידים בטיפול', sub: 'ScallaCRM' },
+      kpiFH: { label: 'Full House', sub: 'Arbox' },
+      kpiIH: { label: 'In House', sub: 'Arbox' },
+      kpiKR: { label: 'כרטיסיות פעילות', sub: 'Arbox' },
+      kpiExp: { label: 'כרטיסיות פגות השבוע', sub: 'Arbox' },
+    };
+    const DEFAULT_SETTINGS = {
+      modules: { leads: true, studio: true, marketing: true, performance: true },
+      chatAgent: true,
+      alerts: { enabled: true, recipient: DEFAULT_EMAIL, cooldownHours: 24, thresholds: {} },
+      refreshMinutes: { scalla: 15, arbox: 30, meta: 60 },
+    };
+
+    function readJson(key, fallback = null) {
+      try {
+        const raw = localStorage.getItem(key);
+        return raw ? JSON.parse(raw) : fallback;
+      } catch {
+        return fallback;
+      }
+    }
+
+    function mergedSettings() {
+      const saved = readJson(CONTROL_SETTINGS_KEY, {}) || {};
+      const legacyThresholds = readJson('kpi_thresholds', {}) || {};
+      const legacyChat = localStorage.getItem(AI_CHAT_ENABLED_KEY);
+      const savedThresholds = saved.alerts && saved.alerts.thresholds ? saved.alerts.thresholds : {};
+      return {
+        modules: { ...DEFAULT_SETTINGS.modules, ...(saved.modules || {}) },
+        chatAgent: typeof saved.chatAgent === 'boolean' ? saved.chatAgent : (legacyChat === null ? DEFAULT_SETTINGS.chatAgent : legacyChat !== 'false'),
+        alerts: {
+          ...DEFAULT_SETTINGS.alerts,
+          ...(saved.alerts || {}),
+          thresholds: Object.keys(savedThresholds).length ? savedThresholds : legacyThresholds,
+        },
+        refreshMinutes: { ...DEFAULT_SETTINGS.refreshMinutes, ...(saved.refreshMinutes || {}) },
+      };
+    }
+
+    function writeSettings(settings) {
+      localStorage.setItem(CONTROL_SETTINGS_KEY, JSON.stringify(settings));
+      localStorage.setItem(AI_CHAT_ENABLED_KEY, String(settings.chatAgent));
+      localStorage.setItem('kpi_thresholds', JSON.stringify(settings.alerts.thresholds || {}));
+    }
+
+    function toast(message, kind = 'ok') {
+      const el = document.getElementById('toast');
+      el.textContent = message;
+      el.className = `toast ${kind}`;
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => el.classList.add('hidden'), 2800);
+    }
+
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
+
+    function renderModules() {
+      const grid = document.getElementById('moduleGrid');
+      grid.innerHTML = MODULES.map(module => `
+        <label class="module-row" for="module-${module.id}">
+          <span><strong>${esc(module.icon)} ${esc(module.label)}</strong><small>${esc(module.sub)}</small></span>
+          <span class="switch"><input id="module-${module.id}" data-module="${module.id}" type="checkbox"><span class="track"></span></span>
+        </label>
+      `).join('');
+    }
+
+    function renderThresholds() {
+      const rows = document.getElementById('thresholdRows');
+      rows.innerHTML = Object.entries(KPI_META).map(([id, meta]) => `
+        <tr data-kpi="${id}">
+          <td class="threshold-name"><strong>${esc(meta.label)}</strong><small>${esc(meta.sub)}</small></td>
+          <td><span class="switch"><input class="threshold-enabled" type="checkbox" aria-label="${esc(meta.label)} פעיל"><span class="track"></span></span></td>
+          <td><input class="threshold-input threshold-lower" type="number" placeholder="ריק"></td>
+          <td><input class="threshold-input threshold-upper" type="number" placeholder="ריק"></td>
+          <td><input class="threshold-email" type="email" dir="ltr" placeholder="${DEFAULT_EMAIL}"></td>
+        </tr>
+      `).join('');
+    }
+
+    const EMAILJS_SDK_URLS = [
+      'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js',
+      'https://unpkg.com/@emailjs/browser@4/dist/email.min.js',
+    ];
+    let emailJsLoadPromise = null;
+
+    function hasEmailJS() {
+      return Boolean(window.emailjs && typeof emailjs.init === 'function' && typeof emailjs.send === 'function');
+    }
+
+    function loadEmailJSScript(src) {
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        const timer = setTimeout(() => {
+          script.remove();
+          reject(new Error('טעינת EmailJS נכשלה או נחסמה'));
+        }, 7000);
+        script.src = src;
+        script.async = true;
+        script.onload = () => {
+          clearTimeout(timer);
+          hasEmailJS() ? resolve() : reject(new Error('EmailJS נטען ללא API תקין'));
+        };
+        script.onerror = () => {
+          clearTimeout(timer);
+          reject(new Error('טעינת EmailJS נכשלה או נחסמה'));
+        };
+        document.head.appendChild(script);
+      });
+    }
+
+    async function ensureEmailJSLoaded() {
+      if (hasEmailJS()) return emailjs;
+      if (!emailJsLoadPromise) {
+        emailJsLoadPromise = (async () => {
+          for (const src of EMAILJS_SDK_URLS) {
+            try {
+              await loadEmailJSScript(src);
+              if (hasEmailJS()) return emailjs;
+            } catch {
+              // Try the next official CDN before surfacing a user-facing error.
+            }
+          }
+          throw new Error('EmailJS לא נטען. בדקו שהדפדפן לא חוסם CDN ונסו שוב');
+        })();
+      }
+      return emailJsLoadPromise;
+    }
+
+    function formatEmailJSError(err) {
+      if (err && err.text) return `EmailJS: ${err.text}`;
+      if (err && err.message) return err.message;
+      return 'שליחת בדיקה נכשלה';
+    }
+
+    function getEmailConfig() {
+      return readJson('emailjs_config', {}) || {};
+    }
+
+    function setEmailConfigFromForm() {
+      const cfg = {
+        publicKey: document.getElementById('ejsPublicKey').value.trim(),
+        serviceId: document.getElementById('ejsServiceId').value.trim(),
+        templateId: document.getElementById('ejsTemplateId').value.trim(),
+      };
+      const filled = [cfg.publicKey, cfg.serviceId, cfg.templateId].filter(Boolean).length;
+      if (filled > 0 && filled < 3) throw new Error('יש למלא את כל שדות EmailJS או להשאיר את כולם ריקים');
+      if (filled === 3) localStorage.setItem('emailjs_config', JSON.stringify(cfg));
+      else localStorage.removeItem('emailjs_config');
+      return cfg;
+    }
+
+    function loadForm() {
+      const settings = mergedSettings();
+      MODULES.forEach(module => {
+        const input = document.getElementById(`module-${module.id}`);
+        if (input) input.checked = settings.modules[module.id] !== false;
+      });
+      document.getElementById('chatAgent').checked = settings.chatAgent !== false;
+      document.getElementById('alertsEnabled').checked = settings.alerts.enabled !== false;
+      document.getElementById('alertRecipient').value = settings.alerts.recipient || DEFAULT_EMAIL;
+      document.getElementById('alertCooldown').value = settings.alerts.cooldownHours ?? 24;
+      document.getElementById('refreshScalla').value = settings.refreshMinutes.scalla ?? 15;
+      document.getElementById('refreshArbox').value = settings.refreshMinutes.arbox ?? 30;
+      document.getElementById('refreshMeta').value = settings.refreshMinutes.meta ?? 60;
+
+      document.querySelectorAll('#thresholdRows tr').forEach(row => {
+        const cfg = settings.alerts.thresholds[row.dataset.kpi] || {};
+        row.querySelector('.threshold-enabled').checked = cfg.enabled === true;
+        row.querySelector('.threshold-lower').value = cfg.lower ?? '';
+        row.querySelector('.threshold-upper').value = cfg.upper ?? '';
+        row.querySelector('.threshold-email').value = cfg.email || '';
+      });
+
+      const ejs = getEmailConfig();
+      document.getElementById('ejsPublicKey').value = ejs.publicKey || '';
+      document.getElementById('ejsServiceId').value = ejs.serviceId || '';
+      document.getElementById('ejsTemplateId').value = ejs.templateId || '';
+      document.getElementById('testEmail').value = settings.alerts.recipient || DEFAULT_EMAIL;
+      document.getElementById('statusText').textContent = `נטען: ${new Date().toLocaleString('he-IL')}`;
+    }
+
+    function collectSettings() {
+      const modules = {};
+      MODULES.forEach(module => { modules[module.id] = document.getElementById(`module-${module.id}`).checked; });
+      if (!Object.values(modules).some(Boolean)) throw new Error('יש להשאיר לפחות מודול אחד פעיל');
+
+      const thresholds = {};
+      document.querySelectorAll('#thresholdRows tr').forEach(row => {
+        const lower = row.querySelector('.threshold-lower').value.trim();
+        const upper = row.querySelector('.threshold-upper').value.trim();
+        const email = row.querySelector('.threshold-email').value.trim();
+        const enabled = row.querySelector('.threshold-enabled').checked;
+        if (enabled || lower || upper || email) thresholds[row.dataset.kpi] = { lower, upper, email, enabled };
+      });
+
+      return {
+        modules,
+        chatAgent: document.getElementById('chatAgent').checked,
+        alerts: {
+          enabled: document.getElementById('alertsEnabled').checked,
+          recipient: document.getElementById('alertRecipient').value.trim() || DEFAULT_EMAIL,
+          cooldownHours: Number(document.getElementById('alertCooldown').value || 0),
+          thresholds,
+        },
+        refreshMinutes: {
+          scalla: Number(document.getElementById('refreshScalla').value || 0),
+          arbox: Number(document.getElementById('refreshArbox').value || 0),
+          meta: Number(document.getElementById('refreshMeta').value || 0),
+        },
+      };
+    }
+
+    function save() {
+      try {
+        const settings = collectSettings();
+        setEmailConfigFromForm();
+        writeSettings(settings);
+        document.getElementById('statusText').textContent = `נשמר: ${new Date().toLocaleString('he-IL')}`;
+        toast('ההגדרות נשמרו');
+      } catch (err) {
+        toast(err.message, 'err');
+      }
+    }
+
+    function resetDefaults() {
+      if (!confirm('לאפס את הגדרות לוח הבקרה בדפדפן זה?')) return;
+      localStorage.removeItem(CONTROL_SETTINGS_KEY);
+      localStorage.removeItem(AI_CHAT_ENABLED_KEY);
+      localStorage.removeItem('kpi_thresholds');
+      localStorage.removeItem('emailjs_config');
+      loadForm();
+      toast('הגדרות ברירת המחדל נטענו');
+    }
+
+    async function testEmail() {
+      try {
+        const cfg = setEmailConfigFromForm();
+        if (!cfg.publicKey) throw new Error('EmailJS לא מוגדר');
+        const email = document.getElementById('testEmail').value.trim() || DEFAULT_EMAIL;
+        await ensureEmailJSLoaded();
+        emailjs.init({ publicKey: cfg.publicKey });
+        await emailjs.send(cfg.serviceId, cfg.templateId, {
+          kpi_name: 'בדיקת לוח בקרה',
+          current_value: '42',
+          threshold_type: 'בדיקה',
+          threshold_value: '40',
+          to_email: email,
+          dashboard_url: location.origin + '/giliguli_dashboard.html',
+        });
+        toast('מייל בדיקה נשלח');
+      } catch (err) {
+        toast(formatEmailJSError(err), 'err');
+      }
+    }
+
+    renderModules();
+    renderThresholds();
+    loadForm();
+
+    document.getElementById('saveTopBtn').addEventListener('click', save);
+    document.getElementById('saveBottomBtn').addEventListener('click', save);
+    document.getElementById('reloadBtn').addEventListener('click', loadForm);
+    document.getElementById('resetBtn').addEventListener('click', resetDefaults);
+    document.getElementById('testEmailBtn').addEventListener('click', testEmail);
+    document.getElementById('openApiExplorerBtn').addEventListener('click', () => { location.href = 'DashBoard_API_Explorer.html'; });
+    document.getElementById('openDashboardBtn').addEventListener('click', () => { location.href = 'giliguli_dashboard.html'; });
+  </script>
+</body>
+</html>

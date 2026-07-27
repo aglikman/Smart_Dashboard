@@ -60,6 +60,7 @@ Phase 4 cleaned local project hygiene: the dashboard HTML files no longer contai
 
 ## CR and bug tracker
 
+- Dashboard control panel: `DashBoard_Control_Panel.html`
 - Customer form: `DashBoard_CR_Form.html`
 - Admin tracker: `DashBoard_CR_Admin.html`
 - Public API: `netlify/functions/cr.mjs`
@@ -67,6 +68,16 @@ Phase 4 cleaned local project hygiene: the dashboard HTML files no longer contai
 - Persistent store: Netlify Blobs (`smart-dashboard-cr`)
 
 The admin screen requires `CR_ADMIN_PASSWORD` and `CR_AUTH_SECRET` in the Netlify Functions environment. Customer requests are stored centrally and remain available across deployments.
+
+## Access protection
+
+Production uses a Netlify Edge password gate:
+
+- `SMART_DASHBOARD_ACCESS_PASSWORD` protects the general Smart Dashboard experience.
+- `SMART_DASHBOARD_ADMIN_PASSWORD` protects the control panel and admin dashboard surfaces.
+- `SMART_DASHBOARD_AUTH_SECRET` signs the HttpOnly access cookie.
+
+Keep these values in local `.env` and Netlify environment variables only.
 
 Next phase should address product decisions: whether the AI chat remains Anthropic/Claude-powered, whether Meta should be configured locally, and whether customer docs need a refresh after the cleanup.
 

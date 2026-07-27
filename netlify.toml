@@ -8,6 +8,10 @@
 [functions."scalla"]
   region = "eu-central-1"
 
+[[edge_functions]]
+  function = "password-gate"
+  path = "/*"
+
 [[headers]]
   for = "/*"
   [headers.values]

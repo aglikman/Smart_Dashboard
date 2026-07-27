@@ -1,0 +1,1211 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>API Endpoints | Smart Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee9;
+      --canvas: #f3f5f8;
+      --surface: #fff;
+      --purple: #6b5cf5;
+      --purple-dark: #5142d8;
+      --purple-pale: #f0eeff;
+      --teal: #087d69;
+      --teal-pale: #e4f6f1;
+      --orange: #b54708;
+      --orange-pale: #fff2dc;
+      --red: #b42318;
+      --red-pale: #ffebe9;
+      --blue: #175cd3;
+      --blue-pale: #eaf1ff;
+      --code: #111827;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font-family: Heebo, Arial, sans-serif;
+    }
+    button, input, select, textarea { font: inherit; }
+    a { color: inherit; }
+    .topbar {
+      min-height: 66px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      color: #fff;
+      background: #16192a;
+      border-bottom: 3px solid var(--purple);
+    }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .mark {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 7px;
+      background: var(--purple);
+      font-weight: 800;
+    }
+    .brand strong { display: block; }
+    .brand small { display: block; color: #b8bfd0; font-size: 11px; }
+    .actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .btn {
+      min-height: 38px;
+      padding: 8px 13px;
+      border: 1px solid #cbd2de;
+      border-radius: 6px;
+      color: #344054;
+      background: #fff;
+      font-weight: 700;
+      font-size: 12px;
+      text-decoration: none;
+      cursor: pointer;
+    }
+    .btn:hover { border-color: #948af7; color: var(--purple-dark); }
+    .btn.primary { color: #fff; border-color: var(--purple); background: var(--purple); }
+    .btn.primary:hover { background: var(--purple-dark); }
+    .btn.dark { color: #e4e7ec; border-color: #484d63; background: transparent; }
+    .btn.warn { color: #fff; border-color: var(--orange); background: var(--orange); }
+    .app { max-width: 1440px; margin: 0 auto; padding: 24px; }
+    .page-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      margin-bottom: 18px;
+    }
+    h1 { margin: 0; font-size: 25px; }
+    .page-head p { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 16px;
+      align-items: start;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfcfd;
+    }
+    .panel-head h2 { margin: 0; font-size: 16px; }
+    .panel-head span { color: var(--muted); font-size: 11px; }
+    .panel-body { padding: 16px; }
+    .endpoint-list { display: grid; gap: 8px; }
+    .endpoint-btn {
+      width: 100%;
+      min-height: 66px;
+      padding: 10px 12px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      text-align: right;
+      border: 1px solid #e4e7ec;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .endpoint-btn:hover { border-color: #948af7; background: #fbfaff; }
+    .endpoint-btn.active { border-color: var(--purple); background: var(--purple-pale); }
+    .endpoint-name { font-weight: 800; font-size: 13px; }
+    .endpoint-desc { margin-top: 2px; color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .chip {
+      height: fit-content;
+      padding: 3px 7px;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 800;
+      direction: ltr;
+      color: var(--blue);
+      background: var(--blue-pale);
+    }
+    .chip.post { color: var(--teal); background: var(--teal-pale); }
+    .chip.local { color: var(--orange); background: var(--orange-pale); }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    .filter-row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .field-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .field { display: grid; gap: 6px; }
+    .field.wide { grid-column: 1 / -1; }
+    label { color: #344054; font-size: 12px; font-weight: 700; }
+    input, select, textarea {
+      width: 100%;
+      min-height: 40px;
+      padding: 8px 10px;
+      color: var(--ink);
+      border: 1px solid #cbd2de;
+      border-radius: 6px;
+      background: #fff;
+      outline: 0;
+    }
+    textarea {
+      min-height: 92px;
+      resize: vertical;
+      direction: ltr;
+      text-align: left;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+    }
+    input[dir="ltr"], select[dir="ltr"] { text-align: left; }
+    input:focus, select:focus, textarea:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px rgba(107,92,245,.16);
+    }
+    .date-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .notice {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border: 1px solid #bfdbfe;
+      border-radius: 7px;
+      color: #175cd3;
+      background: #eff6ff;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+    .notice.warn { border-color: #fed7aa; color: var(--orange); background: #fff7ed; }
+    .preview-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      margin-top: 16px;
+    }
+    pre {
+      margin: 0;
+      padding: 12px;
+      min-height: 230px;
+      overflow: auto;
+      direction: ltr;
+      text-align: left;
+      color: #e5e7eb;
+      background: var(--code);
+      border-radius: 8px;
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+    .result-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 8px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+    .metric-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .metric {
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fff;
+    }
+    .metric span { display: block; color: var(--muted); font-size: 10px; }
+    .metric strong { display: block; margin-top: 3px; font-size: 15px; direction: ltr; text-align: right; }
+    .status-bar {
+      position: sticky;
+      bottom: 0;
+      z-index: 20;
+      margin-top: 18px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: rgba(255,255,255,.96);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: 0 -8px 24px rgba(16,24,40,.08);
+    }
+    .status-text { color: var(--muted); font-size: 12px; }
+    .toast {
+      position: fixed;
+      z-index: 100;
+      left: 20px;
+      bottom: 20px;
+      max-width: 360px;
+      padding: 11px 15px;
+      color: #fff;
+      background: #16192a;
+      border-radius: 6px;
+      box-shadow: 0 10px 28px rgba(17,24,39,.24);
+      font-size: 12px;
+    }
+    .toast.ok { background: var(--teal); }
+    .toast.err { background: var(--red); }
+    .hidden { display: none !important; }
+    @media (max-width: 1080px) {
+      .layout, .preview-grid { grid-template-columns: 1fr; }
+      .field-grid, .date-row, .metric-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 680px) {
+      .topbar, .app { padding-left: 14px; padding-right: 14px; }
+      .topbar { align-items: flex-start; flex-direction: column; padding-top: 14px; padding-bottom: 14px; }
+      .page-head, .status-bar { align-items: stretch; flex-direction: column; }
+      .field-grid, .date-row, .metric-strip { grid-template-columns: 1fr; }
+      .actions { width: 100%; }
+      .actions .btn { flex: 1; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><div class="mark">API</div><div><strong>Smart Dashboard</strong><small>API Endpoint Explorer</small></div></div>
+    <div class="actions">
+      <a class="btn dark" href="DashBoard_Control_Panel.html">לוח בקרה</a>
+      <a class="btn dark" href="DashBoard_Tools_Hub.html">מרכז כלים</a>
+      <a class="btn dark" href="giliguli_dashboard.html">דשבורד</a>
+    </div>
+  </header>
+
+  <main class="app">
+    <div class="page-head">
+      <div>
+        <h1>API Endpoints</h1>
+        <p>בדיקה דינמית של נקודות הקצה בפרויקט, כולל טווחי תאריכים ופרמטרים משתנים.</p>
+      </div>
+      <div class="actions">
+        <button class="btn" id="resetDatesBtn" type="button">30 יום אחרונים</button>
+        <button class="btn primary" id="runBtn" type="button">הרצת בקשה</button>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside class="panel" aria-labelledby="endpointListTitle">
+        <div class="panel-head">
+          <div><h2 id="endpointListTitle">רשימת endpoints</h2><span>Scalla, Arbox, Meta, AI, CR וניטור מקומי</span></div>
+        </div>
+        <div class="panel-body">
+          <div class="filter-row">
+            <div class="field">
+              <label for="groupFilter">קבוצה</label>
+              <select id="groupFilter"></select>
+            </div>
+            <div class="field">
+              <label for="endpointSearch">חיפוש</label>
+              <input id="endpointSearch" type="search" placeholder="שם, נתיב או מקור">
+            </div>
+          </div>
+          <div class="endpoint-list" id="endpointList"></div>
+        </div>
+      </aside>
+
+      <section class="panel" aria-labelledby="builderTitle">
+        <div class="panel-head">
+          <div><h2 id="builderTitle">בונה בקשות</h2><span id="selectedRoute">בחר endpoint מהרשימה</span></div>
+          <span class="chip" id="selectedMethod">GET</span>
+        </div>
+        <div class="panel-body">
+          <div class="date-row" id="dateControls">
+            <div class="field">
+              <label for="fromDate">מתאריך</label>
+              <input id="fromDate" type="date" dir="ltr">
+            </div>
+            <div class="field">
+              <label for="toDate">עד תאריך</label>
+              <input id="toDate" type="date" dir="ltr">
+            </div>
+            <div class="field">
+              <label for="limit">Limit</label>
+              <input id="limit" type="number" min="1" max="1000" step="1" dir="ltr">
+            </div>
+            <div class="field">
+              <label for="page">Page</label>
+              <input id="page" type="number" min="1" max="100" step="1" dir="ltr">
+            </div>
+          </div>
+
+          <div class="field-grid" id="dynamicFields"></div>
+          <div class="notice" id="endpointNote"></div>
+
+          <div class="metric-strip">
+            <div class="metric"><span>HTTP</span><strong id="metricStatus">-</strong></div>
+            <div class="metric"><span>זמן</span><strong id="metricTime">-</strong></div>
+            <div class="metric"><span>רשומות</span><strong id="metricRecords">-</strong></div>
+            <div class="metric"><span>מקור</span><strong id="metricSource">-</strong></div>
+          </div>
+
+          <div class="preview-grid">
+            <div>
+              <div class="result-head">
+                <strong>Request Preview</strong>
+                <button class="btn" id="copyRequestBtn" type="button">העתקה</button>
+              </div>
+              <pre id="requestPreview">{}</pre>
+            </div>
+            <div>
+              <div class="result-head">
+                <strong>Response</strong>
+                <div class="actions">
+                  <button class="btn" id="copyResponseBtn" type="button">העתקה</button>
+                  <button class="btn" id="clearResponseBtn" type="button">ניקוי</button>
+                </div>
+              </div>
+              <pre id="responseOutput">בחר endpoint ולחץ הרצת בקשה.</pre>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="status-bar">
+      <div class="status-text" id="statusText">מוכן לבדיקה. סודות נשארים בצד השרת דרך proxy/functions.</div>
+      <div class="actions">
+        <button class="btn" id="openStatsBtn" type="button">פתיחת /stats</button>
+        <button class="btn primary" id="runBottomBtn" type="button">הרצת בקשה</button>
+      </div>
+    </div>
+  </main>
+
+  <div id="toast" class="toast hidden" role="status"></div>
+
+  <script>
+    const GROUPS = [
+      { id: 'all', label: 'כל הקבוצות' },
+      { id: 'monitoring', label: 'Monitoring' },
+      { id: 'scalla', label: 'ScallaCRM' },
+      { id: 'arbox', label: 'Arbox' },
+      { id: 'meta', label: 'Meta' },
+      { id: 'ai', label: 'AI OS' },
+      { id: 'cr', label: 'CR/Admin' },
+      { id: 'custom', label: 'Custom' },
+    ];
+
+    const MODULES = [
+      'Leads', 'Contacts', 'Accounts', 'Potentials', 'Invoice', 'Quotes',
+      'Products', 'HelpDesk', 'Calendar', 'Registrations',
+    ];
+
+    const ARBOX_REPORTS = [
+      { value: 'activeMembershipsReport', label: 'Active memberships' },
+      { value: 'lateCancellationReport', label: 'Late cancellations' },
+      { value: 'bookingsReport', label: 'Bookings' },
+      { value: 'receiptsReport', label: 'Receipts' },
+      { value: 'transactionsReport', label: 'Transactions' },
+      { value: 'sessionsReport', label: 'Sessions' },
+      { value: 'hugimBookingReport', label: 'Hugim bookings' },
+      { value: 'activeHugimReport', label: 'Active hugim' },
+      { value: 'expiredMembershipsReport', label: 'Expired memberships' },
+      { value: 'expiringMembershipsReport', label: 'Expiring memberships' },
+      { value: 'renewalsReport', label: 'Renewals' },
+      { value: 'canceledMembershipsReport', label: 'Canceled memberships' },
+      { value: 'schedule', label: 'Schedule' },
+    ];
+
+    const ENDPOINTS = [
+      {
+        id: 'health',
+        group: 'monitoring',
+        name: 'Local proxy health',
+        route: '/health',
+        method: 'GET',
+        kind: 'simple',
+        desc: 'בודק אם scalla_proxy.js רץ ומה מוגדר בסביבה המקומית.',
+        note: 'זמין בעיקר בסביבה המקומית דרך localhost:3001.',
+      },
+      {
+        id: 'stats',
+        group: 'monitoring',
+        name: 'Local proxy stats',
+        route: '/stats',
+        method: 'GET',
+        kind: 'simple',
+        desc: 'סטטיסטיקות קריאות Scalla מה-proxy המקומי.',
+        note: 'כולל ספירת בקשות, שגיאות, latency ופעולות אחרונות.',
+      },
+      {
+        id: 'statsReset',
+        group: 'monitoring',
+        name: 'Reset local stats',
+        route: '/stats/reset',
+        method: 'POST',
+        kind: 'simple',
+        desc: 'מאפס מוני ניטור מקומיים, לא מוחק session או נתונים.',
+        note: 'מיועד לפיתוח ובדיקות בלבד.',
+      },
+      {
+        id: 'scallaLogin',
+        group: 'scalla',
+        name: 'Scalla login/modules',
+        method: 'POST',
+        kind: 'scalla',
+        operation: 'loginAndFetchModules',
+        desc: 'בדיקת התחברות והחזרת רשימת מודולים.',
+        note: 'שם משתמש וסיסמה מוזרקים בצד השרת בלבד.',
+      },
+      {
+        id: 'scallaQuery',
+        group: 'scalla',
+        name: 'Scalla SQL query',
+        method: 'POST',
+        kind: 'scalla',
+        operation: 'query',
+        supportsDate: true,
+        dateFilterMode: 'local',
+        fields: [
+          { name: 'query', label: 'Query', type: 'textarea', defaultValue: 'select firstname, lastname, mobile, email, createdtime, modifiedtime, leadstatus, leadsource, assigned_user_id from Leads;' },
+          { name: 'dateField', label: 'Date field for local filter', type: 'select', options: ['createdtime', 'modifiedtime', 'created_at', 'date'], defaultValue: 'createdtime' },
+        ],
+        desc: 'הרצת query מול Scalla עם session אוטומטי.',
+        note: 'טווח התאריכים מסונן בצד הדפדפן אחרי התשובה, כי query date syntax לא אומת בבטחה לכל מודול.',
+      },
+      {
+        id: 'scallaList',
+        group: 'scalla',
+        name: 'Scalla list records',
+        method: 'POST',
+        kind: 'scalla',
+        operation: 'Listrecordsbymodule',
+        supportsDate: true,
+        dateFilterMode: 'local',
+        fields: [
+          { name: 'module', label: 'Module', type: 'select', options: MODULES, defaultValue: 'Leads' },
+          { name: 'dateField', label: 'Date field for local filter', type: 'select', options: ['createdtime', 'modifiedtime', 'created_at', 'date'], defaultValue: 'createdtime' },
+        ],
+        desc: 'רשומות ממודול Scalla לפי שם מודול.',
+        note: 'טווח התאריכים מסונן מקומית כדי לא להמציא יכולת API שלא אומתה.',
+      },
+      {
+        id: 'scallaSearch',
+        group: 'scalla',
+        name: 'Scalla search records',
+        method: 'POST',
+        kind: 'scalla',
+        operation: 'SearchRecords',
+        supportsDate: true,
+        dateFilterMode: 'local',
+        fields: [
+          { name: 'module', label: 'Module', type: 'select', options: MODULES, defaultValue: 'Leads' },
+          { name: 'searchField', label: 'Search field', type: 'text', defaultValue: 'leadstatus' },
+          { name: 'searchValue', label: 'Search value', type: 'text', defaultValue: 'ליד בטיפול' },
+          { name: 'dateField', label: 'Date field for local filter', type: 'select', options: ['createdtime', 'modifiedtime', 'created_at', 'date'], defaultValue: 'createdtime' },
+        ],
+        desc: 'חיפוש Scalla לפי שדה וערך יחיד.',
+        note: 'SearchRecords אומת רק כתנאי אחד. תנאים נוספים מומלץ לבדוק דרך query או סינון מקומי.',
+      },
+      {
+        id: 'scallaFields',
+        group: 'scalla',
+        name: 'Scalla module fields',
+        method: 'POST',
+        kind: 'scalla',
+        operation: 'GetModuleFields',
+        fields: [
+          { name: 'module', label: 'Module', type: 'select', options: MODULES, defaultValue: 'Leads' },
+        ],
+        desc: 'שמות שדות, תוויות, סוגי נתונים ו-picklists.',
+        note: 'השתמש בזה לפני בניית query חדש כדי לוודא שמות שדות.',
+      },
+      {
+        id: 'scallaDashboard',
+        group: 'scalla',
+        name: 'Scalla dashboard config',
+        method: 'POST',
+        kind: 'scalla',
+        operation: 'Dashboard',
+        desc: 'ווידגטים ודוחות שמוגדרים ב-Scalla.',
+        note: 'שימושי להבין אילו KPI הלקוח כבר מודד בתוך Scalla.',
+      },
+      {
+        id: 'arboxReport',
+        group: 'arbox',
+        name: 'Arbox report',
+        method: 'POST',
+        kind: 'arbox',
+        supportsDate: true,
+        fields: [
+          { name: 'report', label: 'Report', type: 'select', options: ARBOX_REPORTS, defaultValue: 'activeMembershipsReport' },
+        ],
+        desc: 'דוחות Arbox עם from/to, limit ו-page.',
+        note: 'ה-API key נשאר בצד השרת. חלק מהדוחות תלויי הרשאות חשבון.',
+      },
+      {
+        id: 'arboxCustom',
+        group: 'arbox',
+        name: 'Arbox custom path',
+        method: 'POST',
+        kind: 'arboxCustom',
+        supportsDate: false,
+        fields: [
+          { name: 'path', label: 'Path', type: 'text', defaultValue: '/reports/activeMembershipsReport?limit=500' },
+        ],
+        desc: 'נתיב Arbox מותאם אישית תחת /api/public/v3.',
+        note: 'חייב להתחיל ב-/ ולא לכלול hostname או API key.',
+      },
+      {
+        id: 'metaCampaigns',
+        group: 'meta',
+        name: 'Meta campaign insights',
+        route: '/.netlify/functions/meta',
+        method: 'POST',
+        kind: 'meta',
+        action: 'campaigns',
+        supportsDate: true,
+        fields: [
+          { name: 'date_preset', label: 'Date preset fallback', type: 'select', options: ['today', 'yesterday', 'this_week_mon_today', 'last_7d', 'last_14d', 'last_30d', 'this_month', 'last_month'], defaultValue: 'this_month' },
+          { name: 'level', label: 'Level', type: 'select', options: ['campaign', 'adset', 'ad'], defaultValue: 'campaign' },
+          { name: 'fields', label: 'Fields', type: 'text', defaultValue: 'campaign_name,objective,spend,actions' },
+        ],
+        desc: 'נתוני קמפיינים ממומנים מ-Meta Graph API.',
+        note: 'אם נבחר from/to, הבקשה תשתמש ב-time_range במקום date_preset.',
+      },
+      {
+        id: 'metaSocial',
+        group: 'meta',
+        name: 'Meta page social',
+        route: '/.netlify/functions/meta',
+        method: 'POST',
+        kind: 'meta',
+        action: 'social',
+        fields: [
+          { name: 'period', label: 'Period', type: 'select', options: ['day', 'week', 'days_28'], defaultValue: 'week' },
+        ],
+        desc: 'מדדי חשיפה ומעורבות בעמוד.',
+        note: 'דורש Page token בצד השרת.',
+      },
+      {
+        id: 'metaFans',
+        group: 'meta',
+        name: 'Meta page fans',
+        route: '/.netlify/functions/meta',
+        method: 'POST',
+        kind: 'meta',
+        action: 'page_fans',
+        desc: 'fan_count / followers_count לעמוד.',
+        note: 'אין טווח תאריכים כי זו תמונת מצב נוכחית.',
+      },
+      {
+        id: 'metaDebug',
+        group: 'meta',
+        name: 'Meta token debug',
+        route: '/.netlify/functions/meta',
+        method: 'POST',
+        kind: 'meta',
+        action: 'debug',
+        desc: 'בדיקת token והרשאות דרך Graph API.',
+        note: 'לא להזין token בדף הזה אלא אם עובדים בסביבת בדיקה מבוקרת.',
+      },
+      {
+        id: 'agentAsk',
+        group: 'ai',
+        name: 'AI OS agent',
+        route: '/.netlify/functions/agent',
+        method: 'POST',
+        kind: 'json',
+        fields: [
+          { name: 'message', label: 'Question', type: 'textarea', defaultValue: 'כמה לידים בטיפול יש כרגע ומה הפעולה הבאה המומלצת?' },
+        ],
+        desc: 'שאלה לסוכן AI עם כלי Scalla/Arbox.',
+        note: 'דורש ANTHROPIC_API_KEY בצד השרת. אין לשים מפתחות בדפדפן.',
+      },
+      {
+        id: 'crCustomers',
+        group: 'cr',
+        name: 'CR customers',
+        route: '/.netlify/functions/cr',
+        method: 'GET',
+        kind: 'simple',
+        desc: 'רשימת לקוחות פעילים לטפסי CR.',
+        note: 'GET ציבורי מוגן בסיסמת הדשבורד בפריסה.',
+      },
+      {
+        id: 'crCreate',
+        group: 'cr',
+        name: 'Create CR request',
+        route: '/.netlify/functions/cr',
+        method: 'POST',
+        kind: 'json',
+        fields: [
+          { name: 'body', label: 'JSON body', type: 'textarea', defaultValue: '{\n  "type": "bug",\n  "priority": "medium",\n  "customerName": "GiliGuli",\n  "title": "בדיקת API Explorer",\n  "description": "תיאור בדיקה בלבד. לא לשלוח בפרודקשן בלי כוונה.",\n  "contactName": "Arye",\n  "contactEmail": "arye.glikman@gmail.com",\n  "confirmed": true\n}' },
+        ],
+        desc: 'פתיחת בקשת שינוי או תקלה.',
+        note: 'זה יוצר רשומה אמיתית אם מריצים מול סביבה מחוברת.',
+      },
+      {
+        id: 'crAdmin',
+        group: 'cr',
+        name: 'CR admin action',
+        route: '/.netlify/functions/cr-admin',
+        method: 'POST',
+        kind: 'json',
+        fields: [
+          { name: 'authToken', label: 'Authorization Bearer token', type: 'text', defaultValue: '' },
+          { name: 'body', label: 'JSON body', type: 'textarea', defaultValue: '{\n  "action": "list"\n}' },
+        ],
+        desc: 'פעולות מנהל CR: login/list/update/add_customer/toggle_customer.',
+        note: 'פעולות שאינן login דורשות token שהתקבל מקריאת login.',
+      },
+      {
+        id: 'custom',
+        group: 'custom',
+        name: 'Custom request',
+        route: '/health',
+        method: 'GET',
+        kind: 'custom',
+        fields: [
+          { name: 'method', label: 'Method', type: 'select', options: ['GET', 'POST'], defaultValue: 'GET' },
+          { name: 'path', label: 'Path', type: 'text', defaultValue: '/health' },
+          { name: 'body', label: 'JSON body', type: 'textarea', defaultValue: '{}' },
+        ],
+        desc: 'בקשה חופשית לנתיב בפרויקט.',
+        note: 'לשימוש מנהל בלבד. אין להזין סודות בגוף הבקשה.',
+      },
+    ];
+
+    const state = {
+      selectedId: 'health',
+      lastRequest: null,
+      lastResponse: null,
+    };
+
+    function isFileMode() {
+      return location.protocol === 'file:';
+    }
+
+    function isLocalHost() {
+      return isFileMode() || ['localhost', '127.0.0.1'].includes(location.hostname);
+    }
+
+    function route(path) {
+      if (path.startsWith('http')) return path;
+      if (isFileMode()) return 'http://localhost:3001' + path;
+      return path;
+    }
+
+    function scallaRoute() {
+      return isLocalHost() ? '/api/scalla' : '/.netlify/functions/scalla';
+    }
+
+    function arboxRoute() {
+      return isLocalHost() ? '/api/arbox' : '/.netlify/functions/arbox';
+    }
+
+    function todayIso(offsetDays = 0) {
+      const date = new Date();
+      date.setDate(date.getDate() + offsetDays);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const dd = String(date.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function esc(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[char]));
+    }
+
+    function endpointById(id) {
+      return ENDPOINTS.find(endpoint => endpoint.id === id) || ENDPOINTS[0];
+    }
+
+    function selectedEndpoint() {
+      return endpointById(state.selectedId);
+    }
+
+    function readField(name) {
+      const el = document.querySelector(`[data-param="${name}"]`);
+      return el ? el.value.trim() : '';
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    function pretty(value) {
+      if (value === undefined) return '';
+      if (typeof value === 'string') {
+        try { return JSON.stringify(JSON.parse(value), null, 2); } catch { return value; }
+      }
+      return JSON.stringify(value, null, 2);
+    }
+
+    function toast(message, kind = 'ok') {
+      const el = document.getElementById('toast');
+      el.textContent = message;
+      el.className = `toast ${kind}`;
+      clearTimeout(toast.timer);
+      toast.timer = setTimeout(() => el.classList.add('hidden'), 2800);
+    }
+
+    function renderGroupFilter() {
+      document.getElementById('groupFilter').innerHTML = GROUPS
+        .map(group => `<option value="${esc(group.id)}">${esc(group.label)}</option>`)
+        .join('');
+    }
+
+    function renderEndpointList() {
+      const group = document.getElementById('groupFilter').value || 'all';
+      const query = document.getElementById('endpointSearch').value.trim().toLowerCase();
+      const list = document.getElementById('endpointList');
+      const filtered = ENDPOINTS.filter(endpoint => {
+        const matchesGroup = group === 'all' || endpoint.group === group;
+        const haystack = `${endpoint.name} ${endpoint.route || ''} ${endpoint.group} ${endpoint.desc}`.toLowerCase();
+        return matchesGroup && (!query || haystack.includes(query));
+      });
+      list.innerHTML = filtered.map(endpoint => `
+        <button class="endpoint-btn ${endpoint.id === state.selectedId ? 'active' : ''}" type="button" data-endpoint="${esc(endpoint.id)}">
+          <span>
+            <span class="endpoint-name">${esc(endpoint.name)}</span>
+            <span class="endpoint-desc">${esc(endpoint.desc)}</span>
+          </span>
+          <span class="chip ${endpoint.method === 'POST' ? 'post' : ''}">${esc(endpoint.method)}</span>
+        </button>
+      `).join('') || '<div class="notice warn">לא נמצאו endpoints לפי הסינון.</div>';
+      list.querySelectorAll('[data-endpoint]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          state.selectedId = btn.dataset.endpoint;
+          renderEndpointList();
+          renderBuilder();
+        });
+      });
+    }
+
+    function optionMarkup(option) {
+      if (typeof option === 'string') return `<option value="${esc(option)}">${esc(option)}</option>`;
+      return `<option value="${esc(option.value)}">${esc(option.label)}</option>`;
+    }
+
+    function fieldMarkup(field) {
+      const value = field.defaultValue || '';
+      if (field.type === 'textarea') {
+        return `
+          <div class="field wide">
+            <label for="param-${esc(field.name)}">${esc(field.label)}</label>
+            <textarea id="param-${esc(field.name)}" data-param="${esc(field.name)}">${esc(value)}</textarea>
+          </div>`;
+      }
+      if (field.type === 'select') {
+        return `
+          <div class="field">
+            <label for="param-${esc(field.name)}">${esc(field.label)}</label>
+            <select id="param-${esc(field.name)}" data-param="${esc(field.name)}" dir="ltr">
+              ${(field.options || []).map(optionMarkup).join('')}
+            </select>
+          </div>`;
+      }
+      return `
+        <div class="field">
+          <label for="param-${esc(field.name)}">${esc(field.label)}</label>
+          <input id="param-${esc(field.name)}" data-param="${esc(field.name)}" type="${field.type || 'text'}" value="${esc(value)}" dir="ltr">
+        </div>`;
+    }
+
+    function renderBuilder() {
+      const endpoint = selectedEndpoint();
+      const method = endpoint.kind === 'custom' ? readField('method') || endpoint.method : endpoint.method;
+      const resolvedRoute = endpoint.kind === 'scalla'
+        ? scallaRoute()
+        : endpoint.kind === 'arbox' || endpoint.kind === 'arboxCustom'
+          ? arboxRoute()
+          : endpoint.route;
+      setText('selectedRoute', `${endpoint.name} | ${resolvedRoute || ''}`);
+      setText('selectedMethod', method);
+      document.getElementById('selectedMethod').className = `chip ${method === 'POST' ? 'post' : ''}`;
+      document.getElementById('endpointNote').className = `notice ${endpoint.dateFilterMode === 'local' ? 'warn' : ''}`;
+      setText('endpointNote', endpoint.note || '');
+
+      document.getElementById('dateControls').classList.toggle('hidden', endpoint.supportsDate !== true);
+      document.getElementById('dynamicFields').innerHTML = (endpoint.fields || []).map(fieldMarkup).join('');
+
+      if (endpoint.fields) {
+        endpoint.fields.forEach(field => {
+          if (field.type === 'select') {
+            const select = document.getElementById(`param-${field.name}`);
+            if (select && field.defaultValue) select.value = field.defaultValue;
+          }
+        });
+      }
+
+      document.querySelectorAll('#dynamicFields input, #dynamicFields select, #dynamicFields textarea, #dateControls input')
+        .forEach(el => {
+          el.addEventListener('input', updatePreview);
+          el.addEventListener('change', updatePreview);
+        });
+      updatePreview();
+    }
+
+    function currentDateParams() {
+      return {
+        fromDate: document.getElementById('fromDate').value,
+        toDate: document.getElementById('toDate').value,
+        limit: document.getElementById('limit').value || '500',
+        page: document.getElementById('page').value || '1',
+      };
+    }
+
+    function buildArboxPath(endpoint) {
+      const { fromDate, toDate, limit, page } = currentDateParams();
+      if (endpoint.kind === 'arboxCustom') return readField('path') || '/reports/activeMembershipsReport';
+
+      const report = readField('report') || 'activeMembershipsReport';
+      const params = new URLSearchParams();
+      if (report === 'schedule') {
+        if (fromDate) params.set('from_date', fromDate);
+        if (toDate) params.set('to_date', toDate);
+        return `/schedule?${params.toString()}`;
+      }
+      if (fromDate) params.set('fromDate', fromDate);
+      if (toDate) params.set('toDate', toDate);
+      if (limit) params.set('limit', limit);
+      if (page) params.set('page', page);
+      return `/reports/${report}?${params.toString()}`;
+    }
+
+    function buildMetaBody(endpoint) {
+      const { fromDate, toDate } = currentDateParams();
+      const body = { action: endpoint.action };
+      if (endpoint.id === 'metaCampaigns') {
+        const fields = readField('fields');
+        const level = readField('level');
+        const datePreset = readField('date_preset');
+        if (fields) body.fields = fields;
+        if (level) body.level = level;
+        if (fromDate && toDate) {
+          body.since = fromDate;
+          body.until = toDate;
+        } else if (datePreset) {
+          body.date_preset = datePreset;
+        }
+      }
+      if (endpoint.id === 'metaSocial') {
+        const period = readField('period');
+        if (period) body.period = period;
+      }
+      return body;
+    }
+
+    function buildScallaParams(endpoint, login = null) {
+      const params = { _operation: endpoint.operation };
+      if (login && endpoint.operation !== 'loginAndFetchModules') {
+        params._session = login.session;
+        if (login.tenant) params.tenant_id = login.tenant;
+      }
+      if (endpoint.operation === 'query') {
+        params.query = readField('query');
+        const page = document.getElementById('page').value;
+        if (page && page !== '1') params.page = page;
+      }
+      if (['Listrecordsbymodule', 'SearchRecords', 'GetModuleFields'].includes(endpoint.operation)) {
+        params.module = readField('module') || 'Leads';
+      }
+      if (endpoint.operation === 'SearchRecords') {
+        params.searchField = readField('searchField');
+        params.searchValue = readField('searchValue');
+      }
+      return params;
+    }
+
+    function buildJsonBody(endpoint) {
+      if (endpoint.id === 'agentAsk') return { message: readField('message'), history: [] };
+      if (endpoint.id === 'crCreate' || endpoint.id === 'crAdmin') {
+        const raw = readField('body') || '{}';
+        return JSON.parse(raw);
+      }
+      return {};
+    }
+
+    function buildRequest() {
+      const endpoint = selectedEndpoint();
+      if (endpoint.kind === 'scalla') {
+        return {
+          method: 'POST',
+          url: route(scallaRoute()),
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          bodyType: 'form',
+          body: buildScallaParams(endpoint),
+          note: endpoint.operation === 'loginAndFetchModules' ? '' : 'Includes automatic login preflight before execution.',
+        };
+      }
+      if (endpoint.kind === 'arbox' || endpoint.kind === 'arboxCustom') {
+        return {
+          method: 'POST',
+          url: route(arboxRoute()),
+          headers: { 'Content-Type': 'application/json' },
+          bodyType: 'json',
+          body: { path: buildArboxPath(endpoint) },
+        };
+      }
+      if (endpoint.kind === 'meta') {
+        return {
+          method: 'POST',
+          url: route(endpoint.route),
+          headers: { 'Content-Type': 'application/json' },
+          bodyType: 'json',
+          body: buildMetaBody(endpoint),
+        };
+      }
+      if (endpoint.kind === 'json') {
+        const headers = { 'Content-Type': 'application/json' };
+        if (endpoint.id === 'crAdmin' && readField('authToken')) headers.Authorization = `Bearer ${readField('authToken')}`;
+        return {
+          method: endpoint.method,
+          url: route(endpoint.route),
+          headers,
+          bodyType: 'json',
+          body: buildJsonBody(endpoint),
+        };
+      }
+      if (endpoint.kind === 'custom') {
+        const method = readField('method') || 'GET';
+        const path = readField('path') || '/health';
+        const rawBody = readField('body') || '{}';
+        return {
+          method,
+          url: route(path.startsWith('/') ? path : '/' + path),
+          headers: { 'Content-Type': 'application/json' },
+          bodyType: 'json',
+          body: method === 'GET' ? null : JSON.parse(rawBody),
+        };
+      }
+      return {
+        method: endpoint.method,
+        url: route(endpoint.route),
+        headers: {},
+        bodyType: 'none',
+        body: null,
+      };
+    }
+
+    function updatePreview() {
+      try {
+        const req = buildRequest();
+        state.lastRequest = req;
+        setText('selectedRoute', `${selectedEndpoint().name} | ${req.url}`);
+        setText('selectedMethod', req.method);
+        document.getElementById('selectedMethod').className = `chip ${req.method === 'POST' ? 'post' : ''}`;
+        setText('requestPreview', pretty(req));
+        setText('statusText', isFileMode()
+          ? 'מצב קובץ מקומי: הבקשות יישלחו אל http://localhost:3001.'
+          : 'מוכן להרצה דרך הנתיב הנוכחי.');
+      } catch (err) {
+        setText('requestPreview', err.message);
+      }
+    }
+
+    function responseBodyForFetch(req) {
+      if (req.method === 'GET' || req.body === null || req.body === undefined) return undefined;
+      if (req.bodyType === 'form') return new URLSearchParams(req.body).toString();
+      return JSON.stringify(req.body);
+    }
+
+    async function fetchRequest(req) {
+      const started = performance.now();
+      const options = {
+        method: req.method,
+        headers: req.headers || {},
+        body: responseBodyForFetch(req),
+        signal: AbortSignal.timeout(30000),
+      };
+      const res = await fetch(req.url, options);
+      const text = await res.text();
+      const elapsedMs = Math.round(performance.now() - started);
+      let body = text;
+      try { body = JSON.parse(text); } catch {}
+      return { status: res.status, ok: res.ok, elapsedMs, body, headers: Object.fromEntries(res.headers.entries()) };
+    }
+
+    async function scallaLoginForRun() {
+      const loginReq = {
+        method: 'POST',
+        url: route(scallaRoute()),
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        bodyType: 'form',
+        body: { _operation: 'loginAndFetchModules' },
+      };
+      const result = await fetchRequest(loginReq);
+      const login = result.body?.result?.login;
+      if (!login || !login.session) throw new Error('Scalla login failed before endpoint request');
+      return { session: login.session, tenant: login.unique_id || '' };
+    }
+
+    function getNestedArrays(value, arrays = []) {
+      if (Array.isArray(value)) {
+        arrays.push(value);
+        return arrays;
+      }
+      if (value && typeof value === 'object') {
+        Object.values(value).forEach(child => getNestedArrays(child, arrays));
+      }
+      return arrays;
+    }
+
+    function firstRecordsArray(body) {
+      if (Array.isArray(body)) return body;
+      if (!body || typeof body !== 'object') return [];
+      if (Array.isArray(body.data)) return body.data;
+      if (Array.isArray(body.records)) return body.records;
+      if (Array.isArray(body.result)) return body.result;
+      if (body.result && Array.isArray(body.result.records)) return body.result.records;
+      const arrays = getNestedArrays(body).filter(arr => arr.length && typeof arr[0] === 'object');
+      return arrays[0] || [];
+    }
+
+    function dateOnly(value) {
+      if (!value) return '';
+      if (typeof value === 'string') return value.slice(0, 10);
+      if (value && typeof value === 'object') {
+        return String(value.value || value.date || value.label || value.name || '').slice(0, 10);
+      }
+      return String(value).slice(0, 10);
+    }
+
+    function filterResponseByDate(body, field, fromDate, toDate) {
+      if (!field || !fromDate || !toDate) return { body, filtered: false, before: 0, after: 0 };
+      const records = firstRecordsArray(body);
+      if (!records.length) return { body, filtered: false, before: 0, after: 0 };
+      const filtered = records.filter(record => {
+        const date = dateOnly(record[field]);
+        return date && date >= fromDate && date <= toDate;
+      });
+      const clone = structuredClone(body);
+      if (Array.isArray(clone)) return { body: filtered, filtered: true, before: records.length, after: filtered.length };
+      if (Array.isArray(clone.data)) clone.data = filtered;
+      else if (Array.isArray(clone.records)) clone.records = filtered;
+      else if (Array.isArray(clone.result)) clone.result = filtered;
+      else if (clone.result && Array.isArray(clone.result.records)) clone.result.records = filtered;
+      clone._localDateFilter = { field, fromDate, toDate, before: records.length, after: filtered.length };
+      return { body: clone, filtered: true, before: records.length, after: filtered.length };
+    }
+
+    async function runSelected() {
+      const endpoint = selectedEndpoint();
+      let req;
+      try {
+        req = buildRequest();
+      } catch (err) {
+        toast(err.message, 'err');
+        return;
+      }
+
+      setText('responseOutput', 'Running request...');
+      setText('statusText', `מריץ ${endpoint.name}`);
+      setText('metricStatus', '-');
+      setText('metricTime', '-');
+      setText('metricRecords', '-');
+      setText('metricSource', endpoint.group);
+
+      try {
+        let result;
+        if (endpoint.kind === 'scalla' && endpoint.operation !== 'loginAndFetchModules') {
+          const login = await scallaLoginForRun();
+          req.body = buildScallaParams(endpoint, login);
+          state.lastRequest = req;
+          setText('requestPreview', pretty(req));
+        }
+
+        result = await fetchRequest(req);
+        let outputBody = result.body;
+        if (endpoint.dateFilterMode === 'local') {
+          const dateParams = currentDateParams();
+          const filtered = filterResponseByDate(outputBody, readField('dateField'), dateParams.fromDate, dateParams.toDate);
+          outputBody = filtered.body;
+        }
+
+        state.lastResponse = { ...result, body: outputBody };
+        const records = firstRecordsArray(outputBody);
+        setText('responseOutput', pretty(outputBody));
+        setText('metricStatus', String(result.status));
+        setText('metricTime', `${result.elapsedMs}ms`);
+        setText('metricRecords', records.length ? String(records.length) : '-');
+        setText('metricSource', endpoint.group);
+        setText('statusText', result.ok ? `הבקשה הושלמה: ${endpoint.name}` : `הבקשה חזרה עם HTTP ${result.status}`);
+      } catch (err) {
+        setText('responseOutput', err.stack || err.message);
+        setText('metricStatus', 'ERR');
+        setText('statusText', 'הבקשה נכשלה: ' + err.message);
+        toast(err.message, 'err');
+      }
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+        toast('הועתק');
+      } catch {
+        toast('לא ניתן להעתיק בדפדפן הזה', 'err');
+      }
+    }
+
+    function resetDates() {
+      document.getElementById('fromDate').value = todayIso(-30);
+      document.getElementById('toDate').value = todayIso(0);
+      document.getElementById('limit').value = '500';
+      document.getElementById('page').value = '1';
+      updatePreview();
+    }
+
+    renderGroupFilter();
+    resetDates();
+    renderEndpointList();
+    renderBuilder();
+
+    document.getElementById('groupFilter').addEventListener('change', renderEndpointList);
+    document.getElementById('endpointSearch').addEventListener('input', renderEndpointList);
+    document.getElementById('runBtn').addEventListener('click', runSelected);
+    document.getElementById('runBottomBtn').addEventListener('click', runSelected);
+    document.getElementById('resetDatesBtn').addEventListener('click', resetDates);
+    document.getElementById('clearResponseBtn').addEventListener('click', () => {
+      state.lastResponse = null;
+      setText('responseOutput', 'Response cleared.');
+      setText('metricStatus', '-');
+      setText('metricTime', '-');
+      setText('metricRecords', '-');
+    });
+    document.getElementById('copyRequestBtn').addEventListener('click', () => copyText(document.getElementById('requestPreview').textContent));
+    document.getElementById('copyResponseBtn').addEventListener('click', () => copyText(document.getElementById('responseOutput').textContent));
+    document.getElementById('openStatsBtn').addEventListener('click', () => { window.open(route('/stats'), '_blank', 'noopener,noreferrer'); });
+  </script>
+</body>
+</html>

@@ -7,6 +7,16 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script>
+    (function () {
+      try {
+        const savedTheme = localStorage.getItem('smart_dashboard_theme');
+        document.documentElement.dataset.themeMode = savedTheme === 'dark' ? 'dark' : 'light';
+      } catch {
+        document.documentElement.dataset.themeMode = 'light';
+      }
+    })();
+  </script>
   <style>
     :root {
       --primary: #6B21A8;
@@ -29,8 +39,52 @@
       --border: #E5E7EB;
       --shadow: 0 2px 16px rgba(107,33,168,0.08);
       --shadow-hover: 0 8px 32px rgba(107,33,168,0.18);
+      --input-bg: #FFFFFF;
+      --muted-surface: #F3F4F6;
+      --overlay: rgba(0,0,0,.45);
+      --header-control-bg: rgba(255,255,255,.96);
+      --header-control-border: rgba(255,255,255,.82);
+      --header-control-text: #5B21B6;
+      --header-control-hover-bg: #FFFFFF;
+      --header-control-hover-text: #3B0764;
       --radius: 16px;
       --radius-sm: 8px;
+    }
+    html[data-theme-mode="dark"] {
+      color-scheme: dark;
+      --primary: #A78BFA;
+      --primary-light: #C084FC;
+      --primary-lighter: rgba(167,139,250,.18);
+      --secondary: #22D3EE;
+      --secondary-light: #67E8F9;
+      --accent: #F472B6;
+      --accent-light: rgba(244,114,182,.18);
+      --success: #4ADE80;
+      --success-light: rgba(74,222,128,.16);
+      --warning: #FBBF24;
+      --warning-light: rgba(251,191,36,.17);
+      --danger: #FB7185;
+      --danger-light: rgba(251,113,133,.17);
+      --bg: #050505;
+      --card: #111111;
+      --text: #F8FAFC;
+      --text-secondary: #CBD5E1;
+      --border: #2D2D2D;
+      --shadow: 0 2px 18px rgba(0,0,0,.46);
+      --shadow-hover: 0 10px 34px rgba(0,0,0,.62);
+      --input-bg: #181818;
+      --muted-surface: #202020;
+      --overlay: rgba(0,0,0,.72);
+      --header-control-bg: rgba(17,17,17,.86);
+      --header-control-border: rgba(255,255,255,.2);
+      --header-control-text: #F8FAFC;
+      --header-control-hover-bg: rgba(255,255,255,.14);
+      --header-control-hover-text: #FFFFFF;
+    }
+    html[data-theme-mode="dark"],
+    html[data-theme-mode="dark"] body {
+      background: var(--bg);
+      color: var(--text);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -39,6 +93,7 @@
       color: var(--text);
       min-height: 100vh;
       direction: rtl;
+      transition: background .2s ease, color .2s ease;
     }
 
     /* ── HEADER ─────────────────────────────────────────── */
@@ -132,14 +187,14 @@
     /* ── MODALS ───────────────────────────────────────────── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: rgba(0,0,0,.45); z-index: 1000;
+      background: var(--overlay); z-index: 1000;
       backdrop-filter: blur(2px);
     }
     .modal-overlay.open { display: block; }
     .threshold-modal {
       display: none; position: fixed; z-index: 1001;
       top: 50%; left: 50%; transform: translate(-50%,-50%);
-      background: #fff; border-radius: 16px;
+      background: var(--card); border-radius: 16px;
       width: min(390px, 93vw);
       box-shadow: 0 20px 60px rgba(0,0,0,.22);
       font-family: 'Heebo', sans-serif;
@@ -147,55 +202,81 @@
     .threshold-modal.open { display: block; }
     .tmodal-header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 18px 20px 14px; border-bottom: 1px solid #F3F4F6;
-      font-size: 15px; font-weight: 700; color: #1F2937;
+      padding: 18px 20px 14px; border-bottom: 1px solid var(--border);
+      font-size: 15px; font-weight: 700; color: var(--text);
     }
     .tmodal-close {
       background: none; border: none; cursor: pointer;
-      font-size: 18px; color: #9CA3AF; padding: 0 4px; line-height: 1;
+      font-size: 18px; color: var(--text-secondary); padding: 0 4px; line-height: 1;
     }
-    .tmodal-close:hover { color: #374151; }
+    .tmodal-close:hover { color: var(--text); }
     .tmodal-body { padding: 12px 20px; display: flex; flex-direction: column; gap: 5px; }
-    .tmodal-body label { font-size: 12px; font-weight: 600; color: #374151; margin-top: 8px; }
+    .tmodal-body label { font-size: 12px; font-weight: 600; color: var(--text); margin-top: 8px; }
     .tmodal-body label em { font-weight: 700; font-style: normal; color: var(--primary); }
     .tmodal-body input[type="number"],
     .tmodal-body input[type="email"],
     .tmodal-body input[type="text"] {
-      border: 1.5px solid #E5E7EB; border-radius: 8px;
+      background: var(--input-bg); color: var(--text);
+      border: 1.5px solid var(--border); border-radius: 8px;
       padding: 8px 12px; font-size: 14px; font-family: 'Heebo', sans-serif;
       outline: none; transition: border-color .15s; width: 100%; box-sizing: border-box;
     }
     .tmodal-body input:focus { border-color: var(--primary); }
     .toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer;
-      font-size: 14px; font-weight: 500; color: #374151; margin-top: 6px; }
+      font-size: 14px; font-weight: 500; color: var(--text); margin-top: 6px; }
     .tmodal-footer {
       padding: 12px 20px 16px; display: flex; gap: 8px; justify-content: flex-end;
-      border-top: 1px solid #F3F4F6;
+      border-top: 1px solid var(--border);
     }
     .btn-save { background: var(--primary); color: #fff; border: none; padding: 8px 18px;
       border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif;
       font-weight: 600; font-size: 13px; }
     .btn-save:hover { background: var(--primary-light); }
-    .btn-clear { background: #F3F4F6; color: #374151; border: none; padding: 8px 14px;
+    .btn-clear { background: var(--muted-surface); color: var(--text); border: none; padding: 8px 14px;
       border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 13px; }
-    .btn-clear:hover { background: #E5E7EB; }
+    .btn-clear:hover { background: var(--border); }
     .btn-test { background: var(--secondary); color: #fff; border: none; padding: 8px 14px;
       border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 13px; }
-    .emailjs-help { font-size: 12px; color: #6B7280; line-height: 1.6; margin: 0; }
+    .emailjs-help { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
     .emailjs-help a { color: var(--primary); }
-    .emailjs-help code { background: #F3F4F6; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+    .emailjs-help code { background: var(--muted-surface); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
     /* ── ALERTS BUTTON IN HEADER ──────────────────────────── */
     .alert-config-btn {
       min-height: 32px; display: inline-flex; align-items: center; justify-content: center;
-      background: rgba(255,255,255,.96); border: 1px solid rgba(255,255,255,.82);
-      color: #5B21B6; padding: 5px 13px; border-radius: 20px;
+      background: var(--header-control-bg); border: 1px solid var(--header-control-border);
+      color: var(--header-control-text); padding: 5px 13px; border-radius: 20px;
       cursor: pointer; font-size: 12px; font-weight: 700;
       font-family: 'Heebo',sans-serif; transition: all .2s;
       box-shadow: 0 1px 4px rgba(49,20,89,.18);
     }
-    .alert-config-btn:hover { background: #fff; color: #3B0764; transform: translateY(-1px); }
+    .alert-config-btn:hover { background: var(--header-control-hover-bg); color: var(--header-control-hover-text); transform: translateY(-1px); }
     .alert-config-btn:focus-visible { outline: 3px solid rgba(255,255,255,.55); outline-offset: 2px; }
     .service-link { display: inline-flex; align-items: center; text-decoration: none; white-space: nowrap; }
+    .theme-switch {
+      min-height: 32px; display: inline-flex; align-items: center; gap: 7px;
+      padding: 5px 10px; border-radius: 20px; cursor: pointer; user-select: none;
+      background: var(--header-control-bg); border: 1px solid var(--header-control-border);
+      color: var(--header-control-text); box-shadow: 0 1px 4px rgba(49,20,89,.18);
+      font-size: 12px; font-weight: 800; transition: background .18s, color .18s, transform .18s;
+    }
+    .theme-switch:hover { background: var(--header-control-hover-bg); color: var(--header-control-hover-text); transform: translateY(-1px); }
+    .theme-switch:focus-within { outline: 3px solid rgba(255,255,255,.55); outline-offset: 2px; }
+    .theme-switch input { position: absolute; opacity: 0; pointer-events: none; }
+    .theme-switch-track, .theme-switch-thumb, .theme-switch-label { pointer-events: none; }
+    .theme-switch-track {
+      position: relative; width: 38px; height: 20px; border-radius: 999px;
+      background: rgba(15,23,42,.22); border: 1px solid rgba(15,23,42,.14);
+      transition: background .18s, border-color .18s;
+    }
+    .theme-switch-thumb {
+      position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%;
+      background: #FFFFFF; box-shadow: 0 1px 4px rgba(0,0,0,.28);
+      transition: transform .18s, background .18s;
+    }
+    .theme-switch input:checked + .theme-switch-track { background: #0F172A; border-color: rgba(255,255,255,.28); }
+    .theme-switch input:checked + .theme-switch-track .theme-switch-thumb { transform: translateX(-18px); background: #F8FAFC; }
+    .theme-switch-label { min-width: 30px; text-align: center; }
+    html[data-theme-mode="dark"] .theme-switch-track { background: #0F172A; border-color: rgba(255,255,255,.3); }
     .kpi-card.red    { border-top-color: var(--danger); }
     .kpi-icon { font-size: 22px; margin-bottom: 6px; }
     .kpi-value { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
@@ -231,6 +312,7 @@
     /* ── TAB CONTENT ─────────────────────────────────────── */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+    .tab-btn[hidden], .tab-content[hidden], [data-dashboard-module][hidden] { display: none !important; }
 
     /* ── MAIN LAYOUT ─────────────────────────────────────── */
     .main { max-width: 1440px; margin: 0 auto; padding: 20px 24px; }
@@ -243,20 +325,36 @@
     .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
     /* ── GRIDS ───────────────────────────────────────────── */
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-    .grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-    .grid-2-1 { display: grid; grid-template-columns: 2fr 1fr; gap: 18px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .grid-5 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+    .grid-2-1 { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr); gap: 18px; }
+    .grid-2 > *, .grid-3 > *, .grid-4 > *, .grid-5 > *, .grid-2-1 > * { min-width: 0; }
+    .leads-layout {
+      display: grid; grid-template-columns: 160px minmax(0, 1fr);
+      gap: 18px; margin-bottom: 18px; align-items: start;
+    }
     @media (max-width: 1100px) {
       .grid-4 { grid-template-columns: repeat(2, 1fr); }
       .grid-5 { grid-template-columns: repeat(3, 1fr); }
     }
     @media (max-width: 900px) {
-      .grid-2, .grid-3, .grid-2-1 { grid-template-columns: 1fr; }
+      .grid-2, .grid-3, .grid-2-1, .leads-layout { grid-template-columns: minmax(0, 1fr); }
     }
     @media (max-width: 600px) {
       .grid-4, .grid-5 { grid-template-columns: 1fr 1fr; }
+      .header { padding: 18px 16px 16px; }
+      .header-brand { min-width: 0; }
+      .brand-title { font-size: 18px; }
+      .brand-sub { font-size: 11px; }
+      .header-meta { gap: 7px; }
+      .header-date, .badge-live, .refresh-btn { font-size: 11px; padding: 5px 9px; }
+      .kpi-grid, .tab-nav, .main { padding-left: 12px; padding-right: 12px; }
+      .tab-nav-inner { overflow-x: auto; scrollbar-width: thin; }
+      .tab-btn { flex: 0 0 auto; padding: 9px 12px; }
+      .card { padding: 14px; }
+      .footer { margin-left: 12px; margin-right: 12px; }
     }
 
     /* ── MINI KPI (in-tab) ──────────────────────────────────── */
@@ -273,6 +371,7 @@
     /* ── CARD ────────────────────────────────────────────── */
     .card {
       background: var(--card); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow);
+      min-width: 0;
     }
     .card-title {
       font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 14px;
@@ -368,6 +467,67 @@
     .ranking-score { font-size: 13px; font-weight: 700; color: var(--primary); }
     .ranking-score.danger { color: var(--danger); }
 
+    /* -- AI PERFORMANCE MODULE ----------------------------- */
+    .performance-hero {
+      display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
+      gap: 18px; margin-bottom: 18px; align-items: stretch;
+    }
+    .performance-score {
+      background: linear-gradient(135deg, #581C87 0%, #7C3AED 55%, #0F766E 100%);
+      color: #fff; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-hover);
+      display: flex; flex-direction: column; justify-content: space-between; min-height: 210px;
+    }
+    .performance-score-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+    .performance-score-title { font-size: 15px; font-weight: 800; opacity: .92; }
+    .performance-score-value { font-size: 64px; line-height: .9; font-weight: 900; letter-spacing: 0; }
+    .performance-score-label { font-size: 13px; opacity: .82; margin-top: 8px; }
+    .performance-score-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.2); overflow: hidden; margin-top: 18px; }
+    .performance-score-fill { height: 100%; width: 0%; border-radius: 999px; background: #4ADE80; transition: width .55s ease; }
+    .performance-score-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .performance-chip {
+      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
+      border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 700;
+    }
+    .performance-action-list, .performance-metric-list { display: flex; flex-direction: column; gap: 10px; }
+    .performance-action {
+      background: var(--bg); border-radius: 10px; padding: 12px 13px;
+      border-right: 4px solid var(--primary);
+    }
+    .performance-action.high { border-right-color: var(--danger); background: var(--danger-light); }
+    .performance-action.medium { border-right-color: var(--warning); background: var(--warning-light); }
+    .performance-action.good { border-right-color: var(--success); background: var(--success-light); }
+    .performance-action-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 5px; }
+    .performance-priority { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--card); color: var(--text-secondary); border: 1px solid var(--border); }
+    .performance-priority.high { color: var(--danger); }
+    .performance-priority.medium { color: var(--warning); }
+    .performance-priority.good { color: var(--success); }
+    .performance-action-metric { font-size: 11px; font-weight: 800; color: var(--text-secondary); white-space: nowrap; }
+    .performance-action-title { font-size: 13px; font-weight: 800; color: var(--text); }
+    .performance-action-body { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-top: 4px; }
+    .performance-action-next { font-size: 11px; font-weight: 800; color: var(--primary); margin-top: 7px; }
+    .performance-metric {
+      display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; align-items: center;
+      background: var(--bg); border-radius: 10px; padding: 11px 12px;
+    }
+    .performance-metric-val { font-size: 24px; font-weight: 900; color: var(--primary); line-height: 1; }
+    .performance-metric-label { font-size: 12px; font-weight: 800; color: var(--text); }
+    .performance-metric-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; }
+    .performance-ai-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+    .performance-ai-btn {
+      background: var(--primary); color: #fff; border: none; border-radius: 10px;
+      padding: 9px 14px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 800;
+    }
+    .performance-ai-btn:hover { background: var(--primary-light); }
+    .performance-ai-btn:disabled { opacity: .55; cursor: wait; }
+    .performance-ai-output {
+      min-height: 150px; background: var(--bg); border-radius: 10px; padding: 13px;
+      font-size: 13px; line-height: 1.65; white-space: pre-wrap; color: var(--text);
+    }
+    @media (max-width: 900px) {
+      .performance-hero { grid-template-columns: minmax(0, 1fr); }
+      .performance-score-value { font-size: 52px; }
+    }
+
     /* ── ONE-TIME BUYERS ─────────────────────────────────── */
     .onetime-list { display: flex; flex-direction: column; gap: 8px; }
     .onetime-item {
@@ -445,7 +605,7 @@
     .filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-btn {
       padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border);
-      background: white; font-family: inherit; font-size: 12px; font-weight: 600;
+      background: var(--card); font-family: inherit; font-size: 12px; font-weight: 600;
       cursor: pointer; color: var(--text-secondary); transition: all 0.15s;
     }
     .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
@@ -458,8 +618,9 @@
     .show-more-btn:hover { background: var(--primary-lighter); color: var(--primary); border-color: var(--primary); }
 
     /* ── CHARTS ──────────────────────────────────────────── */
-    .chart-wrap  { position: relative; height: 210px; }
-    .donut-wrap  { position: relative; height: 215px; }
+    .chart-wrap  { position: relative; height: 210px; min-width: 0; }
+    .donut-wrap  { position: relative; height: 215px; min-width: 0; }
+    .chart-wrap canvas, .donut-wrap canvas { max-width: 100%; }
     .donut-center {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
       text-align: center; pointer-events: none;
@@ -511,6 +672,7 @@
       display: flex; align-items: center; justify-content: center;
       transition: transform 0.2s;
     }
+    .ai-chat-fab[hidden] { display: none !important; }
     .ai-chat-fab:hover { transform: scale(1.06); }
     .ai-chat-fab .ai-chat-fab-dot {
       position: absolute; top: 4px; left: 4px; width: 10px; height: 10px;
@@ -558,7 +720,7 @@
     .ai-chat-input {
       flex: 1; resize: none; border: 1.5px solid var(--border); border-radius: 10px;
       padding: 9px 12px; font-family: 'Heebo', sans-serif; font-size: 13px; outline: none;
-      max-height: 80px; direction: rtl;
+      max-height: 80px; direction: rtl; background: var(--input-bg); color: var(--text);
     }
     .ai-chat-input:focus { border-color: var(--primary); }
     .ai-chat-send {
@@ -567,6 +729,29 @@
     }
     .ai-chat-send:hover { background: var(--primary-light); }
     .ai-chat-send:disabled { opacity: 0.5; cursor: wait; }
+    .ai-chat-master {
+      position: fixed; bottom: 4px; left: 22px; z-index: 901;
+      display: inline-flex; align-items: center; gap: 5px; padding: 2px 6px;
+      border: 1px solid var(--border); border-radius: 12px;
+      background: var(--card); color: var(--text-secondary);
+      font-size: 9px; font-weight: 700; line-height: 1;
+      opacity: .38; transition: opacity .18s, background .18s;
+      cursor: pointer; user-select: none; box-shadow: 0 1px 3px rgba(30,20,55,.08);
+    }
+    .ai-chat-master:hover, .ai-chat-master:focus-within { opacity: .9; background: var(--card); }
+    .ai-chat-master input { position: absolute; opacity: 0; pointer-events: none; }
+    .ai-chat-switch {
+      position: relative; width: 24px; height: 13px; border-radius: 8px;
+      background: #CBD5E1; transition: background .18s;
+    }
+    .ai-chat-switch::after {
+      content: ''; position: absolute; top: 2px; right: 2px;
+      width: 9px; height: 9px; border-radius: 50%; background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform .18s;
+    }
+    .ai-chat-master input:checked + .ai-chat-switch { background: var(--primary); }
+    .ai-chat-master input:checked + .ai-chat-switch::after { transform: translateX(-11px); }
+    .ai-chat-master input:focus-visible + .ai-chat-switch { outline: 2px solid var(--primary); outline-offset: 2px; }
   </style>
 </head>
 <body>
@@ -585,8 +770,12 @@
       <div class="header-date" id="currentDate"></div>
       <div class="badge-live" id="crmBadge"><span class="pulse"></span> מתחבר ל-ScallaCRM...</div>
       <div class="badge-live" id="arboxBadge">⟳ בודק Arbox...</div>
+      <label class="theme-switch" title="החלפת מצב תצוגה">
+        <input id="themeModeToggle" type="checkbox" aria-label="החלפת מצב כהה ובהיר">
+        <span class="theme-switch-track" aria-hidden="true"><span class="theme-switch-thumb"></span></span>
+        <span class="theme-switch-label" id="themeSwitchLabel">כהה</span>
+      </label>
       <a class="alert-config-btn service-link" href="DashBoard_CR_Form.html">בקשת שירות</a>
-      <button class="alert-config-btn" onclick="openEmailJSModal()">🔔 התראות</button>
       <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()">🔄 רענן נתונים</button>
     </div>
   </div>
@@ -594,47 +783,47 @@
 
 <!-- ── KPI GRID ────────────────────────────────────────────── -->
 <div class="kpi-grid">
-  <div class="kpi-card purple" data-href="https://manage.arboxapp.com/reports-v5/all-clients-report" data-label="כל הלידים ב-Arbox">
+  <div class="kpi-card purple" data-dashboard-module="leads" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&parent=&page=1&view=List&viewname=1&orderby=&sortorder=&app=MARKETING&search_params=%5B%5D&tag_params=%5B%5D&nolistcache=0&list_headers=%5B%22assigned_user_id%22%2C%22createdtime%22%2C%22leadstatus%22%2C%22firstname%22%2C%22lastname%22%2C%22mobile%22%2C%22cf_2715%22%2C%22leadsource%22%2C%22facebook_form_name%22%2C%22cf_2719%22%2C%22cf_1267%22%5D&tag=" data-label="סה&quot;כ לידים ב-ScallaCRM">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">📋</div>
     <div class="kpi-value purple" id="kpiTotalLeads">—</div>
     <div class="kpi-label">סה"כ לידים</div>
     <div class="kpi-sub" id="kpiTotalLeadsSub">ScallaCRM</div>
   </div>
-  <div class="kpi-card teal" data-href="https://manage.arboxapp.com/reports-v5/leads-in-process-report" data-label="לידים חדשים ובטיפול ב-Arbox">
+  <div class="kpi-card teal" data-dashboard-module="leads" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%99%D7%93+%D7%91%D7%98%D7%99%D7%A4%D7%95%D7%9C" data-label="לידים בטיפול ב-ScallaCRM">
     <span class="kpi-link-icon">↗</span>
-    <div class="kpi-icon">🆕</div>
+    <div class="kpi-icon">⏳</div>
     <div class="kpi-value teal" id="kpiNewLeads">—</div>
-    <div class="kpi-label">לידים חדשים</div>
-    <div class="kpi-sub">ממתינים לטיפול</div>
+    <div class="kpi-label">לידים בטיפול</div>
+    <div class="kpi-sub">סטטוס ליד בטיפול</div>
   </div>
-  <div class="kpi-card green" data-href="https://manage.arboxapp.com/reports-v5/active-members-report" data-label="מנויי Full House ב-Arbox">
+  <div class="kpi-card green" data-dashboard-module="studio" data-href="https://manage.arboxapp.com/reports-v5/active-members-report" data-label="מנויי Full House ב-Arbox">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">🏡</div>
     <div class="kpi-value green" id="kpiFH">—</div>
     <div class="kpi-label">Full House</div>
     <div class="kpi-sub">מנויים פעילים</div>
   </div>
-  <div class="kpi-card pink" data-href="https://manage.arboxapp.com/" data-label="מנויי In House ב-Arbox">
+  <div class="kpi-card pink" data-dashboard-module="studio" data-href="https://manage.arboxapp.com/" data-label="מנויי In House ב-Arbox">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">🏠</div>
     <div class="kpi-value pink" id="kpiIH">—</div>
     <div class="kpi-label">In House</div>
     <div class="kpi-sub">מנויים פעילים</div>
   </div>
-  <div class="kpi-card purple" data-href="https://manage.arboxapp.com/reports-v5/sessions-report" data-label="כרטיסיות פעילות ב-Arbox">
+  <div class="kpi-card purple" data-dashboard-module="studio" data-href="https://manage.arboxapp.com/reports-v5/sessions-report" data-label="כרטיסיות פעילות ב-Arbox">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">🎫</div>
     <div class="kpi-value purple" id="kpiKR">—</div>
-    <div class="kpi-label">כרטיסיות</div>
+    <div class="kpi-label">כרטיסיות פעילות</div>
     <div class="kpi-sub">פעילות</div>
   </div>
-  <div class="kpi-card orange" data-href="https://manage.arboxapp.com/reports-v5/expiring-sessions-report" data-label="מנויים פגים ב-Arbox">
+  <div class="kpi-card orange" data-dashboard-module="studio" data-report-key="expiring-sessions-week" data-href="https://manage.arboxapp.com/reports-v5/expiring-sessions-report" data-label="כרטיסיות פגות השבוע ב-Arbox">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">⚠️</div>
     <div class="kpi-value orange" id="kpiExp">—</div>
-    <div class="kpi-label">פגים השבוע</div>
-    <div class="kpi-sub">דורשים חידוש</div>
+    <div class="kpi-label">כרטיסיות פגות השבוע</div>
+    <div class="kpi-sub">השבוע הקרוב</div>
   </div>
 </div>
 
@@ -649,6 +838,9 @@
     </button>
     <button class="tab-btn" id="tab-btn-marketing" onclick="switchTab('marketing')">
       📈 שיווק
+    </button>
+    <button class="tab-btn" id="tab-btn-performance" onclick="switchTab('performance')">
+      🤖 AI ביצועים <span class="tab-badge warn" id="badge-performance">—</span>
     </button>
   </div>
 </div>
@@ -666,32 +858,32 @@
   <!-- Leads Funnel KPIs -->
   <div class="section-title">🎯 מדדי לידים - החודש הנוכחי</div>
   <div class="grid-4" style="margin-bottom:14px;">
-    <div class="kpi-card mini-kpi purple" data-href="https://manage.arboxapp.com/reports-v5/all-clients-report" data-label="כל הלידים ב-Arbox">
+    <div class="kpi-card mini-kpi purple" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&parent=&page=1&view=List&viewname=1&orderby=&sortorder=&app=MARKETING&search_params=%5B%5D&tag_params=%5B%5D&nolistcache=0&list_headers=%5B%22assigned_user_id%22%2C%22createdtime%22%2C%22leadstatus%22%2C%22firstname%22%2C%22lastname%22%2C%22mobile%22%2C%22cf_2715%22%2C%22leadsource%22%2C%22facebook_form_name%22%2C%22cf_2719%22%2C%22cf_1267%22%5D&tag=" data-label="סה&quot;כ לידים ב-ScallaCRM">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">📋</div>
       <div class="kpi-value purple" id="kpiAllLeadsPeriod">—</div>
-      <div class="kpi-label">כל הלידים</div>
+      <div class="kpi-label">סה"כ לידים</div>
       <div class="kpi-sub" id="kpiAllLeadsPeriodSub">סה"כ לידים החודש</div>
     </div>
-    <div class="kpi-card mini-kpi teal" data-href="https://manage.arboxapp.com/reports-v5/leads-in-process-report" data-label="לידים בטיפול ב-Arbox">
+    <div class="kpi-card mini-kpi teal" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%99%D7%93+%D7%91%D7%98%D7%99%D7%A4%D7%95%D7%9C" data-label="לידים בטיפול ב-ScallaCRM">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">⏳</div>
       <div class="kpi-value teal" id="kpiInProgress">—</div>
       <div class="kpi-label">לידים בטיפול</div>
-      <div class="kpi-sub">לידים בטיפול פעיל</div>
+      <div class="kpi-sub">סטטוס ליד בטיפול</div>
     </div>
-    <div class="kpi-card mini-kpi green" data-href="https://manage.arboxapp.com/reports-v5/trial-classes-report?date=2026-06-01%2C2026-07-31" data-label="רכשו שיעור ניסיון ב-Arbox">
+    <div class="kpi-card mini-kpi green" data-report-key="trial-classes-month" data-href="https://manage.arboxapp.com/reports-v5/trial-classes-report?date=2026-07-01%2C2026-07-31" data-label="שיעורי ניסיון שנסגרו ב-Arbox">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">✅</div>
       <div class="kpi-value green" id="kpiTrialClosed">—</div>
       <div class="kpi-label">שיעורי ניסיון שנסגרו</div>
       <div class="kpi-sub">נסגרו לשיעור ניסיון</div>
     </div>
-    <div class="kpi-card mini-kpi red" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%90+%D7%A8%D7%9C%D7%95%D7%95%D7%A0%D7%98%D7%99" data-label="לידים לא רלוונטיים ב-ScallaCRM">
+    <div class="kpi-card mini-kpi red" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%90+%D7%A8%D7%9C%D7%95%D7%95%D7%A0%D7%98%D7%99" data-label="לידים לא רלוונטים ב-ScallaCRM">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">❌</div>
       <div class="kpi-value red" id="kpiLostLeads">—</div>
-      <div class="kpi-label">לידים אבודים</div>
+      <div class="kpi-label">לידים לא רלוונטים</div>
       <div class="kpi-sub" id="kpiLostLeadsSub">סיבה מובילה: —</div>
     </div>
   </div>
@@ -700,7 +892,7 @@
   <div class="card" style="margin-bottom:18px;">
     <div class="card-title">
       <span>🏆 סגירות שיעור ניסיון לפי איש/אשת מכירות</span>
-      <span class="card-subtitle">מבוסס שדה "מוקצה אל" ב-ScallaCRM | החודש</span>
+      <span class="card-subtitle">מבוסס שדה "מוקצה אל" ב-ScallaCRM | החודש <a href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&parent=&page=1&view=List&viewname=1&orderby=&sortorder=&app=MARKETING&search_params=%5B%5D&tag_params=%5B%5D&nolistcache=0&list_headers=%5B%22assigned_user_id%22%2C%22createdtime%22%2C%22leadstatus%22%2C%22firstname%22%2C%22lastname%22%2C%22mobile%22%2C%22cf_2715%22%2C%22leadsource%22%2C%22facebook_form_name%22%2C%22cf_2719%22%2C%22cf_1267%22%5D&tag=" target="_blank" rel="noopener" style="margin-right:6px;">↗ Scalla</a></span>
     </div>
     <div class="ranking-list" id="ownerCloseList"></div>
   </div>
@@ -736,7 +928,7 @@
   </div>
 
   <!-- Conversion Time + Leads Table -->
-  <div style="display:grid; grid-template-columns:160px 1fr; gap:18px; margin-bottom:18px; align-items:start;">
+  <div class="leads-layout">
     <div class="conv-card">
       <div class="conv-val">~14</div>
       <div class="conv-unit">ימים</div>
@@ -819,19 +1011,19 @@
       <div class="kpi-label">כרטיסיות שנמכרו</div>
       <div class="kpi-sub">נמכרו ב-90 יום | <span id="kpiPacksActiveSub">— פעילות</span></div>
     </div>
-    <div class="kpi-card mini-kpi orange" data-href="https://manage.arboxapp.com/reports-v5/inactive-members-report" data-label="מנויים לא פעילים ב-Arbox">
+    <div class="kpi-card mini-kpi orange" data-href="https://manage.arboxapp.com/reports-v5/expired-memberships-report" data-label="מנויים לא פעילים ב-Arbox">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">💤</div>
       <div class="kpi-value orange" id="kpiInactive">—</div>
       <div class="kpi-label">מנויים לא פעילים</div>
       <div class="kpi-sub" id="kpiInactiveSub">ללא מנוי פעיל</div>
     </div>
-    <div class="kpi-card mini-kpi red" data-href="https://manage.arboxapp.com/reports-v5/expiring-memberships-report?end=2026-05-01%2C2026-07-31" data-label="מנויים שפג תוקפם ב-Arbox">
+    <div class="kpi-card mini-kpi red" data-report-key="expiring-memberships-month" data-href="https://manage.arboxapp.com/reports-v5/expiring-memberships-report" data-label="מנויים שפג תוקפם ב-Arbox">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">⏱</div>
       <div class="kpi-value red" id="kpiExpiredPlans">—</div>
       <div class="kpi-label">מנויים שפג תוקפם</div>
-      <div class="kpi-sub" id="kpiExpiredPlansSub">פג תוקף | 30 יום</div>
+      <div class="kpi-sub" id="kpiExpiredPlansSub">פגים החודש</div>
     </div>
     <div class="kpi-card mini-kpi green" data-href="https://manage.arboxapp.com/reports-v5/renewals-report" data-label="חידושי מנוי ב-Arbox">
       <span class="kpi-link-icon">↗</span>
@@ -859,7 +1051,7 @@
   <div class="grid-2" style="margin-bottom:18px;">
     <div class="card">
       <div class="card-title">
-        <span>⚠️ מנויים פגים השבוע</span>
+        <span>⚠️ מנויים - פגים ב-30 ימים הקרובים</span>
         <span style="font-size:11px; background:var(--warning-light); color:var(--warning); padding:2px 9px; border-radius:10px; font-weight:700;" id="expiryCount">טוען...</span>
       </div>
       <div class="expiry-list" id="expiryList"></div>
@@ -885,15 +1077,15 @@
   <!-- Courses & engagement -->
   <div class="section-title">🎓 סדנאות ומעורבות</div>
   <div class="grid-3" style="margin-bottom:18px; align-items:start;">
-    <div class="conv-card" data-href="https://manage.arboxapp.com/reports-v5/active-hugim-report" data-label="סדנאות פעילות ב-Arbox" style="grid-column:span 1;">
+    <div class="conv-card" data-href="https://manage.arboxapp.com/reports-v5/hugim-bookings-report" data-label="הרשמות לחוגים ב-Arbox" style="grid-column:span 1;">
       <div class="conv-val" id="kpiActiveCourses">—</div>
-      <div class="conv-unit">סדנאות</div>
-      <div class="conv-label">סדנאות פעילות<br>ב-30 הימים הקרובים</div>
+      <div class="conv-unit">חוגים</div>
+      <div class="conv-label">חוגים פעילים<br>לפי דוח Arbox</div>
     </div>
     <div class="card">
       <div class="card-title">
-        <span>📚 הרשמות לסדנאות לפי סדנה</span>
-        <span class="card-subtitle">הרשמות לסדנאות | 30 יום <a href="https://manage.arboxapp.com/reports-v5/hugim-bookings-report" target="_blank" rel="noopener" style="margin-right:6px;">↗ Arbox</a></span>
+        <span>📚 הרשמות לחוגים לפי חוג</span>
+        <span class="card-subtitle">הרשמות לחוגים | 30 יום <a href="https://manage.arboxapp.com/reports-v5/hugim-bookings-report" target="_blank" rel="noopener" style="margin-right:6px;">↗ Arbox</a></span>
       </div>
       <div class="ranking-list" id="courseBookingList"></div>
     </div>
@@ -1010,6 +1202,75 @@
 </main>
 </div>
 
+<!-- ══════════════════════════════════════════════════════════ -->
+<!--  TAB 4 - AI PERFORMANCE                                  -->
+<!-- ══════════════════════════════════════════════════════════ -->
+<div id="tab-performance" class="tab-content">
+<main class="main">
+
+  <div class="info-note purple" id="performanceInfoNote">
+    ⟳ מנתח נתוני לקוחות מ-Scalla ו-Arbox...
+  </div>
+
+  <div class="performance-hero">
+    <div class="performance-score">
+      <div class="performance-score-top">
+        <div>
+          <div class="performance-score-title">מדד בריאות עסקית</div>
+          <div class="performance-score-label" id="performanceScoreLabel">ממתין לנתוני לקוחות חיים</div>
+        </div>
+        <div class="performance-score-value" id="performanceScoreValue">—</div>
+      </div>
+      <div>
+        <div class="performance-score-bar"><div class="performance-score-fill" id="performanceScoreFill"></div></div>
+        <div class="performance-score-meta" id="performanceScoreMeta">
+          <span class="performance-chip">Scalla: טוען</span>
+          <span class="performance-chip">Arbox: טוען</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>📌 נתונים שחולצו</span>
+        <span class="card-subtitle" id="performanceSnapshotDate">טוען...</span>
+      </div>
+      <div class="performance-metric-list" id="performanceMetricList"></div>
+    </div>
+  </div>
+
+  <div class="grid-2" style="margin-bottom:18px; align-items:start;">
+    <div class="card">
+      <div class="card-title">
+        <span>🎯 פעולות לשיפור ביצועים</span>
+        <span class="card-subtitle">מתועדף לפי השפעה וסיכון</span>
+      </div>
+      <div class="performance-action-list" id="performanceActionList"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">
+        <span>👥 לקוחות לטיפול</span>
+        <span class="card-subtitle">רשימות עבודה מתוך Arbox + Scalla</span>
+      </div>
+      <div class="performance-action-list" id="performanceCustomerList"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">
+      <span>🤖 ניתוח AI עמוק</span>
+      <span class="card-subtitle">משתמש בסוכן הקיים עם גישה חיה ל-Scalla ו-Arbox</span>
+    </div>
+    <div class="performance-ai-row">
+      <button class="performance-ai-btn" id="performanceAiBtn" type="button" onclick="requestPerformanceAiAnalysis()">נתח והמלץ</button>
+      <span class="card-subtitle" id="performanceAiSub">הניתוח המקומי למעלה זמין מיד; הכפתור מפעיל מודל AI server-side.</span>
+    </div>
+    <div class="performance-ai-output" id="performanceAiOutput">בחר/י "נתח והמלץ" כדי לקבל המלצות ניהוליות בעברית על בסיס הנתונים החיים.</div>
+  </div>
+
+</main>
+</div>
 <!-- ── FOOTER ──────────────────────────────────────────────── -->
 <footer class="footer">
   <p>הבית של גיליגולי | דשבורד ניהולי v3.0 | Scalla API v2.0</p>
@@ -1098,6 +1359,140 @@ const META = {
   ENDPOINT: '/.netlify/functions/meta',
 };
 
+const CONTROL_SETTINGS_KEY = 'smart_dashboard_control_settings';
+const THEME_MODE_KEY = 'smart_dashboard_theme';
+const CONTROL_MODULES = ['leads', 'studio', 'marketing', 'performance'];
+const CONTROL_DEFAULTS = {
+  modules: { leads: true, studio: true, marketing: true, performance: true },
+  chatAgent: true,
+  alerts: { enabled: true, recipient: 'arye.glikman@gmail.com', cooldownHours: 24, thresholds: {} },
+  refreshMinutes: { scalla: 15, arbox: 30, meta: 60 },
+};
+
+function readJsonStorage(key, fallback = null) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function readRawControlSettings() {
+  return readJsonStorage(CONTROL_SETTINGS_KEY, null);
+}
+
+function getControlSettings() {
+  const raw = readRawControlSettings() || {};
+  return {
+    modules: { ...CONTROL_DEFAULTS.modules, ...(raw.modules || {}) },
+    chatAgent: typeof raw.chatAgent === 'boolean' ? raw.chatAgent : CONTROL_DEFAULTS.chatAgent,
+    alerts: { ...CONTROL_DEFAULTS.alerts, ...(raw.alerts || {}) },
+    refreshMinutes: { ...CONTROL_DEFAULTS.refreshMinutes, ...(raw.refreshMinutes || {}) },
+  };
+}
+
+function isModuleEnabled(name) {
+  const modules = getControlSettings().modules;
+  const hasEnabledModule = CONTROL_MODULES.some(moduleName => modules[moduleName] !== false);
+  if (!hasEnabledModule) return name === 'leads';
+  return modules[name] !== false;
+}
+
+function getSavedThemeMode() {
+  try {
+    return localStorage.getItem(THEME_MODE_KEY) === 'dark' ? 'dark' : 'light';
+  } catch {
+    return 'light';
+  }
+}
+
+function themeVar(name, fallback = '') {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
+}
+
+function chartThemeColors() {
+  return {
+    text: themeVar('--text-secondary', '#6B7280'),
+    grid: themeVar('--border', '#E5E7EB'),
+    card: themeVar('--card', '#FFFFFF'),
+  };
+}
+
+function setChartThemeDefaults() {
+  if (typeof Chart === 'undefined') return;
+  const colors = chartThemeColors();
+  Chart.defaults.color = colors.text;
+  Chart.defaults.borderColor = colors.grid;
+}
+
+function refreshChartsForTheme() {
+  if (typeof Chart === 'undefined') return;
+  if (Array.isArray(leadsData) && leadsData.length) renderCharts();
+  if (isModuleEnabled('marketing')) renderMarketingTab();
+}
+
+function applyThemeMode(mode, options = {}) {
+  const { persist = true, rerender = true } = options;
+  const normalized = mode === 'dark' ? 'dark' : 'light';
+  document.documentElement.dataset.themeMode = normalized;
+  const isDark = normalized === 'dark';
+  const toggle = document.getElementById('themeModeToggle');
+  const label = document.getElementById('themeSwitchLabel');
+  if (toggle) {
+    toggle.checked = isDark;
+    toggle.setAttribute('aria-checked', String(isDark));
+  }
+  if (label) label.textContent = isDark ? 'בהיר' : 'כהה';
+  if (persist) {
+    try { localStorage.setItem(THEME_MODE_KEY, normalized); } catch {}
+  }
+  setChartThemeDefaults();
+  if (rerender) refreshChartsForTheme();
+}
+
+function initThemeMode() {
+  applyThemeMode(getSavedThemeMode(), { persist: false, rerender: false });
+  const toggle = document.getElementById('themeModeToggle');
+  if (toggle) {
+    toggle.addEventListener('change', event => {
+      applyThemeMode(event.target.checked ? 'dark' : 'light');
+    });
+  }
+}
+
+function firstEnabledModule() {
+  return CONTROL_MODULES.find(isModuleEnabled) || 'leads';
+}
+
+function applyModuleVisibility() {
+  CONTROL_MODULES.forEach(name => {
+    const enabled = isModuleEnabled(name);
+    const btn = document.getElementById('tab-btn-' + name);
+    const content = document.getElementById('tab-' + name);
+    if (btn) btn.hidden = !enabled;
+    if (content) content.hidden = !enabled;
+    document.querySelectorAll(`[data-dashboard-module="${name}"]`).forEach(el => { el.hidden = !enabled; });
+  });
+
+  const active = document.querySelector('.tab-content.active');
+  const activeName = active ? active.id.replace('tab-', '') : '';
+  if (!active || !isModuleEnabled(activeName)) switchTab(firstEnabledModule());
+}
+
+function sourceIsNeeded(source) {
+  if (source === 'scalla') return isModuleEnabled('leads') || isModuleEnabled('marketing') || isModuleEnabled('performance');
+  if (source === 'arbox') return isModuleEnabled('studio') || isModuleEnabled('performance');
+  if (source === 'meta') return isModuleEnabled('marketing');
+  return true;
+}
+
+function refreshIntervalMs(source) {
+  const minutes = Number(getControlSettings().refreshMinutes[source]);
+  if (!Number.isFinite(minutes) || minutes <= 0) return 0;
+  return Math.max(1, minutes) * 60 * 1000;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
@@ -1108,8 +1503,13 @@ let statusData = [];
 let sourceData = [];
 let statusDonutChart = null;
 let sourceBarChart = null;
+let weeklyChart = null;
+let socialChart = null;
 let activeFilter = 'הכל';
 let showAll = false;
+let studioSnapshot = null;
+let performanceAiBusy = false;
+let dataRefreshTimers = [];
 
 // ═══════════════════════════════════════════════════════════════
 // DATE & TABS
@@ -1118,10 +1518,13 @@ document.getElementById('currentDate').textContent =
   new Date().toLocaleDateString('he-IL', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
 function switchTab(name) {
+  if (!isModuleEnabled(name)) name = firstEnabledModule();
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  document.getElementById('tab-' + name).classList.add('active');
-  document.getElementById('tab-btn-' + name).classList.add('active');
+  const tab = document.getElementById('tab-' + name);
+  const btn = document.getElementById('tab-btn-' + name);
+  if (tab) tab.classList.add('active');
+  if (btn) btn.classList.add('active');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1152,16 +1555,46 @@ async function scallaLogin() {
   return scallaSession;
 }
 
+const SCALLA_LEADS_QUERY =
+  'select firstname, lastname, mobile, email, createdtime, modifiedtime, leadstatus, leadsource, facebook_form_name, cf_2719, cf_2715, cf_1267, assigned_user_id from Leads;';
+const SCALLA_MAX_QUERY_PAGES = 40;
+const SCALLA_QUERY_PAGE_DELAY_MS = 250;
+
+function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 async function scallaFetchLeads() {
   if (!scallaSession) await scallaLogin();
-  const data = await scallaPost({
-    _operation: 'Listrecordsbymodule',
-    _session: scallaSession,
-    module: 'Leads',
-    tenant_id: SCALLA.TENANT,
-  });
-  if (!data.result) throw new Error('No result in response');
-  return data.result;
+  const records = [];
+  let nextPage = null;
+  let pagesFetched = 0;
+
+  do {
+    const params = {
+      _operation: 'query',
+      _session: scallaSession,
+      tenant_id: SCALLA.TENANT,
+      query: SCALLA_LEADS_QUERY,
+    };
+    if (nextPage !== null) params.page = String(nextPage);
+
+    const data = await scallaPost(params);
+    if (!data.result) throw new Error('No result in query response');
+
+    records.push(...(data.result.records || []));
+    pagesFetched++;
+
+    const rawNextPage = data.result.nextPage;
+    const parsedNextPage = Number(rawNextPage);
+    if (!rawNextPage || parsedNextPage === 0 || !Number.isFinite(parsedNextPage)) break;
+    if (pagesFetched >= SCALLA_MAX_QUERY_PAGES) throw new Error('Scalla query pagination exceeded max pages');
+
+    nextPage = parsedNextPage;
+    await delay(SCALLA_QUERY_PAGE_DELAY_MS);
+  } while (true);
+
+  return { records };
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1190,6 +1623,53 @@ function getStatusInfo(label) {
   return STATUS_MAP[label] || DEFAULT_STATUS;
 }
 
+function fieldText(value) {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') return String(value).trim();
+  if (Array.isArray(value)) return value.map(fieldText).filter(Boolean).join(', ');
+  if (typeof value === 'object') {
+    return fieldText(value.label || value.name || value.value || value.display_value || value.text || value.id || '');
+  }
+  return '';
+}
+
+function pad2(value) {
+  return String(value).padStart(2, '0');
+}
+
+function parseScallaDate(value) {
+  const text = fieldText(value);
+  if (!text) return null;
+
+  const iso = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+  if (iso) {
+    return new Date(
+      Number(iso[1]),
+      Number(iso[2]) - 1,
+      Number(iso[3]),
+      Number(iso[4] || 0),
+      Number(iso[5] || 0),
+      Number(iso[6] || 0),
+    );
+  }
+
+  const dmy = text.match(/^(\d{1,2})[\/.\-](\d{1,2})[\/.\-](\d{4})/);
+  if (dmy) return new Date(Number(dmy[3]), Number(dmy[2]) - 1, Number(dmy[1]));
+
+  const parsed = new Date(text);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function formatScallaDate(date) {
+  if (!date) return '';
+  return `${pad2(date.getDate())}/${pad2(date.getMonth() + 1)}/${date.getFullYear()}`;
+}
+
+function scallaMonthKey(date) {
+  if (!date) return '';
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}`;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // PARSE API RESPONSE INTO DASHBOARD DATA
 // ═══════════════════════════════════════════════════════════════
@@ -1203,28 +1683,23 @@ function parseScallaLeads(records) {
 
   recordList.forEach(rec => {
     // Extract fields - try multiple possible field names
-    const firstName = rec.firstname || rec.first_name || '';
-    const lastName = rec.lastname || rec.last_name || '';
-    const name = (firstName + ' ' + lastName).trim() || rec.label || rec.leadname || 'ללא שם';
-    const status = rec.leadstatus || rec.status || '';
-    const source = rec.leadsource || rec.source || 'לא ידוע';
-    const phone = rec.phone || rec.mobile || '';
-    const created = rec.createdtime || rec.created_time || rec.modifiedtime || '';
-    const babyAge = rec.cf_potentials_babyage || rec.cf_leads_babyage || '';
+    const firstName = fieldText(rec.firstname || rec.first_name);
+    const lastName = fieldText(rec.lastname || rec.last_name);
+    const name = (firstName + ' ' + lastName).trim() || fieldText(rec.label || rec.leadname) || 'ללא שם';
+    const status = fieldText(rec.leadstatus || rec.status);
+    const source = fieldText(rec.leadsource || rec.source || rec.facebook_form_name || rec.cf_2719) || 'לא ידוע';
+    const phone = fieldText(rec.phone || rec.mobile);
+    const created = fieldText(rec.createdtime || rec.created_time || rec.modifiedtime);
+    const babyAge = fieldText(rec.cf_potentials_babyage || rec.cf_leads_babyage || rec.cf_2715);
     // cf_1267 = "סיבה שלא התקדם" (reason lead didn't progress) - confirmed via GetModuleFields 07/07/2026
-    const reason = rec.cf_1267 || rec.lead_source_reason || rec.cf_leads_leadreason || rec.cf_lead_reason || rec.description || '';
+    const reason = fieldText(rec.cf_1267 || rec.lead_source_reason || rec.cf_leads_leadreason || rec.cf_lead_reason || rec.description);
     // assigned_user_id = "מוקצה אל" (owner/salesperson) - confirmed via GetModuleFields 07/07/2026
-    const ownerRaw = rec.assigned_user_id;
-    const owner = (ownerRaw && typeof ownerRaw === 'object') ? (ownerRaw.label || ownerRaw.name || '') : (ownerRaw || '');
+    const owner = fieldText(rec.assigned_user_id);
 
-    // Format date
-    let dateStr = '';
-    if (created) {
-      try {
-        const d = new Date(created);
-        dateStr = d.toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit', year:'numeric' });
-      } catch { dateStr = created.split(' ')[0] || ''; }
-    }
+    // Format date and keep a stable month key for current-month KPIs.
+    const createdDate = parseScallaDate(created);
+    const dateStr = createdDate ? formatScallaDate(createdDate) : (created.split(' ')[0] || '');
+    const monthKey = scallaMonthKey(createdDate);
 
     // Mask phone for privacy
     let phoneMasked = phone;
@@ -1251,6 +1726,7 @@ function parseScallaLeads(records) {
       phone: phoneMasked,
       date: dateStr,
       rawDate: created,
+      monthKey,
     });
   });
 
@@ -1412,6 +1888,7 @@ async function loadScallaData() {
   renderCharts();
   renderFilters();
   renderTable();
+  renderPerformanceModule();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1419,30 +1896,20 @@ async function loadScallaData() {
 // ═══════════════════════════════════════════════════════════════
 function renderKPIs() {
   const total = statusData.reduce((sum, d) => sum + d.count, 0);
-  const newLeads = statusData.find(d => d.label === 'ליד חדש');
-  const inProgress = statusData.find(d => d.label === 'ליד בטיפול');
+  const activeTreatmentLeads = statusData
+    .filter(d => IN_PROGRESS_STATUSES.includes(d.label))
+    .reduce((sum, d) => sum + d.count, 0);
 
   document.getElementById('kpiTotalLeads').textContent = total;
   document.getElementById('kpiTotalLeadsSub').textContent =
     scallaDataSource === 'live' ? 'ScallaCRM חי' : 'נתונים שמורים';
-  document.getElementById('kpiNewLeads').textContent =
-    (newLeads ? newLeads.count : 0) + (inProgress ? inProgress.count : 0);
-  document.getElementById('badge-leads').textContent = newLeads ? newLeads.count : 0;
+  document.getElementById('kpiNewLeads').textContent = activeTreatmentLeads;
+  document.getElementById('badge-leads').textContent = activeTreatmentLeads;
 
   // Update marketing tab leads goal
-  const thisMonth = new Date().getMonth();
-  const thisYear = new Date().getFullYear();
-  const monthLeadsArr = [];
-  leadsData.forEach(l => {
-    if (l.date) {
-      const parts = l.date.split('/');
-      if (parts.length === 3) {
-        const m = parseInt(parts[1]) - 1;
-        const y = parseInt(parts[2]);
-        if (m === thisMonth && y === thisYear) monthLeadsArr.push(l);
-      }
-    }
-  });
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}`;
+  const monthLeadsArr = leadsData.filter(l => l.monthKey === currentMonthKey);
   const monthLeads = monthLeadsArr.length;
   const goalEl = document.getElementById('goalLeadsActual');
   const barEl = document.getElementById('goalLeadsBar');
@@ -1459,8 +1926,8 @@ function renderKPIs() {
 // RENDER: LEADS TAB - EXTRA KPI CARDS (All/In-Progress/Trial/Lost/Owner)
 // ═══════════════════════════════════════════════════════════════
 // Status buckets - aligned with STATUS_MAP css classes already used for the donut/table
-const LOST_STATUSES = ['לא רלוונטי', 'מספר לא תקין', 'כפול'];
-const IN_PROGRESS_STATUSES = ['ליד בטיפול', 'נסיונות חיוג', 'תואמה שיחה', 'לחזור בעתיד'];
+const LOST_STATUSES = ['לא רלוונטי'];
+const IN_PROGRESS_STATUSES = ['ליד בטיפול'];
 const TRIAL_CLOSED_STATUS = 'רכשה שיעור ניסיון';
 const NO_REASON_PLACEHOLDER = 'בחר לאחר שינוי סטטוס';
 
@@ -1514,6 +1981,7 @@ function renderCharts() {
   const dateLabel = scallaDataSource === 'live'
     ? new Date().toLocaleDateString('he-IL')
     : '01/07/2026';
+  const chartColors = chartThemeColors();
 
   // Update subtitles
   document.getElementById('statusChartSub').textContent = `מתוך ${total} לידים`;
@@ -1536,7 +2004,7 @@ function renderCharts() {
     type: 'doughnut',
     data: {
       labels: statusData.map(d => d.label),
-      datasets: [{ data: statusData.map(d => d.pct || d.count), backgroundColor: statusData.map(d => d.color), borderWidth: 2, borderColor: '#fff' }]
+      datasets: [{ data: statusData.map(d => d.pct || d.count), backgroundColor: statusData.map(d => d.color), borderWidth: 2, borderColor: chartColors.card }]
     },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '68%',
@@ -1567,8 +2035,8 @@ function renderCharts() {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { rtl: true } },
       scales: {
-        x: { grid: { color: '#F3F0FF' }, ticks: { font: { family: 'Heebo' } } },
-        y: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 } } }
+        x: { grid: { color: chartColors.grid }, ticks: { color: chartColors.text, font: { family: 'Heebo' } } },
+        y: { grid: { display: false }, ticks: { color: chartColors.text, font: { family: 'Heebo', size: 11 } } }
       }
     }
   });
@@ -1618,9 +2086,28 @@ function toggleLeads() {
 // ARBOX - LIVE STUDIO DATA
 // ═══════════════════════════════════════════════════════════════
 function fmtDateHeb(isoStr) { return isoStr ? isoStr.split('-').reverse().join('/') : ''; }
+function isoFromDate(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+}
 function isoDate(offsetDays = 0) {
   const d = new Date(); d.setDate(d.getDate() + offsetDays);
-  return d.toISOString().slice(0, 10);
+  return isoFromDate(d);
+}
+function setReportTileHref(key, href) {
+  document.querySelectorAll(`[data-report-key="${key}"]`).forEach(el => { el.dataset.href = href; });
+}
+function updateDynamicReportLinks() {
+  const today = isoDate(0);
+  const plus7 = isoDate(7);
+  const now = new Date();
+  const monthStart = isoFromDate(new Date(now.getFullYear(), now.getMonth(), 1));
+  const monthEnd = isoFromDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
+  setReportTileHref('expiring-sessions-week', `https://manage.arboxapp.com/reports-v5/expiring-sessions-report?end=${encodeURIComponent(today + ',' + plus7)}`);
+    setReportTileHref('trial-classes-month', `https://manage.arboxapp.com/reports-v5/trial-classes-report?date=${encodeURIComponent(monthStart + ',' + monthEnd)}`);
+  setReportTileHref('expiring-memberships-month', `https://manage.arboxapp.com/reports-v5/expiring-memberships-report?end=${encodeURIComponent(monthStart + ',' + monthEnd)}`);
 }
 function dateOnly(value) {
   return value ? String(value).slice(0, 10) : '';
@@ -1682,45 +2169,54 @@ async function loadStudioData() {
 
   try {
     const today = isoDate(0), minus30 = isoDate(-30), plus30 = isoDate(30), plus7 = isoDate(7);
+    const now = new Date();
+    const monthStart = isoFromDate(new Date(now.getFullYear(), now.getMonth(), 1));
+    const monthEnd = isoFromDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
 
-    const [members, schedule, lateCancels, bookings, transactions] = await Promise.all([
+    const [members, schedule, lateCancels, bookings, transactions, activeHugim, activeSessionsReport, hugimBookings] = await Promise.all([
       arboxGet(`/reports/activeMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
       arboxGet(`/schedule?from_date=${today}&to_date=${plus30}`),
       arboxGet(`/reports/lateCancellationReport?fromDate=${minus30}&toDate=${today}`),
       arboxGet(`/reports/bookingsReport?fromDate=${minus30}&toDate=${today}`),
       arboxGetSafe(`/reports/transactionsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/activeHugimReport?fromDate=${today}&toDate=${plus30}&limit=500`),
+      arboxGetSafe(`/reports/sessionsReport?fromDate=${monthStart}&toDate=${monthEnd}&limit=500&page=1`),
+      arboxGetSafe(`/reports/hugimBookingReport?fromDate=${monthStart}&toDate=${monthEnd}&limit=500&page=1`),
     ]);
 
     const [inactiveMembers, expiredMemberships, renewals, cancellations] = await Promise.all([
-      arboxGetSafe(`/reports/inactiveMembersReport?fromDate=${minus30}&toDate=${today}&limit=500`),
-      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${monthStart}&toDate=${monthEnd}&limit=500&page=1`),
+      arboxGetSafe(`/reports/expiringMembershipsReport?fromDate=${monthStart}&toDate=${monthEnd}&limit=500&page=1`),
       arboxGetSafe(`/reports/renewalsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
       arboxGetSafe(`/reports/canceledMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
     ]);
 
-    let fh = 0, ih = 0, kr = 0;
-    const expiring = [], punchExpiring = [];
+    let fh = 0, ih = 0, derivedKr = 0;
+    const expiring = [], punchExpiring = [], punchExpiringWeek = [];
     members.forEach(m => {
       const n = (m.membership_type_name || '').toLowerCase();
       const isPunch = n.includes('כרטיסי') || n.includes('punch') || n.includes('כניסות') || n.includes('כרטיס');
       if (n.includes('full house') || n.includes('פול האוס'))       fh++;
       else if (n.includes('in house') || n.includes('אין האוס'))    ih++;
-      else if (isPunch)                                               kr++;
+      else if (isPunch)                                               derivedKr++;
       const days = m.end_date ? Math.max(0, Math.ceil((new Date(m.end_date) - new Date()) / 86400000)) : null;
-      if (m.end_date && m.end_date >= today && m.end_date <= plus7 && !isPunch) {
+      if (m.end_date && m.end_date >= today && m.end_date <= plus30 && !isPunch) {
         expiring.push({ name: m.full_name, type: m.membership_type_name, expires: fmtDateHeb(m.end_date), days });
       }
       if (m.end_date && m.end_date >= today && m.end_date <= plus30 && isPunch) {
-        punchExpiring.push({ name: m.full_name, type: m.membership_type_name, expires: fmtDateHeb(m.end_date), days });
+        const punchItem = { name: m.full_name, type: m.membership_type_name, expires: fmtDateHeb(m.end_date), days };
+        punchExpiring.push(punchItem);
+        if (m.end_date <= plus7) punchExpiringWeek.push(punchItem);
       }
     });
+    const kr = Array.isArray(activeSessionsReport) ? activeSessionsReport.length : derivedKr;
     const total = (fh + ih + kr) || 1;
 
     ['kpiFH','kpiIH','kpiKR'].forEach((id, i) => {
       const el = document.getElementById(id);
       if (el) el.textContent = [fh, ih, kr][i];
     });
-    document.getElementById('kpiExp').textContent = expiring.length;
+    document.getElementById('kpiExp').textContent = punchExpiringWeek.length;
     document.getElementById('fhNum').textContent = fh;
     document.getElementById('ihNum').textContent = ih;
     document.getElementById('krNum').textContent = kr;
@@ -1762,7 +2258,7 @@ async function loadStudioData() {
       return amount > 0 && (desc.includes('כרטיסי') || desc.includes('כרטיסיה') || desc.includes('lucky') || desc.includes('מיני האוס'));
     });
     setTxt('kpiPacksSold', transactions ? packReceipts.length : '?');
-    setTxt('kpiPacksActiveSub', `${kr} פעילות | 30 יום`);
+    setTxt('kpiPacksActiveSub', `${kr} פעילות | החודש`);
 
     // 3. Expiring session packs KPI entry-point (full breakdown already below in punchExpList)
     setTxt('kpiPunchExpKPI', punchExpiring.length);
@@ -1778,7 +2274,7 @@ async function loadStudioData() {
 
     if (expiredMemberships) {
       setTxt('kpiExpiredPlans', expiredMemberships.length);
-      setTxt('kpiExpiredPlansSub', 'פגו ב-30 הימים האחרונים');
+      setTxt('kpiExpiredPlansSub', 'פגים החודש');
     }
     else setPending('kpiExpiredPlans', 'kpiExpiredPlansSub', 'נדרש אימות מול Arbox');
 
@@ -1794,9 +2290,12 @@ async function loadStudioData() {
     }
     else setPending('kpiCancellations', 'kpiCancellationsSub', 'נדרש אימות מול Arbox');
 
-    // 8. Active Courses (upcoming, next 30 days) - distinct course/session names
-    const courseNames = new Set((schedule || []).filter(s => s.date >= today).map(s => s.session_name).filter(Boolean));
-    setTxt('kpiActiveCourses', courseNames.size);
+    // 8. Active Courses - use the validated hugim booking report, fall back to older report/schedule if unavailable.
+    const scheduleCourseNames = new Set((schedule || []).filter(s => s.date >= today).map(s => s.session_name).filter(Boolean));
+    const activeHugimCount = Array.isArray(hugimBookings)
+      ? hugimBookings.length
+      : (Array.isArray(activeHugim) ? activeHugim.length : scheduleCourseNames.size);
+    setTxt('kpiActiveCourses', activeHugimCount);
 
     // 9. Course Bookings by course (last 30 days)
     const courseBookingMap = {};
@@ -1852,7 +2351,7 @@ expiring.sort((a, b) => a.days - b.days);
             </div>
             <div class="expiry-days">${e.days === 0 ? 'היום!' : e.days + ' ימים'}</div>
           </div>`).join('')
-      : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין מנויים הפגים השבוע</div>';
+      : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין מנויים הפגים ב-30 ימים הקרובים</div>';
 
     const dayNames = ['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'];
     const seen = {}, upcoming = [];
@@ -1946,7 +2445,36 @@ expiring.sort((a, b) => a.days - b.days);
           ${transactions && transactions.length > 0 ? '✓ אין רוכשי שיעור ניסיון ללא מנוי פעיל' : '🔍 נתוני עסקאות לא זמינים מ-Arbox (יש לבדוק הרשאות API)'}
         </div>`;
 
-const note = document.getElementById('studioInfoNote');
+    studioSnapshot = {
+      loadedAt: new Date().toISOString(),
+      range: { today, minus30, plus30, plus7, monthStart, monthEnd },
+      members,
+      schedule,
+      lateCancels,
+      bookings,
+      transactions,
+      activeHugim,
+      activeSessionsReport,
+      hugimBookings,
+      inactiveMembers,
+      expiredMemberships,
+      renewals,
+      cancellations,
+      fh,
+      ih,
+      kr,
+      expiring,
+      punchExpiring,
+      punchExpiringWeek,
+      nonEngaged,
+      onetimeList,
+      topLC,
+      topCust,
+      courseBookingArr,
+    };
+    renderPerformanceModule();
+
+    const note = document.getElementById('studioInfoNote');
     if (note) {
       note.innerHTML = `✅ נתוני Arbox <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | ${members.length} מנויים פעילים`;
       note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
@@ -1961,6 +2489,8 @@ const note = document.getElementById('studioInfoNote');
 
   } catch (err) {
     console.error('Arbox load error:', err);
+    studioSnapshot = null;
+    renderPerformanceModule();
     const note = document.getElementById('studioInfoNote');
     if (note) { note.innerHTML = '⚠️ שגיאת חיבור ל-Arbox - מציג נתוני הדגמה'; note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;'; }
     const arboxBadge = document.getElementById('arboxBadge');
@@ -2089,9 +2619,11 @@ function renderMarketingTab() {
   if (typeof Chart === 'undefined') return;
 
   renderCampaignTable(DEMO_CAMPAIGN_ROWS);
+  const chartColors = chartThemeColors();
 
   const wkCtx = document.getElementById('weeklyChart').getContext('2d');
-  new Chart(wkCtx, {
+  if (weeklyChart) { weeklyChart.destroy(); weeklyChart = null; }
+  weeklyChart = new Chart(wkCtx, {
     type: 'bar',
     data: {
       labels: ['שבוע 1 (1-7/6)', 'שבוע 2 (8-14/6)', 'שבוע 3 (15-21/6)', 'שבוע 4 (22-28/6)'],
@@ -2102,16 +2634,17 @@ function renderMarketingTab() {
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', rtl: true, labels: { font: { family: 'Heebo' } } }, tooltip: { rtl: true } },
+      plugins: { legend: { position: 'top', rtl: true, labels: { color: chartColors.text, font: { family: 'Heebo' } } }, tooltip: { rtl: true } },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 } } },
-        y: { grid: { color: '#F3F0FF' }, ticks: { font: { family: 'Heebo' } } }
+        x: { grid: { display: false }, ticks: { color: chartColors.text, font: { family: 'Heebo', size: 11 } } },
+        y: { grid: { color: chartColors.grid }, ticks: { color: chartColors.text, font: { family: 'Heebo' } } }
       }
     }
   });
 
   const socCtx = document.getElementById('socialChart').getContext('2d');
-  new Chart(socCtx, {
+  if (socialChart) { socialChart.destroy(); socialChart = null; }
+  socialChart = new Chart(socCtx, {
     type: 'line',
     data: {
       labels: ['שבוע 1', 'שבוע 2', 'שבוע 3', 'שבוע 4'],
@@ -2121,7 +2654,7 @@ function renderMarketingTab() {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 10 } } },
+        x: { grid: { display: false }, ticks: { color: chartColors.text, font: { family: 'Heebo', size: 10 } } },
         y: { display: false }
       }
     }
@@ -2129,41 +2662,390 @@ function renderMarketingTab() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// AI PERFORMANCE MODULE - LOCAL ANALYTICS + OPTIONAL AI SUMMARY
+// ═══════════════════════════════════════════════════════════════
+function perfClamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
+function perfPct(part, total) { return total > 0 ? Math.round((part / total) * 100) : null; }
+function perfCount(arr) { return Array.isArray(arr) ? arr.length : 0; }
+function perfHtml(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+function perfSetText(id, value) { const el = document.getElementById(id); if (el) el.textContent = value; }
+function perfSetHtml(id, value) { const el = document.getElementById(id); if (el) el.innerHTML = value; }
+
+function performanceMetricHtml(value, label, sub) {
+  return `
+    <div class="performance-metric">
+      <div class="performance-metric-val">${perfHtml(value)}</div>
+      <div>
+        <div class="performance-metric-label">${perfHtml(label)}</div>
+        <div class="performance-metric-sub">${perfHtml(sub)}</div>
+      </div>
+    </div>`;
+}
+
+function performanceActionHtml(action) {
+  return `
+    <div class="performance-action ${action.priority}">
+      <div class="performance-action-head">
+        <span class="performance-priority ${action.priority}">${perfHtml(action.priorityLabel)}</span>
+        <span class="performance-action-metric">${perfHtml(action.metric)}</span>
+      </div>
+      <div class="performance-action-title">${perfHtml(action.title)}</div>
+      <div class="performance-action-body">${perfHtml(action.body)}</div>
+      <div class="performance-action-next">${perfHtml(action.next)}</div>
+    </div>`;
+}
+
+function performanceNames(items, getName) {
+  const names = (items || []).map(getName).filter(Boolean).slice(0, 5);
+  return names.length ? names.join(' · ') : 'אין רשימת שמות זמינה';
+}
+
+function buildPerformanceAnalysis() {
+  const now = new Date();
+  const currentMonthKey = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}`;
+  const monthLeads = (leadsData || []).filter(l => l.monthKey === currentMonthKey);
+  const inProgressLeads = (leadsData || []).filter(l => IN_PROGRESS_STATUSES.includes(l.statusLabel));
+  const trialClosed = monthLeads.filter(l => l.statusLabel === TRIAL_CLOSED_STATUS);
+  const lostLeads = monthLeads.filter(l => LOST_STATUSES.includes(l.statusLabel));
+  const conversionRate = perfPct(trialClosed.length, monthLeads.length);
+  const hasStudio = !!(studioSnapshot && Array.isArray(studioSnapshot.members));
+
+  const activeMembers = hasStudio ? studioSnapshot.members.length : 0;
+  const expiring = hasStudio ? studioSnapshot.expiring || [] : [];
+  const punchExpiring = hasStudio ? studioSnapshot.punchExpiring || [] : [];
+  const punchExpiringWeek = hasStudio ? studioSnapshot.punchExpiringWeek || [] : [];
+  const nonEngaged = hasStudio ? studioSnapshot.nonEngaged || [] : [];
+  const onetimeList = hasStudio ? studioSnapshot.onetimeList || [] : [];
+  const lateCancels = hasStudio ? studioSnapshot.lateCancels || [] : [];
+  const bookings = hasStudio ? studioSnapshot.bookings || [] : [];
+  const inactiveMembers = hasStudio && Array.isArray(studioSnapshot.inactiveMembers) ? studioSnapshot.inactiveMembers : null;
+  const renewals = hasStudio && Array.isArray(studioSnapshot.renewals) ? studioSnapshot.renewals : null;
+  const cancellations = hasStudio && Array.isArray(studioSnapshot.cancellations) ? studioSnapshot.cancellations : null;
+  const topLC = hasStudio ? studioSnapshot.topLC || [] : [];
+
+  const nonEngagedRate = activeMembers ? nonEngaged.length / activeMembers : 0;
+  const expiryRate = activeMembers ? expiring.length / activeMembers : 0;
+  const lateCancelRate = bookings.length ? lateCancels.length / bookings.length : 0;
+  const engagementRate = activeMembers ? perfPct(activeMembers - nonEngaged.length, activeMembers) : null;
+
+  let score = hasStudio ? 84 : (scallaDataSource === 'live' ? 68 : 55);
+  if (hasStudio) {
+    score -= Math.min(24, Math.round(nonEngagedRate * 32));
+    score -= Math.min(18, Math.round(expiryRate * 45));
+    score -= Math.min(12, Math.round(lateCancelRate * 80));
+    score -= Math.min(10, Math.round(onetimeList.length * 1.2));
+    if (conversionRate !== null && conversionRate < 15) score -= 12;
+    else if (conversionRate !== null && conversionRate < 25) score -= 6;
+    else if (conversionRate !== null && conversionRate >= 25) score += 4;
+    if (renewals && cancellations && renewals.length > cancellations.length) score += 3;
+    if (!expiring.length && !nonEngaged.length && !onetimeList.length) score += 6;
+  }
+  score = perfClamp(Math.round(score), 35, 95);
+
+  const actions = [];
+  const addAction = (priority, metric, title, body, next) => {
+    const labels = { high: 'דחוף', medium: 'חשוב', good: 'תקין' };
+    actions.push({ priority, priorityLabel: labels[priority] || 'חשוב', metric, title, body, next });
+  };
+
+  if (!hasStudio) {
+    addAction('medium', 'Arbox לא נטען', 'להשלים טעינת נתוני לקוחות', 'אפשר לחשב לידים מ-Scalla, אבל המלצות שימור ו-upsell דורשות Arbox חי.', 'לבדוק חיבור Arbox ואז לרענן נתונים.');
+  }
+  if (hasStudio && expiring.length > 0) {
+    addAction('high', `${expiring.length} מנויים`, 'לסגור חידושים לפני פקיעת מנוי', 'מנוי שעומד לפוג הוא הסיכון הישיר ביותר להכנסה חוזרת. התחילו מהמנויים שפגים ב-7-14 ימים הקרובים.', 'להוציא רשימת חידוש יומית ולעדכן סטטוס אחרי כל שיחה.');
+  }
+  if (hasStudio && nonEngaged.length > 0) {
+    addAction(nonEngagedRate >= .25 ? 'high' : 'medium', `${nonEngaged.length} ללא פעילות`, 'להחזיר לקוחות שלא הגיעו 30 יום', 'לקוחות פעילים שלא נרשמו לשיעור נוטים לבטל או לא לחדש. זה אזור שימור עם השפעה מהירה.', 'לשלוח הודעה אישית עם 2 מועדי שיעור פנויים לשבוע הקרוב.');
+  }
+  if (hasStudio && onetimeList.length > 0) {
+    addAction('high', `${onetimeList.length} רוכשי ניסיון`, 'להמיר רוכשי שיעור ניסיון למנוי', 'אלו לקוחות שכבר שילמו והראו כוונה. חלון ההמרה קצר, לכן הם צריכים טיפול לפני לידים קרים.', 'לבנות משימת follow-up תוך 24 שעות מרכישה עם הצעת Full House או כרטיסייה.');
+  }
+  if (hasStudio && lateCancels.length > 0) {
+    addAction(lateCancelRate >= .12 ? 'high' : 'medium', `${lateCancels.length} ביטולים`, 'להקטין ביטולים מאוחרים ואי-הגעה', 'ביטולים חוזרים פוגעים בניצול שיעורים ובחוויה של לקוחות שממתינים למקום.', 'לזהות את 5 המבטלים המובילים ולהפעיל תזכורת/מדיניות ביטול רכה.');
+  }
+  if (conversionRate !== null && conversionRate < 20 && monthLeads.length >= 5) {
+    addAction('medium', `${conversionRate}% המרה`, 'לשפר מעבר ליד לשיעור ניסיון', 'יש מספיק נפח לידים החודש, אבל מעט מדי נסגרים לשיעור ניסיון.', 'לבדוק מקור ליד וסיבת אי-התקדמות, ואז לעדכן תסריט שיחה.');
+  }
+  if (inProgressLeads.length > 0) {
+    addAction('medium', `${inProgressLeads.length} לידים`, 'לנקות לידים בטיפול', 'לידים פתוחים שלא מקבלים next step מייצרים אשליית פייפליין ולא הכנסה.', 'לקבוע לכל ליד פעולה אחת: שיחה, WhatsApp, תזכורת או סגירה.');
+  }
+  if (!actions.length) {
+    addAction('good', 'אין חריגות', 'להמשיך מעקב שבועי', 'הנתונים לא מציפים כרגע סיכון ביצועי חריג.', 'לשמר קצב בדיקה קבוע של חידושים, פעילות לקוחות והמרת ניסיון.');
+  }
+
+  const customerSegments = [];
+  if (hasStudio && onetimeList.length) {
+    customerSegments.push({
+      priority: 'high', priorityLabel: 'Upsell', metric: `${onetimeList.length} לקוחות`,
+      title: 'רכשו שיעור ניסיון ללא מנוי פעיל',
+      body: performanceNames(onetimeList, o => `${o.name} (${o.price}₪)`),
+      next: 'לתעדף שיחת מכירה אישית היום.',
+    });
+  }
+  if (hasStudio && expiring.length) {
+    customerSegments.push({
+      priority: 'high', priorityLabel: 'שימור', metric: `${expiring.length} מנויים`,
+      title: 'מנויים שפגים ב-30 יום',
+      body: performanceNames(expiring, e => `${e.name} (${e.days} ימים)`),
+      next: 'להציע חידוש לפני תאריך הפקיעה.',
+    });
+  }
+  if (hasStudio && nonEngaged.length) {
+    customerSegments.push({
+      priority: 'medium', priorityLabel: 'מעורבות', metric: `${nonEngaged.length} לקוחות`,
+      title: 'מנויים פעילים ללא הזמנה ב-30 יום',
+      body: performanceNames(nonEngaged, m => m.full_name),
+      next: 'להחזיר אותם לשיעור קרוב.',
+    });
+  }
+  if (hasStudio && punchExpiring.length) {
+    customerSegments.push({
+      priority: punchExpiringWeek.length ? 'high' : 'medium', priorityLabel: 'כרטיסיות', metric: `${punchExpiring.length} כרטיסיות`,
+      title: 'כרטיסיות שעומדות לפוג',
+      body: performanceNames(punchExpiring, e => `${e.name} (${e.days} ימים)`),
+      next: 'להציע הארכה/חידוש לפני אובדן הערך.',
+    });
+  }
+  if (hasStudio && topLC.length) {
+    customerSegments.push({
+      priority: 'medium', priorityLabel: 'ביטולים', metric: `${topLC.length} מובילים`,
+      title: 'לקוחות עם ביטולים מאוחרים',
+      body: performanceNames(topLC, ([name, count]) => `${name} (${count})`),
+      next: 'לבדוק האם נדרש תזכורת או התאמת שעה.',
+    });
+  }
+  if (!customerSegments.length) {
+    customerSegments.push({
+      priority: hasStudio ? 'good' : 'medium', priorityLabel: hasStudio ? 'תקין' : 'ממתין', metric: hasStudio ? '0 חריגים' : 'אין Arbox',
+      title: hasStudio ? 'אין רשימת לקוחות דחופה' : 'נתוני לקוחות עדיין לא זמינים',
+      body: hasStudio ? 'לא נמצאו קבוצות לקוחות עם סיכון מיידי לפי הנתונים הקיימים.' : 'רשימות לקוחות יופיעו אחרי טעינת Arbox.',
+      next: hasStudio ? 'להמשיך מעקב אחרי חידושים ופעילות.' : 'לרענן אחרי שהחיבור פעיל.',
+    });
+  }
+
+  return {
+    hasStudio,
+    score,
+    scoreLabel: score >= 82 ? 'בריא, עם מעקב שוטף' : score >= 68 ? 'יציב, אבל יש פעולות לשיפור' : 'דורש טיפול ניהולי השבוע',
+    metrics: {
+      activeMembers,
+      fh: hasStudio ? studioSnapshot.fh : 0,
+      ih: hasStudio ? studioSnapshot.ih : 0,
+      kr: hasStudio ? studioSnapshot.kr : 0,
+      monthLeads: monthLeads.length,
+      inProgressLeads: inProgressLeads.length,
+      trialClosed: trialClosed.length,
+      lostLeads: lostLeads.length,
+      conversionRate,
+      engagementRate,
+      nonEngaged: nonEngaged.length,
+      expiring: expiring.length,
+      punchExpiring: punchExpiring.length,
+      punchExpiringWeek: punchExpiringWeek.length,
+      onetime: onetimeList.length,
+      bookings: bookings.length,
+      lateCancels: lateCancels.length,
+      inactiveMembers: inactiveMembers ? inactiveMembers.length : null,
+      renewals: renewals ? renewals.length : null,
+      cancellations: cancellations ? cancellations.length : null,
+    },
+    actions: actions.slice(0, 6),
+    customerSegments: customerSegments.slice(0, 5),
+  };
+}
+
+function renderPerformanceModule() {
+  const analysis = buildPerformanceAnalysis();
+  const m = analysis.metrics;
+  const highCount = analysis.actions.filter(a => a.priority === 'high').length;
+  const sourceLabel = `${scallaDataSource === 'live' ? 'Scalla חי' : scallaDataSource === 'cached' ? 'Scalla שמור' : 'Scalla ממתין'} | ${analysis.hasStudio ? 'Arbox חי' : 'Arbox ממתין'}`;
+
+  perfSetText('performanceScoreValue', analysis.hasStudio || leadsData.length ? analysis.score : '—');
+  perfSetText('performanceScoreLabel', analysis.scoreLabel);
+  const fill = document.getElementById('performanceScoreFill');
+  if (fill) fill.style.width = `${analysis.hasStudio || leadsData.length ? analysis.score : 0}%`;
+  perfSetText('badge-performance', highCount ? String(highCount) : '✓');
+  perfSetText('performanceSnapshotDate', new Date().toLocaleString('he-IL'));
+
+  perfSetHtml('performanceScoreMeta', `
+    <span class="performance-chip">${perfHtml(sourceLabel)}</span>
+    <span class="performance-chip">${perfHtml(m.activeMembers || 0)} מנויים פעילים</span>
+    <span class="performance-chip">${perfHtml(m.monthLeads)} לידים החודש</span>
+  `);
+
+  perfSetHtml('performanceMetricList', [
+    performanceMetricHtml(m.activeMembers || '—', 'לקוחות פעילים', analysis.hasStudio ? `FH ${m.fh} | IH ${m.ih} | כרטיסיות ${m.kr}` : 'ממתין ל-Arbox'),
+    performanceMetricHtml(m.engagementRate === null ? '—' : `${m.engagementRate}%`, 'מעורבות לקוחות', `${m.nonEngaged} ללא פעילות ב-30 יום`),
+    performanceMetricHtml(m.conversionRate === null ? '—' : `${m.conversionRate}%`, 'ליד ← שיעור ניסיון', `${m.trialClosed} סגירות מתוך ${m.monthLeads} לידים החודש`),
+    performanceMetricHtml(m.expiring, 'מנויים לפני פקיעה', 'ב-30 הימים הקרובים'),
+    performanceMetricHtml(m.onetime, 'הזדמנויות Upsell', 'רוכשי ניסיון ללא מנוי פעיל'),
+  ].join(''));
+
+  perfSetHtml('performanceActionList', analysis.actions.map(performanceActionHtml).join(''));
+  perfSetHtml('performanceCustomerList', analysis.customerSegments.map(performanceActionHtml).join(''));
+
+  const note = document.getElementById('performanceInfoNote');
+  if (note) {
+    if (analysis.hasStudio && (scallaDataSource === 'live' || scallaDataSource === 'cached')) {
+      note.innerHTML = `✅ <strong>מודול AI ביצועים פעיל</strong> - חילוץ לקוחות מ-Arbox ולידים מ-Scalla | ${sourceLabel}`;
+      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    } else {
+      note.innerHTML = `⟳ ממתין להשלמת טעינת נתונים | ${sourceLabel}`;
+      note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+  }
+}
+
+function buildPerformanceAiPrompt() {
+  const analysis = buildPerformanceAnalysis();
+  return `נתח את ביצועי העסק של הבית של גיליגולי לפי הנתונים הבאים והחזר בעברית קצרה: 1) שלוש פעולות בעדיפות גבוהה, 2) קהל לקוחות לטיפול, 3) מה לבדוק בשבוע הקרוב. אל תנחש מספרים שלא מופיעים כאן. נתוני סיכום: ${JSON.stringify(analysis.metrics)}. פעולות מקומיות שחושבו: ${JSON.stringify(analysis.actions.map(a => ({ priority: a.priorityLabel, metric: a.metric, title: a.title })))}.`;
+}
+
+async function requestPerformanceAiAnalysis() {
+  if (performanceAiBusy) return;
+  const btn = document.getElementById('performanceAiBtn');
+  const output = document.getElementById('performanceAiOutput');
+  const sub = document.getElementById('performanceAiSub');
+  performanceAiBusy = true;
+  if (btn) { btn.disabled = true; btn.textContent = 'מנתח...'; }
+  if (sub) sub.textContent = 'שולח סיכום נתונים לסוכן AI server-side.';
+  if (output) output.textContent = 'מנתח את הנתונים ומכין המלצות...';
+
+  try {
+    const endpoint = (typeof AI_CHAT !== 'undefined' && AI_CHAT.ENDPOINT) ? AI_CHAT.ENDPOINT : '/.netlify/functions/agent';
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: buildPerformanceAiPrompt(), history: [] }),
+      signal: AbortSignal.timeout(60000),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) throw new Error(data.error || data.detail || 'AI request failed');
+    if (output) output.textContent = data.reply || 'לא התקבלה תשובה מהמודול.';
+    if (sub) sub.textContent = `נותח עכשיו | ${Array.isArray(data.toolCalls) ? data.toolCalls.length : 0} קריאות נתונים`;
+  } catch (err) {
+    if (output) output.textContent = 'לא הצלחתי להשלים ניתוח AI כרגע: ' + err.message;
+    if (sub) sub.textContent = 'הניתוח המקומי עדיין זמין למעלה.';
+  } finally {
+    performanceAiBusy = false;
+    if (btn) { btn.disabled = false; btn.textContent = 'נתח והמלץ'; }
+  }
+}
+// ═══════════════════════════════════════════════════════════════
 // THRESHOLD ALERT SYSTEM
 // ═══════════════════════════════════════════════════════════════
 
 const KPI_META = {
   kpiTotalLeads: { label: 'סה"כ לידים' },
-  kpiNewLeads:   { label: 'לידים חדשים' },
+  kpiNewLeads:   { label: 'לידים בטיפול' },
   kpiFH:         { label: 'Full House' },
   kpiIH:         { label: 'In House' },
-  kpiKR:         { label: 'כרטיסיות' },
-  kpiExp:        { label: 'פגים השבוע' },
+  kpiKR:         { label: 'כרטיסיות פעילות' },
+  kpiExp:        { label: 'כרטיסיות פגות השבוע' },
 };
 const ALERT_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours
 
 function getThresholds() {
-  try { return JSON.parse(localStorage.getItem('kpi_thresholds') || '{}'); } catch { return {}; }
+  const legacy = readJsonStorage('kpi_thresholds', {});
+  if (legacy && Object.keys(legacy).length) return legacy;
+  return getControlSettings().alerts.thresholds || {};
 }
-function saveThresholds(t) { localStorage.setItem('kpi_thresholds', JSON.stringify(t)); }
+function saveThresholds(t) {
+  localStorage.setItem('kpi_thresholds', JSON.stringify(t));
+  const raw = readRawControlSettings() || {};
+  const alerts = { ...(raw.alerts || {}), thresholds: t };
+  localStorage.setItem(CONTROL_SETTINGS_KEY, JSON.stringify({ ...raw, alerts }));
+}
 
 function getEmailJSCfg() {
   try { return JSON.parse(localStorage.getItem('emailjs_config') || 'null'); } catch { return null; }
 }
 
-function initEmailJS() {
+const EMAILJS_SDK_URLS = [
+  'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js',
+  'https://unpkg.com/@emailjs/browser@4/dist/email.min.js',
+];
+let emailJsLoadPromise = null;
+
+function hasEmailJS() {
+  return Boolean(window.emailjs && typeof emailjs.init === 'function' && typeof emailjs.send === 'function');
+}
+
+function loadEmailJSScript(src) {
+  return new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      script.remove();
+      reject(new Error('טעינת EmailJS נכשלה או נחסמה'));
+    }, 7000);
+    script.src = src;
+    script.async = true;
+    script.onload = () => {
+      clearTimeout(timer);
+      hasEmailJS() ? resolve() : reject(new Error('EmailJS נטען ללא API תקין'));
+    };
+    script.onerror = () => {
+      clearTimeout(timer);
+      reject(new Error('טעינת EmailJS נכשלה או נחסמה'));
+    };
+    document.head.appendChild(script);
+  });
+}
+
+async function ensureEmailJSLoaded() {
+  if (hasEmailJS()) return emailjs;
+  if (!emailJsLoadPromise) {
+    emailJsLoadPromise = (async () => {
+      for (const src of EMAILJS_SDK_URLS) {
+        try {
+          await loadEmailJSScript(src);
+          if (hasEmailJS()) return emailjs;
+        } catch {
+          // Try the next official CDN before logging the alert failure.
+        }
+      }
+      throw new Error('EmailJS לא נטען. בדקו שהדפדפן לא חוסם CDN ונסו שוב');
+    })();
+  }
+  return emailJsLoadPromise;
+}
+
+function formatEmailJSError(err) {
+  if (err && err.text) return `EmailJS: ${err.text}`;
+  if (err && err.message) return err.message;
+  return 'שליחת EmailJS נכשלה';
+}
+
+async function initEmailJS() {
   const cfg = getEmailJSCfg();
-  if (cfg && cfg.publicKey && window.emailjs) {
-    emailjs.init(cfg.publicKey);
+  if (cfg && cfg.publicKey) {
+    try {
+      await ensureEmailJSLoaded();
+      emailjs.init({ publicKey: cfg.publicKey });
+    } catch(e) {
+      console.warn('[Alerts] EmailJS init failed:', formatEmailJSError(e));
+    }
   }
 }
 
 async function sendAlertEmail(kpiId, value, thresholdType, thresholdValue, toEmail) {
   const cfg = getEmailJSCfg();
-  if (!cfg || !cfg.publicKey) { openEmailJSModal(); return; }
+  if (!cfg || !cfg.publicKey || !cfg.serviceId || !cfg.templateId) {
+    console.warn('[Alerts] EmailJS is not configured. Configure alerts in DashBoard_Control_Panel.html.');
+    return;
+  }
   const meta = KPI_META[kpiId] || { label: kpiId };
   const typeLabel = thresholdType === 'lower' ? `ירד מתחת ל-${thresholdValue}` : `עלה מעל ל-${thresholdValue}`;
   try {
+    await ensureEmailJSLoaded();
+    emailjs.init({ publicKey: cfg.publicKey });
     await emailjs.send(cfg.serviceId, cfg.templateId, {
       kpi_name: meta.label,
       current_value: String(value),
@@ -2174,11 +3056,13 @@ async function sendAlertEmail(kpiId, value, thresholdType, thresholdValue, toEma
     });
     console.log(`📧 התראה נשלחה: ${meta.label} = ${value} (${typeLabel})`);
   } catch(e) {
-    console.error('EmailJS error:', e);
+    console.error('EmailJS error:', formatEmailJSError(e));
   }
 }
 
 function checkThresholds(kpiId, value) {
+  const settings = getControlSettings();
+  if (settings.alerts.enabled === false) return;
   const t = getThresholds();
   const cfg = t[kpiId];
   if (!cfg || !cfg.enabled) return;
@@ -2187,9 +3071,13 @@ function checkThresholds(kpiId, value) {
 
   // Check cooldown
   const ck = `alert_last_${kpiId}`;
-  if (Date.now() - Number(localStorage.getItem(ck) || 0) < ALERT_COOLDOWN) return;
+  const cooldownHours = Number(settings.alerts.cooldownHours);
+  const cooldownMs = Number.isFinite(cooldownHours) && cooldownHours >= 0
+    ? cooldownHours * 60 * 60 * 1000
+    : ALERT_COOLDOWN;
+  if (Date.now() - Number(localStorage.getItem(ck) || 0) < cooldownMs) return;
 
-  const email = cfg.email || 'arye.glikman@gmail.com';
+  const email = cfg.email || settings.alerts.recipient || 'arye.glikman@gmail.com';
   let breached = false;
 
   if (cfg.lower !== '' && cfg.lower !== null && cfg.lower !== undefined && num < Number(cfg.lower)) {
@@ -2302,45 +3190,29 @@ function saveEmailJSConfig() {
   };
   if (!cfg.publicKey || !cfg.serviceId || !cfg.templateId) { alert('יש למלא את כל השדות'); return; }
   localStorage.setItem('emailjs_config', JSON.stringify(cfg));
-  if (window.emailjs) emailjs.init(cfg.publicKey);
+  initEmailJS();
   closeEmailJSModal();
   alert('✅ הגדרות EmailJS נשמרו');
 }
 async function testEmailJS() {
   const cfg = getEmailJSCfg();
-  if (!cfg) { alert('יש לשמור הגדרות EmailJS קודם'); return; }
-  if (window.emailjs) emailjs.init(cfg.publicKey);
+  if (!cfg || !cfg.publicKey || !cfg.serviceId || !cfg.templateId) { alert('יש לשמור הגדרות EmailJS קודם'); return; }
   try {
+    await ensureEmailJSLoaded();
+    emailjs.init({ publicKey: cfg.publicKey });
     await emailjs.send(cfg.serviceId, cfg.templateId, {
       kpi_name: 'סה"כ לידים (בדיקה)', current_value: '42',
       threshold_type: 'עלה מעל ל-40', threshold_value: '40',
       to_email: 'arye.glikman@gmail.com', dashboard_url: window.location.href,
     });
     alert('✅ מייל בדיקה נשלח לarye.glikman@gmail.com');
-  } catch(e) { alert('❌ שגיאה: ' + (e?.text || JSON.stringify(e))); }
+  } catch(e) { alert('❌ שגיאה: ' + formatEmailJSError(e)); }
 }
 
 // ── Inject settings UI into each KPI tile ───────────────────
 function initThresholdUI() {
   initEmailJS();
-  Object.keys(KPI_META).forEach(kpiId => {
-    const el = document.getElementById(kpiId);
-    const card = el && el.closest('.kpi-card');
-    if (!card) return;
-    if (!card.querySelector('.kpi-settings-btn')) {
-      const btn = document.createElement('button');
-      btn.className = 'kpi-settings-btn';
-      btn.textContent = '⚙';
-      btn.title = 'הגדר התראת סף';
-      btn.addEventListener('click', e => { e.stopPropagation(); openThresholdModal(kpiId); });
-      card.appendChild(btn);
-    }
-    if (!card.querySelector('.threshold-dot')) {
-      const dot = document.createElement('div');
-      dot.className = 'threshold-dot';
-      card.appendChild(dot);
-    }
-  });
+  document.querySelectorAll('.kpi-settings-btn, .threshold-dot').forEach(el => el.remove());
   renderThresholdDots();
 }
 
@@ -2350,36 +3222,115 @@ function initThresholdUI() {
 async function refreshDashboard() {
   const btn = document.getElementById('refreshBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⟳ מרענן...'; }
-  await Promise.all([loadScallaData(), loadStudioData(), loadMetaData()]);
+  updateDynamicReportLinks();
+  const tasks = [];
+  if (sourceIsNeeded('scalla')) tasks.push(loadScallaData());
+  if (sourceIsNeeded('arbox')) tasks.push(loadStudioData());
+  if (sourceIsNeeded('meta')) tasks.push(loadMetaData());
+  await Promise.all(tasks);
   if (btn) { btn.disabled = false; btn.textContent = '🔄 רענן נתונים'; }
   checkAllThresholds();
 }
 
+function clearDataRefreshTimers() {
+  dataRefreshTimers.forEach(timer => clearInterval(timer));
+  dataRefreshTimers = [];
+}
+
+function scheduleSourceRefreshes() {
+  clearDataRefreshTimers();
+  const sources = [
+    { key: 'scalla', load: loadScallaData },
+    { key: 'arbox', load: loadStudioData },
+    { key: 'meta', load: loadMetaData },
+  ];
+  sources.forEach(({ key, load }) => {
+    const interval = refreshIntervalMs(key);
+    if (!interval) return;
+    const timer = setInterval(async () => {
+      if (!sourceIsNeeded(key)) return;
+      try {
+        await load();
+        if (key === 'scalla' || key === 'arbox') checkAllThresholds();
+      } catch (err) {
+        console.warn(`[Refresh] ${key} refresh failed:`, err.message);
+      }
+    }, interval);
+    dataRefreshTimers.push(timer);
+  });
+}
+
+function applyDashboardControls() {
+  applyModuleVisibility();
+  if (typeof AI_CHAT !== 'undefined') setAiChatEnabled(getSavedAiChatEnabled(), false);
+  scheduleSourceRefreshes();
+}
+
 // Initialize
 (async function init() {
+  initThemeMode();
+  applyModuleVisibility();
   // Set up threshold UI (gear buttons + dots on each KPI tile)
   initThresholdUI();
+  updateDynamicReportLinks();
   // Start data loading in parallel
-  const dataPromise = Promise.all([loadScallaData(), loadStudioData(), loadMetaData()]);
+  const dataLoads = [];
+  if (sourceIsNeeded('scalla')) dataLoads.push(loadScallaData());
+  if (sourceIsNeeded('arbox')) dataLoads.push(loadStudioData());
+  if (sourceIsNeeded('meta')) dataLoads.push(loadMetaData());
+  const dataPromise = Promise.all(dataLoads);
   // Render marketing tab (static data, needs Chart.js)
-  if (typeof Chart !== 'undefined') {
+  if (isModuleEnabled('marketing') && typeof Chart !== 'undefined') {
     renderMarketingTab();
-  } else {
+  } else if (isModuleEnabled('marketing')) {
     window.addEventListener('load', renderMarketingTab);
   }
   await dataPromise;
   // Check all thresholds after data is loaded
   checkAllThresholds();
+  scheduleSourceRefreshes();
 })();
 
+window.addEventListener('storage', event => {
+  if (event.key === THEME_MODE_KEY) {
+    applyThemeMode(getSavedThemeMode(), { persist: false });
+    return;
+  }
+  if (event.key !== CONTROL_SETTINGS_KEY && event.key !== 'ai_chat_enabled' && event.key !== 'kpi_thresholds') return;
+  applyDashboardControls();
+  renderThresholdDots();
+  if (isModuleEnabled('marketing') && typeof Chart !== 'undefined') renderMarketingTab();
+});
+
 // ═══════════════════════════════════════════════════════════════
-// KPI TILE CLICK HANDLER — opens target system in new tab
+// KPI TILE CLICK HANDLER — always opens target system in a new tab
 // ═══════════════════════════════════════════════════════════════
-document.querySelectorAll('.kpi-card[data-href], .conv-card[data-href]').forEach(card => {
-  card.addEventListener('click', function() {
-    window.open(this.dataset.href, '_blank', 'noopener');
-  });
+const REPORT_TILE_SELECTOR = '.kpi-card[data-href], .conv-card[data-href]';
+const REPORT_TILE_INTERACTIVE_SELECTOR = 'a, button, input, select, textarea, label';
+
+function openReportTileInNewTab(tile) {
+  const targetUrl = tile && tile.dataset && tile.dataset.href;
+  if (!targetUrl) return;
+  const tab = window.open(targetUrl, '_blank', 'noopener,noreferrer');
+  if (tab) tab.opener = null;
+}
+
+document.addEventListener('click', event => {
+  const tile = event.target.closest(REPORT_TILE_SELECTOR);
+  if (!tile || event.target.closest(REPORT_TILE_INTERACTIVE_SELECTOR)) return;
+  event.preventDefault();
+  openReportTileInNewTab(tile);
+});
+
+document.querySelectorAll(REPORT_TILE_SELECTOR).forEach(card => {
+  card.setAttribute('role', 'link');
+  card.setAttribute('tabindex', '0');
   card.setAttribute('title', card.dataset.label || '');
+  card.addEventListener('keydown', event => {
+    if (event.key !== 'Enter' && event.key !== ' ') return;
+    event.preventDefault();
+    openReportTileInNewTab(card);
+  });
 });
 
 // ═══════════════════════════════════════════════════════════════
@@ -2389,7 +3340,11 @@ const AI_CHAT = {
   ENDPOINT: '/.netlify/functions/agent',
   history: [],   // Anthropic-format message history, echoed back by the server each turn
   busy: false,
+  enabled: true,
+  controller: null,
 };
+
+const AI_CHAT_ENABLED_KEY = 'ai_chat_enabled';
 
 const AI_CHAT_SUGGESTIONS = [
   'כמה לידים חדשים נכנסו החודש?',
@@ -2399,6 +3354,7 @@ const AI_CHAT_SUGGESTIONS = [
 ];
 
 function aiChatToggle(forceOpen) {
+  if (!AI_CHAT.enabled) return;
   const panel = document.getElementById('aiChatPanel');
   const shouldOpen = forceOpen !== undefined ? forceOpen : !panel.classList.contains('open');
   panel.classList.toggle('open', shouldOpen);
@@ -2435,7 +3391,7 @@ function aiChatHideTyping() {
 
 async function aiChatSend(text) {
   const question = (text !== undefined ? text : document.getElementById('aiChatInput').value).trim();
-  if (!question || AI_CHAT.busy) return;
+  if (!question || AI_CHAT.busy || !AI_CHAT.enabled) return;
 
   document.getElementById('aiChatInput').value = '';
   const suggestionsEl = document.getElementById('aiChatSuggestions');
@@ -2444,12 +3400,15 @@ async function aiChatSend(text) {
   aiChatShowTyping();
   AI_CHAT.busy = true;
   document.getElementById('aiChatSend').disabled = true;
+  const controller = new AbortController();
+  AI_CHAT.controller = controller;
 
   try {
     const res = await fetch(AI_CHAT.ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: question, history: AI_CHAT.history }),
+      signal: controller.signal,
     });
     const data = await res.json();
     aiChatHideTyping();
@@ -2462,11 +3421,48 @@ async function aiChatSend(text) {
     aiChatAppendMessage(data.reply, 'bot');
   } catch (err) {
     aiChatHideTyping();
-    aiChatAppendMessage('שגיאת תקשורת - בדוק את החיבור ונסה שוב. (' + err.message + ')', 'error');
+    if (err.name !== 'AbortError') {
+      aiChatAppendMessage('שגיאת תקשורת - בדוק את החיבור ונסה שוב. (' + err.message + ')', 'error');
+    }
   } finally {
+    if (AI_CHAT.controller === controller) AI_CHAT.controller = null;
     AI_CHAT.busy = false;
     document.getElementById('aiChatSend').disabled = false;
   }
+}
+
+function setAiChatEnabled(enabled, persist = true) {
+  AI_CHAT.enabled = Boolean(enabled);
+  const toggle = document.getElementById('aiChatEnabled');
+  const fab = document.getElementById('aiChatFab');
+  const panel = document.getElementById('aiChatPanel');
+
+  if (toggle) {
+    toggle.checked = AI_CHAT.enabled;
+    toggle.setAttribute('aria-checked', String(AI_CHAT.enabled));
+  }
+  if (fab) fab.hidden = !AI_CHAT.enabled;
+  if (panel && !AI_CHAT.enabled) panel.classList.remove('open');
+
+  if (!AI_CHAT.enabled && AI_CHAT.controller) {
+    AI_CHAT.controller.abort();
+    AI_CHAT.controller = null;
+    aiChatHideTyping();
+  }
+
+  if (persist) {
+    try { localStorage.setItem(AI_CHAT_ENABLED_KEY, String(AI_CHAT.enabled)); } catch {}
+  }
+}
+
+function getSavedAiChatEnabled() {
+  const rawSettings = readRawControlSettings();
+  if (rawSettings && typeof rawSettings.chatAgent === 'boolean') return rawSettings.chatAgent;
+  try {
+    const legacy = localStorage.getItem(AI_CHAT_ENABLED_KEY);
+    if (legacy !== null) return legacy !== 'false';
+  } catch {}
+  return true;
 }
 
 function initAiChat() {
@@ -2489,6 +3485,9 @@ function initAiChat() {
   document.getElementById('aiChatSend').addEventListener('click', () => aiChatSend());
   document.getElementById('aiChatFab').addEventListener('click', () => aiChatToggle());
   document.getElementById('aiChatCloseBtn').addEventListener('click', () => aiChatToggle(false));
+  const toggle = document.getElementById('aiChatEnabled');
+  if (toggle) toggle.addEventListener('change', event => setAiChatEnabled(event.target.checked));
+  setAiChatEnabled(getSavedAiChatEnabled(), false);
 }
 // Deferred: the chat widget markup (button/panel) is written to the DOM *after* this
 // inline <script> block, so calling initAiChat() immediately would hit null elements.

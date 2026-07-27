@@ -3,20 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>דשבורד ניהולי | הבית של גיליגולי</title>
+  <title>דשבורד ניהולי | סטודיו דמו</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <script>
-    (function () {
-      try {
-        const savedTheme = localStorage.getItem('smart_dashboard_theme');
-        document.documentElement.dataset.themeMode = savedTheme === 'dark' ? 'dark' : 'light';
-      } catch {
-        document.documentElement.dataset.themeMode = 'light';
-      }
-    })();
-  </script>
   <style>
     :root {
       --primary: #6B21A8;
@@ -39,52 +29,8 @@
       --border: #E5E7EB;
       --shadow: 0 2px 16px rgba(107,33,168,0.08);
       --shadow-hover: 0 8px 32px rgba(107,33,168,0.18);
-      --input-bg: #FFFFFF;
-      --muted-surface: #F3F4F6;
-      --overlay: rgba(0,0,0,.45);
-      --header-control-bg: rgba(255,255,255,.96);
-      --header-control-border: rgba(255,255,255,.82);
-      --header-control-text: #5B21B6;
-      --header-control-hover-bg: #FFFFFF;
-      --header-control-hover-text: #3B0764;
       --radius: 16px;
       --radius-sm: 8px;
-    }
-    html[data-theme-mode="dark"] {
-      color-scheme: dark;
-      --primary: #A78BFA;
-      --primary-light: #C084FC;
-      --primary-lighter: rgba(167,139,250,.18);
-      --secondary: #22D3EE;
-      --secondary-light: #67E8F9;
-      --accent: #F472B6;
-      --accent-light: rgba(244,114,182,.18);
-      --success: #4ADE80;
-      --success-light: rgba(74,222,128,.16);
-      --warning: #FBBF24;
-      --warning-light: rgba(251,191,36,.17);
-      --danger: #FB7185;
-      --danger-light: rgba(251,113,133,.17);
-      --bg: #050505;
-      --card: #111111;
-      --text: #F8FAFC;
-      --text-secondary: #CBD5E1;
-      --border: #2D2D2D;
-      --shadow: 0 2px 18px rgba(0,0,0,.46);
-      --shadow-hover: 0 10px 34px rgba(0,0,0,.62);
-      --input-bg: #181818;
-      --muted-surface: #202020;
-      --overlay: rgba(0,0,0,.72);
-      --header-control-bg: rgba(17,17,17,.86);
-      --header-control-border: rgba(255,255,255,.2);
-      --header-control-text: #F8FAFC;
-      --header-control-hover-bg: rgba(255,255,255,.14);
-      --header-control-hover-text: #FFFFFF;
-    }
-    html[data-theme-mode="dark"],
-    html[data-theme-mode="dark"] body {
-      background: var(--bg);
-      color: var(--text);
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body {
@@ -93,7 +39,6 @@
       color: var(--text);
       min-height: 100vh;
       direction: rtl;
-      transition: background .2s ease, color .2s ease;
     }
 
     /* ── HEADER ─────────────────────────────────────────── */
@@ -187,14 +132,14 @@
     /* ── MODALS ───────────────────────────────────────────── */
     .modal-overlay {
       display: none; position: fixed; inset: 0;
-      background: var(--overlay); z-index: 1000;
+      background: rgba(0,0,0,.45); z-index: 1000;
       backdrop-filter: blur(2px);
     }
     .modal-overlay.open { display: block; }
     .threshold-modal {
       display: none; position: fixed; z-index: 1001;
       top: 50%; left: 50%; transform: translate(-50%,-50%);
-      background: var(--card); border-radius: 16px;
+      background: #fff; border-radius: 16px;
       width: min(390px, 93vw);
       box-shadow: 0 20px 60px rgba(0,0,0,.22);
       font-family: 'Heebo', sans-serif;
@@ -202,81 +147,55 @@
     .threshold-modal.open { display: block; }
     .tmodal-header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 18px 20px 14px; border-bottom: 1px solid var(--border);
-      font-size: 15px; font-weight: 700; color: var(--text);
+      padding: 18px 20px 14px; border-bottom: 1px solid #F3F4F6;
+      font-size: 15px; font-weight: 700; color: #1F2937;
     }
     .tmodal-close {
       background: none; border: none; cursor: pointer;
-      font-size: 18px; color: var(--text-secondary); padding: 0 4px; line-height: 1;
+      font-size: 18px; color: #9CA3AF; padding: 0 4px; line-height: 1;
     }
-    .tmodal-close:hover { color: var(--text); }
+    .tmodal-close:hover { color: #374151; }
     .tmodal-body { padding: 12px 20px; display: flex; flex-direction: column; gap: 5px; }
-    .tmodal-body label { font-size: 12px; font-weight: 600; color: var(--text); margin-top: 8px; }
+    .tmodal-body label { font-size: 12px; font-weight: 600; color: #374151; margin-top: 8px; }
     .tmodal-body label em { font-weight: 700; font-style: normal; color: var(--primary); }
     .tmodal-body input[type="number"],
     .tmodal-body input[type="email"],
     .tmodal-body input[type="text"] {
-      background: var(--input-bg); color: var(--text);
-      border: 1.5px solid var(--border); border-radius: 8px;
+      border: 1.5px solid #E5E7EB; border-radius: 8px;
       padding: 8px 12px; font-size: 14px; font-family: 'Heebo', sans-serif;
       outline: none; transition: border-color .15s; width: 100%; box-sizing: border-box;
     }
     .tmodal-body input:focus { border-color: var(--primary); }
     .toggle-label { display: flex; align-items: center; gap: 8px; cursor: pointer;
-      font-size: 14px; font-weight: 500; color: var(--text); margin-top: 6px; }
+      font-size: 14px; font-weight: 500; color: #374151; margin-top: 6px; }
     .tmodal-footer {
       padding: 12px 20px 16px; display: flex; gap: 8px; justify-content: flex-end;
-      border-top: 1px solid var(--border);
+      border-top: 1px solid #F3F4F6;
     }
     .btn-save { background: var(--primary); color: #fff; border: none; padding: 8px 18px;
       border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif;
       font-weight: 600; font-size: 13px; }
     .btn-save:hover { background: var(--primary-light); }
-    .btn-clear { background: var(--muted-surface); color: var(--text); border: none; padding: 8px 14px;
+    .btn-clear { background: #F3F4F6; color: #374151; border: none; padding: 8px 14px;
       border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 13px; }
-    .btn-clear:hover { background: var(--border); }
+    .btn-clear:hover { background: #E5E7EB; }
     .btn-test { background: var(--secondary); color: #fff; border: none; padding: 8px 14px;
       border-radius: 8px; cursor: pointer; font-family: 'Heebo',sans-serif; font-size: 13px; }
-    .emailjs-help { font-size: 12px; color: var(--text-secondary); line-height: 1.6; margin: 0; }
+    .emailjs-help { font-size: 12px; color: #6B7280; line-height: 1.6; margin: 0; }
     .emailjs-help a { color: var(--primary); }
-    .emailjs-help code { background: var(--muted-surface); padding: 1px 5px; border-radius: 3px; font-size: 11px; }
+    .emailjs-help code { background: #F3F4F6; padding: 1px 5px; border-radius: 3px; font-size: 11px; }
     /* ── ALERTS BUTTON IN HEADER ──────────────────────────── */
     .alert-config-btn {
       min-height: 32px; display: inline-flex; align-items: center; justify-content: center;
-      background: var(--header-control-bg); border: 1px solid var(--header-control-border);
-      color: var(--header-control-text); padding: 5px 13px; border-radius: 20px;
+      background: rgba(255,255,255,.96); border: 1px solid rgba(255,255,255,.82);
+      color: #5B21B6; padding: 5px 13px; border-radius: 20px;
       cursor: pointer; font-size: 12px; font-weight: 700;
       font-family: 'Heebo',sans-serif; transition: all .2s;
       box-shadow: 0 1px 4px rgba(49,20,89,.18);
     }
-    .alert-config-btn:hover { background: var(--header-control-hover-bg); color: var(--header-control-hover-text); transform: translateY(-1px); }
+    .alert-config-btn:hover { background: #fff; color: #3B0764; transform: translateY(-1px); }
     .alert-config-btn:focus-visible { outline: 3px solid rgba(255,255,255,.55); outline-offset: 2px; }
     .service-link { display: inline-flex; align-items: center; text-decoration: none; white-space: nowrap; }
-    .theme-switch {
-      min-height: 32px; display: inline-flex; align-items: center; gap: 7px;
-      padding: 5px 10px; border-radius: 20px; cursor: pointer; user-select: none;
-      background: var(--header-control-bg); border: 1px solid var(--header-control-border);
-      color: var(--header-control-text); box-shadow: 0 1px 4px rgba(49,20,89,.18);
-      font-size: 12px; font-weight: 800; transition: background .18s, color .18s, transform .18s;
-    }
-    .theme-switch:hover { background: var(--header-control-hover-bg); color: var(--header-control-hover-text); transform: translateY(-1px); }
-    .theme-switch:focus-within { outline: 3px solid rgba(255,255,255,.55); outline-offset: 2px; }
-    .theme-switch input { position: absolute; opacity: 0; pointer-events: none; }
-    .theme-switch-track, .theme-switch-thumb, .theme-switch-label { pointer-events: none; }
-    .theme-switch-track {
-      position: relative; width: 38px; height: 20px; border-radius: 999px;
-      background: rgba(15,23,42,.22); border: 1px solid rgba(15,23,42,.14);
-      transition: background .18s, border-color .18s;
-    }
-    .theme-switch-thumb {
-      position: absolute; top: 2px; right: 2px; width: 14px; height: 14px; border-radius: 50%;
-      background: #FFFFFF; box-shadow: 0 1px 4px rgba(0,0,0,.28);
-      transition: transform .18s, background .18s;
-    }
-    .theme-switch input:checked + .theme-switch-track { background: #0F172A; border-color: rgba(255,255,255,.28); }
-    .theme-switch input:checked + .theme-switch-track .theme-switch-thumb { transform: translateX(-18px); background: #F8FAFC; }
-    .theme-switch-label { min-width: 30px; text-align: center; }
-    html[data-theme-mode="dark"] .theme-switch-track { background: #0F172A; border-color: rgba(255,255,255,.3); }
     .kpi-card.red    { border-top-color: var(--danger); }
     .kpi-icon { font-size: 22px; margin-bottom: 6px; }
     .kpi-value { font-size: 34px; font-weight: 900; line-height: 1; margin-bottom: 4px; }
@@ -312,7 +231,6 @@
     /* ── TAB CONTENT ─────────────────────────────────────── */
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-    .tab-btn[hidden], .tab-content[hidden], [data-dashboard-module][hidden] { display: none !important; }
 
     /* ── MAIN LAYOUT ─────────────────────────────────────── */
     .main { max-width: 1440px; margin: 0 auto; padding: 20px 24px; }
@@ -467,67 +385,6 @@
     .ranking-score { font-size: 13px; font-weight: 700; color: var(--primary); }
     .ranking-score.danger { color: var(--danger); }
 
-    /* -- AI PERFORMANCE MODULE ----------------------------- */
-    .performance-hero {
-      display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(280px, .65fr);
-      gap: 18px; margin-bottom: 18px; align-items: stretch;
-    }
-    .performance-score {
-      background: linear-gradient(135deg, #581C87 0%, #7C3AED 55%, #0F766E 100%);
-      color: #fff; border-radius: var(--radius); padding: 22px; box-shadow: var(--shadow-hover);
-      display: flex; flex-direction: column; justify-content: space-between; min-height: 210px;
-    }
-    .performance-score-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
-    .performance-score-title { font-size: 15px; font-weight: 800; opacity: .92; }
-    .performance-score-value { font-size: 64px; line-height: .9; font-weight: 900; letter-spacing: 0; }
-    .performance-score-label { font-size: 13px; opacity: .82; margin-top: 8px; }
-    .performance-score-bar { height: 8px; border-radius: 999px; background: rgba(255,255,255,.2); overflow: hidden; margin-top: 18px; }
-    .performance-score-fill { height: 100%; width: 0%; border-radius: 999px; background: #4ADE80; transition: width .55s ease; }
-    .performance-score-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-    .performance-chip {
-      background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.22);
-      border-radius: 999px; padding: 4px 10px; font-size: 11px; font-weight: 700;
-    }
-    .performance-action-list, .performance-metric-list { display: flex; flex-direction: column; gap: 10px; }
-    .performance-action {
-      background: var(--bg); border-radius: 10px; padding: 12px 13px;
-      border-right: 4px solid var(--primary);
-    }
-    .performance-action.high { border-right-color: var(--danger); background: var(--danger-light); }
-    .performance-action.medium { border-right-color: var(--warning); background: var(--warning-light); }
-    .performance-action.good { border-right-color: var(--success); background: var(--success-light); }
-    .performance-action-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 5px; }
-    .performance-priority { font-size: 10px; font-weight: 800; padding: 2px 8px; border-radius: 999px; background: var(--card); color: var(--text-secondary); border: 1px solid var(--border); }
-    .performance-priority.high { color: var(--danger); }
-    .performance-priority.medium { color: var(--warning); }
-    .performance-priority.good { color: var(--success); }
-    .performance-action-metric { font-size: 11px; font-weight: 800; color: var(--text-secondary); white-space: nowrap; }
-    .performance-action-title { font-size: 13px; font-weight: 800; color: var(--text); }
-    .performance-action-body { font-size: 12px; color: var(--text-secondary); line-height: 1.55; margin-top: 4px; }
-    .performance-action-next { font-size: 11px; font-weight: 800; color: var(--primary); margin-top: 7px; }
-    .performance-metric {
-      display: grid; grid-template-columns: 82px minmax(0, 1fr); gap: 10px; align-items: center;
-      background: var(--bg); border-radius: 10px; padding: 11px 12px;
-    }
-    .performance-metric-val { font-size: 24px; font-weight: 900; color: var(--primary); line-height: 1; }
-    .performance-metric-label { font-size: 12px; font-weight: 800; color: var(--text); }
-    .performance-metric-sub { font-size: 11px; color: var(--text-secondary); margin-top: 2px; line-height: 1.45; }
-    .performance-ai-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
-    .performance-ai-btn {
-      background: var(--primary); color: #fff; border: none; border-radius: 10px;
-      padding: 9px 14px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 800;
-    }
-    .performance-ai-btn:hover { background: var(--primary-light); }
-    .performance-ai-btn:disabled { opacity: .55; cursor: wait; }
-    .performance-ai-output {
-      min-height: 150px; background: var(--bg); border-radius: 10px; padding: 13px;
-      font-size: 13px; line-height: 1.65; white-space: pre-wrap; color: var(--text);
-    }
-    @media (max-width: 900px) {
-      .performance-hero { grid-template-columns: minmax(0, 1fr); }
-      .performance-score-value { font-size: 52px; }
-    }
-
     /* ── ONE-TIME BUYERS ─────────────────────────────────── */
     .onetime-list { display: flex; flex-direction: column; gap: 8px; }
     .onetime-item {
@@ -605,7 +462,7 @@
     .filter-row { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 14px; }
     .filter-btn {
       padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border);
-      background: var(--card); font-family: inherit; font-size: 12px; font-weight: 600;
+      background: white; font-family: inherit; font-size: 12px; font-weight: 600;
       cursor: pointer; color: var(--text-secondary); transition: all 0.15s;
     }
     .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
@@ -720,7 +577,7 @@
     .ai-chat-input {
       flex: 1; resize: none; border: 1.5px solid var(--border); border-radius: 10px;
       padding: 9px 12px; font-family: 'Heebo', sans-serif; font-size: 13px; outline: none;
-      max-height: 80px; direction: rtl; background: var(--input-bg); color: var(--text);
+      max-height: 80px; direction: rtl;
     }
     .ai-chat-input:focus { border-color: var(--primary); }
     .ai-chat-send {
@@ -732,13 +589,13 @@
     .ai-chat-master {
       position: fixed; bottom: 4px; left: 22px; z-index: 901;
       display: inline-flex; align-items: center; gap: 5px; padding: 2px 6px;
-      border: 1px solid var(--border); border-radius: 12px;
-      background: var(--card); color: var(--text-secondary);
+      border: 1px solid rgba(107,33,168,.16); border-radius: 12px;
+      background: rgba(255,255,255,.72); color: var(--text-secondary);
       font-size: 9px; font-weight: 700; line-height: 1;
       opacity: .38; transition: opacity .18s, background .18s;
       cursor: pointer; user-select: none; box-shadow: 0 1px 3px rgba(30,20,55,.08);
     }
-    .ai-chat-master:hover, .ai-chat-master:focus-within { opacity: .9; background: var(--card); }
+    .ai-chat-master:hover, .ai-chat-master:focus-within { opacity: .9; background: rgba(255,255,255,.96); }
     .ai-chat-master input { position: absolute; opacity: 0; pointer-events: none; }
     .ai-chat-switch {
       position: relative; width: 24px; height: 13px; border-radius: 8px;
@@ -762,63 +619,60 @@
     <div class="header-brand">
       <div class="brand-icon">🌸</div>
       <div>
-        <div class="brand-title">הבית של גיליגולי</div>
-        <div class="brand-sub">דשבורד ניהולי v3.0 | חיבור API חי ל-ScallaCRM</div>
+        <div class="brand-title">סטודיו דמו</div>
+        <div class="brand-sub">דשבורד דמו אנונימי | ללא חיבור למערכות לקוח</div>
       </div>
     </div>
     <div class="header-meta">
+      <div class="badge-live" id="demoModeBadge">נתוני דמו אנונימיים</div>
       <div class="header-date" id="currentDate"></div>
-      <div class="badge-live" id="crmBadge"><span class="pulse"></span> מתחבר ל-ScallaCRM...</div>
-      <div class="badge-live" id="arboxBadge">⟳ בודק Arbox...</div>
-      <label class="theme-switch" title="החלפת מצב תצוגה">
-        <input id="themeModeToggle" type="checkbox" aria-label="החלפת מצב כהה ובהיר">
-        <span class="theme-switch-track" aria-hidden="true"><span class="theme-switch-thumb"></span></span>
-        <span class="theme-switch-label" id="themeSwitchLabel">כהה</span>
-      </label>
+      <div class="badge-live" id="crmBadge"><span class="pulse"></span> מתחבר ל-CRM...</div>
+      <div class="badge-live" id="arboxBadge">⟳ בודק מערכת סטודיו...</div>
       <a class="alert-config-btn service-link" href="DashBoard_CR_Form.html">בקשת שירות</a>
-      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()">🔄 רענן נתונים</button>
+      <button class="alert-config-btn" onclick="openEmailJSModal()">🔔 התראות</button>
+      <button class="refresh-btn" id="refreshBtn" onclick="refreshDashboard()">רענן דמו</button>
     </div>
   </div>
 </header>
 
 <!-- ── KPI GRID ────────────────────────────────────────────── -->
 <div class="kpi-grid">
-  <div class="kpi-card purple" data-dashboard-module="leads" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&parent=&page=1&view=List&viewname=1&orderby=&sortorder=&app=MARKETING&search_params=%5B%5D&tag_params=%5B%5D&nolistcache=0&list_headers=%5B%22assigned_user_id%22%2C%22createdtime%22%2C%22leadstatus%22%2C%22firstname%22%2C%22lastname%22%2C%22mobile%22%2C%22cf_2715%22%2C%22leadsource%22%2C%22facebook_form_name%22%2C%22cf_2719%22%2C%22cf_1267%22%5D&tag=" data-label="סה&quot;כ לידים ב-ScallaCRM">
+  <div class="kpi-card purple" data-demo-report="true" data-label="סה&quot;כ לידים ב-CRM">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">📋</div>
     <div class="kpi-value purple" id="kpiTotalLeads">—</div>
     <div class="kpi-label">סה"כ לידים</div>
-    <div class="kpi-sub" id="kpiTotalLeadsSub">ScallaCRM</div>
+    <div class="kpi-sub" id="kpiTotalLeadsSub">CRM</div>
   </div>
-  <div class="kpi-card teal" data-dashboard-module="leads" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%99%D7%93+%D7%91%D7%98%D7%99%D7%A4%D7%95%D7%9C" data-label="לידים בטיפול ב-ScallaCRM">
+  <div class="kpi-card teal" data-demo-report="true" data-label="לידים בטיפול ב-CRM">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">⏳</div>
     <div class="kpi-value teal" id="kpiNewLeads">—</div>
     <div class="kpi-label">לידים בטיפול</div>
     <div class="kpi-sub">סטטוס ליד בטיפול</div>
   </div>
-  <div class="kpi-card green" data-dashboard-module="studio" data-href="https://manage.arboxapp.com/reports-v5/active-members-report" data-label="מנויי Full House ב-Arbox">
+  <div class="kpi-card green" data-demo-report="true" data-label="מנויי Full House במערכת סטודיו">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">🏡</div>
     <div class="kpi-value green" id="kpiFH">—</div>
     <div class="kpi-label">Full House</div>
     <div class="kpi-sub">מנויים פעילים</div>
   </div>
-  <div class="kpi-card pink" data-dashboard-module="studio" data-href="https://manage.arboxapp.com/" data-label="מנויי In House ב-Arbox">
+  <div class="kpi-card pink" data-demo-report="true" data-label="מנויי In House במערכת סטודיו">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">🏠</div>
     <div class="kpi-value pink" id="kpiIH">—</div>
     <div class="kpi-label">In House</div>
     <div class="kpi-sub">מנויים פעילים</div>
   </div>
-  <div class="kpi-card purple" data-dashboard-module="studio" data-href="https://manage.arboxapp.com/reports-v5/sessions-report" data-label="כרטיסיות פעילות ב-Arbox">
+  <div class="kpi-card purple" data-demo-report="true" data-label="כרטיסיות פעילות במערכת סטודיו">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">🎫</div>
     <div class="kpi-value purple" id="kpiKR">—</div>
     <div class="kpi-label">כרטיסיות פעילות</div>
     <div class="kpi-sub">פעילות</div>
   </div>
-  <div class="kpi-card orange" data-dashboard-module="studio" data-report-key="expiring-sessions-week" data-href="https://manage.arboxapp.com/reports-v5/expiring-sessions-report" data-label="כרטיסיות פגות השבוע ב-Arbox">
+  <div class="kpi-card orange" data-report-key="expiring-sessions-week" data-demo-report="true" data-label="כרטיסיות פגות השבוע במערכת סטודיו">
     <span class="kpi-link-icon">↗</span>
     <div class="kpi-icon">⚠️</div>
     <div class="kpi-value orange" id="kpiExp">—</div>
@@ -839,9 +693,6 @@
     <button class="tab-btn" id="tab-btn-marketing" onclick="switchTab('marketing')">
       📈 שיווק
     </button>
-    <button class="tab-btn" id="tab-btn-performance" onclick="switchTab('performance')">
-      🤖 AI ביצועים <span class="tab-badge warn" id="badge-performance">—</span>
-    </button>
   </div>
 </div>
 
@@ -852,34 +703,34 @@
 <main class="main">
 
   <div class="info-note purple" id="leadsInfoNote">
-    ⟳ מתחבר ל-ScallaCRM API...
+    ⟳ מתחבר ל-CRM API...
   </div>
 
   <!-- Leads Funnel KPIs -->
   <div class="section-title">🎯 מדדי לידים - החודש הנוכחי</div>
   <div class="grid-4" style="margin-bottom:14px;">
-    <div class="kpi-card mini-kpi purple" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&parent=&page=1&view=List&viewname=1&orderby=&sortorder=&app=MARKETING&search_params=%5B%5D&tag_params=%5B%5D&nolistcache=0&list_headers=%5B%22assigned_user_id%22%2C%22createdtime%22%2C%22leadstatus%22%2C%22firstname%22%2C%22lastname%22%2C%22mobile%22%2C%22cf_2715%22%2C%22leadsource%22%2C%22facebook_form_name%22%2C%22cf_2719%22%2C%22cf_1267%22%5D&tag=" data-label="סה&quot;כ לידים ב-ScallaCRM">
+    <div class="kpi-card mini-kpi purple" data-demo-report="true" data-label="סה&quot;כ לידים ב-CRM">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">📋</div>
       <div class="kpi-value purple" id="kpiAllLeadsPeriod">—</div>
       <div class="kpi-label">סה"כ לידים</div>
       <div class="kpi-sub" id="kpiAllLeadsPeriodSub">סה"כ לידים החודש</div>
     </div>
-    <div class="kpi-card mini-kpi teal" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%99%D7%93+%D7%91%D7%98%D7%99%D7%A4%D7%95%D7%9C" data-label="לידים בטיפול ב-ScallaCRM">
+    <div class="kpi-card mini-kpi teal" data-demo-report="true" data-label="לידים בטיפול ב-CRM">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">⏳</div>
       <div class="kpi-value teal" id="kpiInProgress">—</div>
       <div class="kpi-label">לידים בטיפול</div>
       <div class="kpi-sub">סטטוס ליד בטיפול</div>
     </div>
-    <div class="kpi-card mini-kpi green" data-report-key="trial-classes-month" data-href="https://manage.arboxapp.com/reports-v5/trial-classes-report?date=2026-07-01%2C2026-07-31" data-label="שיעורי ניסיון שנסגרו ב-Arbox">
+    <div class="kpi-card mini-kpi green" data-report-key="trial-classes-month" data-demo-report="true" data-label="שיעורי ניסיון שנסגרו במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">✅</div>
       <div class="kpi-value green" id="kpiTrialClosed">—</div>
       <div class="kpi-label">שיעורי ניסיון שנסגרו</div>
       <div class="kpi-sub">נסגרו לשיעור ניסיון</div>
     </div>
-    <div class="kpi-card mini-kpi red" data-href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&action=index&searchtype=basic&query=true&leadstatus=%D7%9C%D7%90+%D7%A8%D7%9C%D7%95%D7%95%D7%A0%D7%98%D7%99" data-label="לידים לא רלוונטים ב-ScallaCRM">
+    <div class="kpi-card mini-kpi red" data-demo-report="true" data-label="לידים לא רלוונטים ב-CRM">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">❌</div>
       <div class="kpi-value red" id="kpiLostLeads">—</div>
@@ -892,7 +743,7 @@
   <div class="card" style="margin-bottom:18px;">
     <div class="card-title">
       <span>🏆 סגירות שיעור ניסיון לפי איש/אשת מכירות</span>
-      <span class="card-subtitle">מבוסס שדה "מוקצה אל" ב-ScallaCRM | החודש <a href="https://houseofgiliguli.scallacrm.co.il/index.php?module=Leads&parent=&page=1&view=List&viewname=1&orderby=&sortorder=&app=MARKETING&search_params=%5B%5D&tag_params=%5B%5D&nolistcache=0&list_headers=%5B%22assigned_user_id%22%2C%22createdtime%22%2C%22leadstatus%22%2C%22firstname%22%2C%22lastname%22%2C%22mobile%22%2C%22cf_2715%22%2C%22leadsource%22%2C%22facebook_form_name%22%2C%22cf_2719%22%2C%22cf_1267%22%5D&tag=" target="_blank" rel="noopener" style="margin-right:6px;">↗ Scalla</a></span>
+      <span class="card-subtitle">מבוסס שדה "מוקצה אל" ב-CRM | החודש <a href="#" data-demo-link="true" onclick="return false;" target="_blank" rel="noopener" style="margin-right:6px;">↗ Scalla</a></span>
     </div>
     <div class="ranking-list" id="ownerCloseList"></div>
   </div>
@@ -948,7 +799,7 @@
             </tr>
           </thead>
           <tbody id="leadsTableBody">
-            <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-secondary);">⟳ טוען לידים מ-ScallaCRM...</td></tr>
+            <tr><td colspan="8" style="text-align:center;padding:20px;color:var(--text-secondary);">⟳ טוען לידים מ-CRM...</td></tr>
           </tbody>
         </table>
       </div>
@@ -966,7 +817,7 @@
 <main class="main">
 
   <div class="info-note purple" id="studioInfoNote">
-    ⟳ טוען נתונים מ-Arbox...
+    ⟳ טוען נתונים ממערכת סטודיו...
   </div>
 
   <div class="section-title">🎟 תמונת מצב מנויים פעילים</div>
@@ -997,49 +848,49 @@
   <!-- Extended membership metrics -->
   <div class="section-title">📋 מדדי מנויים מורחבים</div>
   <div class="grid-4" style="margin-bottom:18px;">
-    <div class="kpi-card mini-kpi purple" data-href="https://manage.arboxapp.com/" data-label="כל תוכניות המנוי הפעילות ב-Arbox">
+    <div class="kpi-card mini-kpi purple" data-demo-report="true" data-label="כל תוכניות המנוי הפעילות במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">🎟</div>
       <div class="kpi-value purple" id="kpiActivePlans">—</div>
       <div class="kpi-label">מנויים פעילים</div>
       <div class="kpi-sub" id="kpiActivePlansSub">סה"כ מנויים פעילים</div>
     </div>
-    <div class="kpi-card mini-kpi teal" data-href="https://manage.arboxapp.com/" data-label="כרטיסיות שנמכרו ב-Arbox">
+    <div class="kpi-card mini-kpi teal" data-demo-report="true" data-label="כרטיסיות שנמכרו במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">🧾</div>
       <div class="kpi-value teal" id="kpiPacksSold">—</div>
       <div class="kpi-label">כרטיסיות שנמכרו</div>
       <div class="kpi-sub">נמכרו ב-90 יום | <span id="kpiPacksActiveSub">— פעילות</span></div>
     </div>
-    <div class="kpi-card mini-kpi orange" data-href="https://manage.arboxapp.com/reports-v5/expired-memberships-report" data-label="מנויים לא פעילים ב-Arbox">
+    <div class="kpi-card mini-kpi orange" data-demo-report="true" data-label="מנויים לא פעילים במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">💤</div>
       <div class="kpi-value orange" id="kpiInactive">—</div>
       <div class="kpi-label">מנויים לא פעילים</div>
       <div class="kpi-sub" id="kpiInactiveSub">ללא מנוי פעיל</div>
     </div>
-    <div class="kpi-card mini-kpi red" data-report-key="expiring-memberships-month" data-href="https://manage.arboxapp.com/reports-v5/expiring-memberships-report" data-label="מנויים שפג תוקפם ב-Arbox">
+    <div class="kpi-card mini-kpi red" data-demo-report="true" data-label="מנויים שפג תוקפם במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">⏱</div>
       <div class="kpi-value red" id="kpiExpiredPlans">—</div>
       <div class="kpi-label">מנויים שפג תוקפם</div>
-      <div class="kpi-sub" id="kpiExpiredPlansSub">פגים החודש</div>
+      <div class="kpi-sub" id="kpiExpiredPlansSub">פג תוקף | 30 יום</div>
     </div>
-    <div class="kpi-card mini-kpi green" data-href="https://manage.arboxapp.com/reports-v5/renewals-report" data-label="חידושי מנוי ב-Arbox">
+    <div class="kpi-card mini-kpi green" data-demo-report="true" data-label="חידושי מנוי במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">🔁</div>
       <div class="kpi-value green" id="kpiRenewals">—</div>
       <div class="kpi-label">חידושי מנוי</div>
       <div class="kpi-sub" id="kpiRenewalsSub">חודשו | 30 יום</div>
     </div>
-    <div class="kpi-card mini-kpi red" data-href="https://manage.arboxapp.com/reports-v5/cancelled-memberships-report" data-label="ביטולי מנוי ב-Arbox">
+    <div class="kpi-card mini-kpi red" data-demo-report="true" data-label="ביטולי מנוי במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">🚫</div>
       <div class="kpi-value red" id="kpiCancellations">—</div>
       <div class="kpi-label">ביטולי מנוי</div>
       <div class="kpi-sub" id="kpiCancellationsSub">בוטלו | 30 יום</div>
     </div>
-    <div class="kpi-card mini-kpi pink" data-href="https://manage.arboxapp.com/reports-v5/expiring-sessions-report" data-label="כרטיסיות שעומדות לפוג ב-Arbox">
+    <div class="kpi-card mini-kpi pink" data-demo-report="true" data-label="כרטיסיות שעומדות לפוג במערכת סטודיו">
       <span class="kpi-link-icon">↗</span>
       <div class="kpi-icon">🎫</div>
       <div class="kpi-value pink" id="kpiPunchExpKPI">—</div>
@@ -1077,15 +928,15 @@
   <!-- Courses & engagement -->
   <div class="section-title">🎓 סדנאות ומעורבות</div>
   <div class="grid-3" style="margin-bottom:18px; align-items:start;">
-    <div class="conv-card" data-href="https://manage.arboxapp.com/reports-v5/hugim-bookings-report" data-label="הרשמות לחוגים ב-Arbox" style="grid-column:span 1;">
+    <div class="conv-card" data-demo-report="true" data-label="הרשמות לחוגים במערכת סטודיו" style="grid-column:span 1;">
       <div class="conv-val" id="kpiActiveCourses">—</div>
       <div class="conv-unit">חוגים</div>
-      <div class="conv-label">חוגים פעילים<br>לפי דוח Arbox</div>
+      <div class="conv-label">חוגים פעילים<br>לפי דוח מערכת סטודיו</div>
     </div>
     <div class="card">
       <div class="card-title">
         <span>📚 הרשמות לחוגים לפי חוג</span>
-        <span class="card-subtitle">הרשמות לחוגים | 30 יום <a href="https://manage.arboxapp.com/reports-v5/hugim-bookings-report" target="_blank" rel="noopener" style="margin-right:6px;">↗ Arbox</a></span>
+        <span class="card-subtitle">הרשמות לחוגים | 30 יום <a href="#" data-demo-link="true" onclick="return false;" target="_blank" rel="noopener" style="margin-right:6px;">↗ מערכת סטודיו</a></span>
       </div>
       <div class="ranking-list" id="courseBookingList"></div>
     </div>
@@ -1109,7 +960,7 @@
     <div class="card">
       <div class="card-title">
         <span>🚨 Top 5 - ביטולים ואי-הגעה</span>
-        <span class="card-subtitle">החודש האחרון <a href="https://manage.arboxapp.com/reports-v5/booking-cancellation-report" target="_blank" rel="noopener" style="margin-right:6px;">↗ Arbox</a></span>
+        <span class="card-subtitle">החודש האחרון <a href="#" data-demo-link="true" onclick="return false;" target="_blank" rel="noopener" style="margin-right:6px;">↗ מערכת סטודיו</a></span>
       </div>
       <div class="ranking-list" id="noShowList"></div>
     </div>
@@ -1120,7 +971,7 @@
       <span>💡 רכשו שיעור ניסיון (99₪ / 220₪) - הזדמנויות Upsell</span>
       <span style="font-size:11px; background:rgba(107,33,168,.1); color:var(--primary); padding:2px 9px; border-radius:10px; font-weight:700;" id="onetimeCount">טוען...</span>
     </div>
-    <div class="alert-box">🔍 זיהוי רוכשי שיעור ניסיון ללא מנוי - דורש השוואה Arbox ↔ ScallaCRM</div>
+    <div class="alert-box">🔍 זיהוי רוכשי שיעור ניסיון ללא מנוי - דורש השוואה מערכת סטודיו ↔ CRM</div>
     <div class="onetime-list" id="onetimeList"></div>
   </div>
 
@@ -1134,7 +985,7 @@
 <main class="main">
 
   <div class="info-note pink" id="marketingInfoNote">
-    ✏️ נתוני שיווק - הזן ערכים בשדות הכחולים | חיבור Meta Ads יאפשר נתונים אוטומטיים בעתיד
+    ✏️ נתוני שיווק - הזן ערכים בשדות הכחולים | חיבור שיווק דיגיטלי יאפשר נתונים אוטומטיים בעתיד
   </div>
 
   <div class="section-title">🎯 יעדים מול ביצוע - יוני 2026</div>
@@ -1142,18 +993,18 @@
     <div class="goal-card">
       <div class="goal-header">
         <div class="goal-label">💰 הכנסות חודשיות</div>
-        <div class="goal-numbers"><strong style="color:var(--warning);">38,500</strong>₪ / <span style="color:var(--text-secondary);">50,000₪</span></div>
+        <div class="goal-numbers"><strong style="color:var(--warning);">64,200</strong>₪ / <span style="color:var(--text-secondary);">80,000₪</span></div>
       </div>
       <div class="goal-bar-wrap"><div class="goal-bar-fill behind" style="width:77%"></div></div>
-      <div class="goal-pct">77% מהיעד החודשי - פיגור של 11,500₪</div>
+      <div class="goal-pct">80% מהיעד החודשי - פיגור של 15,800₪</div>
     </div>
     <div class="goal-card">
       <div class="goal-header">
         <div class="goal-label">📣 תקציב שיווק</div>
-        <div class="goal-numbers"><strong style="color:var(--warning);">6,400</strong>₪ / <span style="color:var(--text-secondary);">8,000₪</span></div>
+        <div class="goal-numbers"><strong style="color:var(--warning);">9,100</strong>₪ / <span style="color:var(--text-secondary);">12,000₪</span></div>
       </div>
       <div class="goal-bar-wrap"><div class="goal-bar-fill behind" style="width:80%"></div></div>
-      <div class="goal-pct">80% ניצול | 1,600₪ נותרו לחודש</div>
+      <div class="goal-pct">76% ניצול | 2,900₪ נותרו לחודש</div>
     </div>
     <div class="goal-card">
       <div class="goal-header">
@@ -1169,7 +1020,7 @@
     <div class="card">
       <div class="card-title">
         <span>📣 ביצועי קמפיינים - יוני 2026</span>
-        <span class="card-subtitle">ScallaCRM + הזנה ידנית</span>
+        <span class="card-subtitle">CRM + הזנה ידנית</span>
       </div>
       <div style="overflow-x:auto;">
         <table class="tbl">
@@ -1181,13 +1032,13 @@
     <div class="card">
       <div class="card-title"><span>📱 סושיאל אורגני</span></div>
       <div class="social-grid" style="margin-bottom:12px;">
-        <div class="social-stat"><div class="social-stat-val" id="metaImpressions">12.4K</div><div class="social-stat-label">חשיפות</div></div>
-        <div class="social-stat"><div class="social-stat-val" id="metaEngagementRate">8.2%</div><div class="social-stat-label">מעורבות</div></div>
-        <div class="social-stat"><div class="social-stat-val" id="metaFans">1,020</div><div class="social-stat-label">עוקבים</div></div>
-        <div class="social-stat"><div class="social-stat-val" id="metaEngaged">45</div><div class="social-stat-label">משתמשים מעורבים</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaImpressions">18.7K</div><div class="social-stat-label">חשיפות</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaEngagementRate">9.4%</div><div class="social-stat-label">מעורבות</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaFans">2,340</div><div class="social-stat-label">עוקבים</div></div>
+        <div class="social-stat"><div class="social-stat-val" id="metaEngaged">86</div><div class="social-stat-label">משתמשים מעורבים</div></div>
       </div>
       <div class="chart-wrap" style="height:100px;"><canvas id="socialChart"></canvas></div>
-      <div style="font-size:10px; color:var(--text-secondary); text-align:center; margin-top:5px;" id="metaSourceNote">* חיבור Meta API יאפשר עדכון אוטומטי</div>
+      <div style="font-size:10px; color:var(--text-secondary); text-align:center; margin-top:5px;" id="metaSourceNote">* חיבור חיבור שיווקי יאפשר עדכון אוטומטי</div>
     </div>
   </div>
 
@@ -1202,81 +1053,12 @@
 </main>
 </div>
 
-<!-- ══════════════════════════════════════════════════════════ -->
-<!--  TAB 4 - AI PERFORMANCE                                  -->
-<!-- ══════════════════════════════════════════════════════════ -->
-<div id="tab-performance" class="tab-content">
-<main class="main">
-
-  <div class="info-note purple" id="performanceInfoNote">
-    ⟳ מנתח נתוני לקוחות מ-Scalla ו-Arbox...
-  </div>
-
-  <div class="performance-hero">
-    <div class="performance-score">
-      <div class="performance-score-top">
-        <div>
-          <div class="performance-score-title">מדד בריאות עסקית</div>
-          <div class="performance-score-label" id="performanceScoreLabel">ממתין לנתוני לקוחות חיים</div>
-        </div>
-        <div class="performance-score-value" id="performanceScoreValue">—</div>
-      </div>
-      <div>
-        <div class="performance-score-bar"><div class="performance-score-fill" id="performanceScoreFill"></div></div>
-        <div class="performance-score-meta" id="performanceScoreMeta">
-          <span class="performance-chip">Scalla: טוען</span>
-          <span class="performance-chip">Arbox: טוען</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">
-        <span>📌 נתונים שחולצו</span>
-        <span class="card-subtitle" id="performanceSnapshotDate">טוען...</span>
-      </div>
-      <div class="performance-metric-list" id="performanceMetricList"></div>
-    </div>
-  </div>
-
-  <div class="grid-2" style="margin-bottom:18px; align-items:start;">
-    <div class="card">
-      <div class="card-title">
-        <span>🎯 פעולות לשיפור ביצועים</span>
-        <span class="card-subtitle">מתועדף לפי השפעה וסיכון</span>
-      </div>
-      <div class="performance-action-list" id="performanceActionList"></div>
-    </div>
-
-    <div class="card">
-      <div class="card-title">
-        <span>👥 לקוחות לטיפול</span>
-        <span class="card-subtitle">רשימות עבודה מתוך Arbox + Scalla</span>
-      </div>
-      <div class="performance-action-list" id="performanceCustomerList"></div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">
-      <span>🤖 ניתוח AI עמוק</span>
-      <span class="card-subtitle">משתמש בסוכן הקיים עם גישה חיה ל-Scalla ו-Arbox</span>
-    </div>
-    <div class="performance-ai-row">
-      <button class="performance-ai-btn" id="performanceAiBtn" type="button" onclick="requestPerformanceAiAnalysis()">נתח והמלץ</button>
-      <span class="card-subtitle" id="performanceAiSub">הניתוח המקומי למעלה זמין מיד; הכפתור מפעיל מודל AI server-side.</span>
-    </div>
-    <div class="performance-ai-output" id="performanceAiOutput">בחר/י "נתח והמלץ" כדי לקבל המלצות ניהוליות בעברית על בסיס הנתונים החיים.</div>
-  </div>
-
-</main>
-</div>
 <!-- ── FOOTER ──────────────────────────────────────────────── -->
 <footer class="footer">
-  <p>הבית של גיליגולי | דשבורד ניהולי v3.0 | Scalla API v2.0</p>
+  <p>סטודיו דמו | דשבורד דמו אנונימי | נתונים סינתטיים</p>
   <div class="freshness">
-    <div class="fr-item"><div class="fr-dot pending" id="crmDot"></div><span id="crmStatus">ScallaCRM - מתחבר...</span></div>
-    <div class="fr-item"><div class="fr-dot pending" id="arboxDot"></div><span id="arboxStatus">Arbox - בודק...</span></div>
+    <div class="fr-item"><div class="fr-dot pending" id="crmDot"></div><span id="crmStatus">CRM - מתחבר...</span></div>
+    <div class="fr-item"><div class="fr-dot pending" id="arboxDot"></div><span id="arboxStatus">מערכת סטודיו - בודק...</span></div>
     <div class="fr-item"><div class="fr-dot manual" id="metaDot"></div><span id="metaStatus">שיווק - נתונים ידניים</span></div>
   </div>
 </footer>
@@ -1294,7 +1076,7 @@
     <label>סף מקסימום — שלח התראה אם הערך עולה <em>מעל ל</em></label>
     <input type="number" id="tUpper" placeholder="ריק = לא פעיל">
     <label>שלח התראה אל</label>
-    <input type="email" id="tEmail" value="arye.glikman@gmail.com">
+    <input type="email" id="tEmail" value="demo-alerts@example.com">
     <label class="toggle-label">
       <input type="checkbox" id="tEnabled" checked>
       <span>התראות מופעלות</span>
@@ -1310,7 +1092,7 @@
 <div id="emailjsOverlay" class="modal-overlay" onclick="closeEmailJSModal()"></div>
 <div id="emailjsModal" class="threshold-modal" dir="rtl">
   <div class="tmodal-header">
-    <span>⚙️ הגדרת שליחת מיילים (EmailJS)</span>
+    <span>הגדרת שליחת מיילים (EmailJS) - דמו</span>
     <button onclick="closeEmailJSModal()" class="tmodal-close">✕</button>
   </div>
   <div class="tmodal-body">
@@ -1338,160 +1120,22 @@
 // ═══════════════════════════════════════════════════════════════
 // CONFIGURATION
 // ═══════════════════════════════════════════════════════════════
+const DEMO_MODE = true;
+const DEMO_EMAIL = 'demo-alerts@example.com';
+
 const SCALLA = {
-  API: 'https://api.scallacrm.co.il/scallaapi/api',
-  TENANT: '',  // Overwritten by unique_id from server-side login
-  // Auto-detect: local dev -> local proxy, Netlify -> serverless function
-  PROXY: location.hostname === 'localhost'
-    ? '/api/scalla'
-    : '/.netlify/functions/scalla',
+  API: '',
+  TENANT: '',
+  PROXY: '',
 };
 
 const ARBOX = {
-  // Server-side proxy keeps the Arbox API key out of browser-visible code
-  ENDPOINT: location.hostname === 'localhost'
-    ? '/api/arbox'
-    : '/.netlify/functions/arbox',
+  ENDPOINT: '',
 };
 
 const META = {
-  // Server-side proxy (netlify/functions/meta.js) - holds the System User token, never exposed client-side
-  ENDPOINT: '/.netlify/functions/meta',
+  ENDPOINT: '',
 };
-
-const CONTROL_SETTINGS_KEY = 'smart_dashboard_control_settings';
-const THEME_MODE_KEY = 'smart_dashboard_theme';
-const CONTROL_MODULES = ['leads', 'studio', 'marketing', 'performance'];
-const CONTROL_DEFAULTS = {
-  modules: { leads: true, studio: true, marketing: true, performance: true },
-  chatAgent: true,
-  alerts: { enabled: true, recipient: 'arye.glikman@gmail.com', cooldownHours: 24, thresholds: {} },
-  refreshMinutes: { scalla: 15, arbox: 30, meta: 60 },
-};
-
-function readJsonStorage(key, fallback = null) {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function readRawControlSettings() {
-  return readJsonStorage(CONTROL_SETTINGS_KEY, null);
-}
-
-function getControlSettings() {
-  const raw = readRawControlSettings() || {};
-  return {
-    modules: { ...CONTROL_DEFAULTS.modules, ...(raw.modules || {}) },
-    chatAgent: typeof raw.chatAgent === 'boolean' ? raw.chatAgent : CONTROL_DEFAULTS.chatAgent,
-    alerts: { ...CONTROL_DEFAULTS.alerts, ...(raw.alerts || {}) },
-    refreshMinutes: { ...CONTROL_DEFAULTS.refreshMinutes, ...(raw.refreshMinutes || {}) },
-  };
-}
-
-function isModuleEnabled(name) {
-  const modules = getControlSettings().modules;
-  const hasEnabledModule = CONTROL_MODULES.some(moduleName => modules[moduleName] !== false);
-  if (!hasEnabledModule) return name === 'leads';
-  return modules[name] !== false;
-}
-
-function getSavedThemeMode() {
-  try {
-    return localStorage.getItem(THEME_MODE_KEY) === 'dark' ? 'dark' : 'light';
-  } catch {
-    return 'light';
-  }
-}
-
-function themeVar(name, fallback = '') {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback;
-}
-
-function chartThemeColors() {
-  return {
-    text: themeVar('--text-secondary', '#6B7280'),
-    grid: themeVar('--border', '#E5E7EB'),
-    card: themeVar('--card', '#FFFFFF'),
-  };
-}
-
-function setChartThemeDefaults() {
-  if (typeof Chart === 'undefined') return;
-  const colors = chartThemeColors();
-  Chart.defaults.color = colors.text;
-  Chart.defaults.borderColor = colors.grid;
-}
-
-function refreshChartsForTheme() {
-  if (typeof Chart === 'undefined') return;
-  if (Array.isArray(leadsData) && leadsData.length) renderCharts();
-  if (isModuleEnabled('marketing')) renderMarketingTab();
-}
-
-function applyThemeMode(mode, options = {}) {
-  const { persist = true, rerender = true } = options;
-  const normalized = mode === 'dark' ? 'dark' : 'light';
-  document.documentElement.dataset.themeMode = normalized;
-  const isDark = normalized === 'dark';
-  const toggle = document.getElementById('themeModeToggle');
-  const label = document.getElementById('themeSwitchLabel');
-  if (toggle) {
-    toggle.checked = isDark;
-    toggle.setAttribute('aria-checked', String(isDark));
-  }
-  if (label) label.textContent = isDark ? 'בהיר' : 'כהה';
-  if (persist) {
-    try { localStorage.setItem(THEME_MODE_KEY, normalized); } catch {}
-  }
-  setChartThemeDefaults();
-  if (rerender) refreshChartsForTheme();
-}
-
-function initThemeMode() {
-  applyThemeMode(getSavedThemeMode(), { persist: false, rerender: false });
-  const toggle = document.getElementById('themeModeToggle');
-  if (toggle) {
-    toggle.addEventListener('change', event => {
-      applyThemeMode(event.target.checked ? 'dark' : 'light');
-    });
-  }
-}
-
-function firstEnabledModule() {
-  return CONTROL_MODULES.find(isModuleEnabled) || 'leads';
-}
-
-function applyModuleVisibility() {
-  CONTROL_MODULES.forEach(name => {
-    const enabled = isModuleEnabled(name);
-    const btn = document.getElementById('tab-btn-' + name);
-    const content = document.getElementById('tab-' + name);
-    if (btn) btn.hidden = !enabled;
-    if (content) content.hidden = !enabled;
-    document.querySelectorAll(`[data-dashboard-module="${name}"]`).forEach(el => { el.hidden = !enabled; });
-  });
-
-  const active = document.querySelector('.tab-content.active');
-  const activeName = active ? active.id.replace('tab-', '') : '';
-  if (!active || !isModuleEnabled(activeName)) switchTab(firstEnabledModule());
-}
-
-function sourceIsNeeded(source) {
-  if (source === 'scalla') return isModuleEnabled('leads') || isModuleEnabled('marketing') || isModuleEnabled('performance');
-  if (source === 'arbox') return isModuleEnabled('studio') || isModuleEnabled('performance');
-  if (source === 'meta') return isModuleEnabled('marketing');
-  return true;
-}
-
-function refreshIntervalMs(source) {
-  const minutes = Number(getControlSettings().refreshMinutes[source]);
-  if (!Number.isFinite(minutes) || minutes <= 0) return 0;
-  return Math.max(1, minutes) * 60 * 1000;
-}
 
 // ═══════════════════════════════════════════════════════════════
 // STATE
@@ -1503,13 +1147,8 @@ let statusData = [];
 let sourceData = [];
 let statusDonutChart = null;
 let sourceBarChart = null;
-let weeklyChart = null;
-let socialChart = null;
 let activeFilter = 'הכל';
 let showAll = false;
-let studioSnapshot = null;
-let performanceAiBusy = false;
-let dataRefreshTimers = [];
 
 // ═══════════════════════════════════════════════════════════════
 // DATE & TABS
@@ -1518,19 +1157,17 @@ document.getElementById('currentDate').textContent =
   new Date().toLocaleDateString('he-IL', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 
 function switchTab(name) {
-  if (!isModuleEnabled(name)) name = firstEnabledModule();
   document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-  const tab = document.getElementById('tab-' + name);
-  const btn = document.getElementById('tab-btn-' + name);
-  if (tab) tab.classList.add('active');
-  if (btn) btn.classList.add('active');
+  document.getElementById('tab-' + name).classList.add('active');
+  document.getElementById('tab-btn-' + name).classList.add('active');
 }
 
 // ═══════════════════════════════════════════════════════════════
 // SCALLA CRM API
 // ═══════════════════════════════════════════════════════════════
 async function scallaPost(params) {
+  if (DEMO_MODE) throw new Error('Demo mode does not connect to CRM');
   const url = SCALLA.PROXY;
   const res = await fetch(url, {
     method: 'POST',
@@ -1615,7 +1252,7 @@ const STATUS_MAP = {
   'קיבלה שובר':        { css: 'voucher',     color: '#10B981' },
   'כפול':              { css: 'irrelevant',  color: '#6B7280' },
   'שתפ':               { css: 'return',      color: '#EC4899' },
-  'מיקום - מתאימה לסדנאות בלוקיישן אחר של גיליגולי': { css: 'location', color: '#34D399' },
+  'מיקום - מתאימה לסדנאות בלוקיישן אחר של סטודיו דמו': { css: 'location', color: '#34D399' },
 };
 const DEFAULT_STATUS = { css: 'irrelevant', color: '#E5E7EB' };
 
@@ -1754,89 +1391,108 @@ function parseScallaLeads(records) {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// CACHED FALLBACK DATA (scraped 01/07/2026 - live from ScallaCRM AmCharts widget 63)
-// Total leads: 1,311 | Active pipeline (excl. לא רלוונטי): 503
+// SYNTHETIC DEMO DATA - anonymized, not derived from customer records
 // ═══════════════════════════════════════════════════════════════
 const CACHED_STATUS = [
-  { label: 'לא רלוונטי',   pct: 61.63, count: 808, color: '#9CA3AF' },
-  { label: 'מסננת כרונית', pct: 26.55, count: 348, color: '#818CF8' },
-  { label: 'מיקום',        pct:  6.64, count:  87, color: '#34D399' },
-  { label: 'ליד בטיפול',   pct:  1.53, count:  20, color: '#6B21A8' },
-  { label: 'מספר לא תקין', pct:  1.30, count:  17, color: '#FCA5A5' },
-  { label: 'סיבוב נוסף',   pct:  0.61, count:   8, color: '#A78BFA' },
-  { label: 'לחזור בעתיד',  pct:  0.53, count:   7, color: '#F9A8D4' },
-  { label: 'נסיונות חיוג', pct:  0.46, count:   6, color: '#FCD34D' },
-  { label: 'ליד חדש',      pct:  0.23, count:   3, color: '#0EA5E9' },
-  { label: 'כפול',         pct:  0.23, count:   3, color: '#6B7280' },
-  { label: 'תואמה שיחה',   pct:  0.08, count:   1, color: '#F59E0B' },
-  { label: 'רכשה שיעור ניסיון', pct: 0.08, count: 1, color: '#16A34A' },
-  { label: 'קיבלה שובר',   pct:  0.08, count:   1, color: '#10B981' },
-  { label: 'שתפ',          pct:  0.08, count:   1, color: '#EC4899' },
+  { label: 'ליד בטיפול',        pct: 26.44, count: 92, color: '#6B21A8' },
+  { label: 'נסיונות חיוג',      pct: 20.11, count: 70, color: '#FCD34D' },
+  { label: 'לא רלוונטי',        pct: 18.68, count: 65, color: '#9CA3AF' },
+  { label: 'רכשה שיעור ניסיון', pct: 12.07, count: 42, color: '#16A34A' },
+  { label: 'ליד חדש',           pct:  8.91, count: 31, color: '#0EA5E9' },
+  { label: 'מיקום',             pct:  5.75, count: 20, color: '#34D399' },
+  { label: 'לחזור בעתיד',       pct:  4.31, count: 15, color: '#F9A8D4' },
+  { label: 'תואמה שיחה',        pct:  3.74, count: 13, color: '#F59E0B' },
 ];
 
 const CACHED_SOURCES = [
-  { label: 'קמפיינים ממומנים',  count: 22 },
-  { label: 'פייסבוק/אינסטגרם',  count:  5 },
-  { label: 'הגיעה מגיליגולי',   count:  4 },
-  { label: 'לא ידוע',           count:  4 },
-  { label: 'אתר אינטרנט',       count:  3 },
-  { label: 'WhatsApp',          count:  2 },
+  { label: 'קמפיינים ממומנים', count: 96 },
+  { label: 'רשתות חברתיות',    count: 74 },
+  { label: 'אתר אינטרנט',      count: 61 },
+  { label: 'הפניות פנימיות',   count: 43 },
+  { label: 'WhatsApp',         count: 31 },
+  { label: 'אירוע קהילתי',     count: 24 },
+  { label: 'לא ידוע',          count: 19 },
 ];
 
 const CACHED_LEADS = [
-  { name: 'שירלי ביניאשוילי',  status: 'new',        statusLabel: 'ליד חדש',           source: 'אתר אינטרנט',     age: 'לא ידוע', reason: '-',      phone: '052-5XXXXXX', date: '01/07/2026' },
-  { name: 'אליס',               status: 'new',        statusLabel: 'ליד חדש',           source: 'הגיעה מגיליגולי', age: 'לא ידוע', reason: '-',      phone: '050-7XXXXXX', date: '01/07/2026' },
-  { name: 'Sivan Shitrit',      status: 'new',        statusLabel: 'ליד חדש',           source: 'קמפיינים',        age: 'שנה-2.5 שנים', reason: '-', phone: '054-4XXXXXX', date: '22/06/2026' },
-  { name: 'Elinor Cohen',       status: 'new',        statusLabel: 'ליד חדש',           source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '050-7XXXXXX', date: '22/06/2026' },
-  { name: 'חן בוגין',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-4XXXXXX', date: '22/06/2026' },
-  { name: 'הדסה לוי',           status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '050-9XXXXXX', date: '22/06/2026' },
-  { name: 'לי',                 status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '4-8 חודשים', reason: '-',   phone: '050-8XXXXXX', date: '21/06/2026' },
-  { name: 'גיא דוד',           status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '21/06/2026' },
-  { name: 'Odelia Graff',       status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '055-9XXXXXX', date: '21/06/2026' },
-  { name: 'אור שושני',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '21/06/2026' },
-  { name: 'דנה שלו',            status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-2XXXXXX', date: '21/06/2026' },
-  { name: 'אריאל בן חשל',      status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-8XXXXXX', date: '21/06/2026' },
-  { name: 'הילה אורה',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-9XXXXXX', date: '21/06/2026' },
-  { name: 'אניטה גולדמן',      status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '052-8XXXXXX', date: '20/06/2026' },
-  { name: 'רותם מנחם',          status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'הגיעה מגיליגולי', age: 'לא ידוע', reason: '-',      phone: '052-7XXXXXX', date: '20/06/2026' },
-  { name: 'שירז',               status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '052-3XXXXXX', date: '19/06/2026' },
-  { name: 'הודיה מויאל',        status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '052-6XXXXXX', date: '19/06/2026' },
-  { name: 'מיכל גולן',          status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '19/06/2026' },
-  { name: 'בנדטה קזנטיני',     status: 'calling',    statusLabel: 'נסיונות חיוג',      source: 'אתר אינטרנט',     age: 'לא ידוע', reason: '-',      phone: '058-7XXXXXX', date: '18/06/2026' },
-  { name: 'ירדן אסרף',          status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-2XXXXXX', date: '17/06/2026' },
-  { name: 'לירון טלקר',         status: 'location',   statusLabel: 'מיקום',             source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '050-2XXXXXX', date: '17/06/2026' },
-  { name: 'לירון צדיק',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'קמפיינים',        age: 'שנה-2.5 שנים', reason: '-', phone: '052-8XXXXXX', date: '17/06/2026' },
-  { name: 'יעל גייבר',          status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '052-5XXXXXX', date: '17/06/2026' },
-  { name: 'עדן אלמליח',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'לא ידוע',         age: '1-4 חודשים', reason: '-',   phone: '053-3XXXXXX', date: '17/06/2026' },
-  { name: 'פז',                 status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '052-6XXXXXX', date: '16/06/2026' },
-  { name: 'מאי בר לב',          status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '050-9XXXXXX', date: '15/06/2026' },
-  { name: 'מאי ברנדר',          status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'WhatsApp',        age: '4-8 חודשים', reason: '-',   phone: '054-5XXXXXX', date: '15/06/2026' },
-  { name: "פאולינה מג'אר",     status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '054-4XXXXXX', date: '15/06/2026' },
-  { name: 'אלן חיים',           status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'פייסבוק/אינסטגרם', age: 'לא ידוע', reason: '-',    phone: '054-6XXXXXX', date: '15/06/2026' },
-  { name: 'טוהר לוין',          status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-7XXXXXX', date: '14/06/2026' },
-  { name: 'יובל בסד',           status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: '1-4 חודשים', reason: '-',   phone: '054-7XXXXXX', date: '09/06/2026' },
-  { name: 'ליאל רוכמן',         status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'WhatsApp',        age: 'לא ידוע', reason: '-',      phone: '054-6XXXXXX', date: '07/06/2026' },
-  { name: 'אביטל',              status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'אתר אינטרנט',     age: 'לא ידוע', reason: '-',      phone: '058-5XXXXXX', date: '07/06/2026' },
-  { name: 'מיכל הובר',          status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '054-5XXXXXX', date: '04/06/2026' },
-  { name: 'בתאל קופלוביץ ממן',  status: 'irrelevant', statusLabel: 'לא רלוונטי',       source: 'הגיעה מגיליגולי', age: 'לא ידוע', reason: '-',      phone: '052-8XXXXXX', date: '02/06/2026' },
-  { name: 'לייה',               status: 'purchased',  statusLabel: 'רכשה שיעור ניסיון', source: 'לא ידוע',         age: '1-4 חודשים', reason: '-',   phone: '052-8XXXXXX', date: '20/05/2026' },
-  { name: 'שחר אבנעים',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'קמפיינים',        age: '1-3 חודשים', reason: '-',   phone: '058-6XXXXXX', date: '18/05/2026' },
-  { name: 'נהיר אורן',          status: 'in-progress',statusLabel: 'ליד בטיפול',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '054-7XXXXXX', date: '28/04/2026' },
-  { name: 'הילה האוסמן',        status: 'chronic',    statusLabel: 'מסננת כרונית',      source: 'קמפיינים',        age: 'שנה-2.5 שנים', reason: '-', phone: '054-3XXXXXX', date: '18/09/2025' },
-  { name: 'שני שם טוב',         status: 'irrelevant', statusLabel: 'לא רלוונטי',        source: 'לא ידוע',         age: 'לא ידוע', reason: '-',      phone: '050-2XXXXXX', date: '28/03/2026' },
+  { name: 'לקוחה דמו 001', status: 'new', statusLabel: 'ליד חדש', source: 'אתר אינטרנט', age: '1-3 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXXX1', date: '22/07/2026', rawDate: '2026-07-22 09:15:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 002', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'קמפיינים ממומנים', age: '4-8 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXXX2', date: '22/07/2026', rawDate: '2026-07-22 08:40:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 003', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'רשתות חברתיות', age: '1-3 חודשים', reason: '-', owner: 'צוות ג', phone: '050-0XXXXX3', date: '21/07/2026', rawDate: '2026-07-21 18:20:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 004', status: 'purchased', statusLabel: 'רכשה שיעור ניסיון', source: 'WhatsApp', age: 'שנה-2.5 שנים', reason: '-', owner: 'צוות א', phone: '050-0XXXXX4', date: '21/07/2026', rawDate: '2026-07-21 15:05:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 005', status: 'scheduled', statusLabel: 'תואמה שיחה', source: 'הפניות פנימיות', age: 'לא ידוע', reason: '-', owner: 'צוות ב', phone: '050-0XXXXX5', date: '20/07/2026', rawDate: '2026-07-20 17:25:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 006', status: 'irrelevant', statusLabel: 'לא רלוונטי', source: 'קמפיינים ממומנים', age: '1-3 חודשים', reason: 'מחוץ לאזור השירות', owner: 'צוות ג', phone: '050-0XXXXX6', date: '20/07/2026', rawDate: '2026-07-20 10:10:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 007', status: 'location', statusLabel: 'מיקום', source: 'אתר אינטרנט', age: '4-8 חודשים', reason: 'מעדיפה מיקום אחר', owner: 'צוות א', phone: '050-0XXXXX7', date: '19/07/2026', rawDate: '2026-07-19 13:32:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 008', status: 'return', statusLabel: 'לחזור בעתיד', source: 'רשתות חברתיות', age: '1-4 חודשים', reason: 'מעוניינת בחודש הבא', owner: 'צוות ב', phone: '050-0XXXXX8', date: '19/07/2026', rawDate: '2026-07-19 09:12:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 009', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'אירוע קהילתי', age: 'לא ידוע', reason: '-', owner: 'צוות ג', phone: '050-0XXXXX9', date: '18/07/2026', rawDate: '2026-07-18 14:45:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 010', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'קמפיינים ממומנים', age: '1-3 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX10', date: '18/07/2026', rawDate: '2026-07-18 11:00:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 011', status: 'purchased', statusLabel: 'רכשה שיעור ניסיון', source: 'הפניות פנימיות', age: '4-8 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX11', date: '17/07/2026', rawDate: '2026-07-17 16:30:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 012', status: 'new', statusLabel: 'ליד חדש', source: 'WhatsApp', age: 'לא ידוע', reason: '-', owner: 'צוות ג', phone: '050-0XXXX12', date: '17/07/2026', rawDate: '2026-07-17 12:12:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 013', status: 'irrelevant', statusLabel: 'לא רלוונטי', source: 'לא ידוע', age: '1-3 חודשים', reason: 'תקציב לא מתאים', owner: 'צוות א', phone: '050-0XXXX13', date: '16/07/2026', rawDate: '2026-07-16 15:22:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 014', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'קמפיינים ממומנים', age: '1-4 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX14', date: '16/07/2026', rawDate: '2026-07-16 09:55:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 015', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'אתר אינטרנט', age: 'שנה-2.5 שנים', reason: '-', owner: 'צוות ג', phone: '050-0XXXX15', date: '15/07/2026', rawDate: '2026-07-15 17:42:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 016', status: 'purchased', statusLabel: 'רכשה שיעור ניסיון', source: 'רשתות חברתיות', age: '4-8 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX16', date: '15/07/2026', rawDate: '2026-07-15 08:20:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 017', status: 'scheduled', statusLabel: 'תואמה שיחה', source: 'קמפיינים ממומנים', age: '1-3 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX17', date: '14/07/2026', rawDate: '2026-07-14 13:00:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 018', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'הפניות פנימיות', age: 'לא ידוע', reason: '-', owner: 'צוות ג', phone: '050-0XXXX18', date: '14/07/2026', rawDate: '2026-07-14 10:11:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 019', status: 'return', statusLabel: 'לחזור בעתיד', source: 'אתר אינטרנט', age: '1-3 חודשים', reason: 'מבקשת תזכורת', owner: 'צוות א', phone: '050-0XXXX19', date: '13/07/2026', rawDate: '2026-07-13 18:16:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 020', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'WhatsApp', age: '1-4 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX20', date: '13/07/2026', rawDate: '2026-07-13 12:38:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 021', status: 'irrelevant', statusLabel: 'לא רלוונטי', source: 'קמפיינים ממומנים', age: 'לא ידוע', reason: 'אין זמינות בשעות', owner: 'צוות ג', phone: '050-0XXXX21', date: '12/07/2026', rawDate: '2026-07-12 11:50:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 022', status: 'new', statusLabel: 'ליד חדש', source: 'רשתות חברתיות', age: '4-8 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX22', date: '12/07/2026', rawDate: '2026-07-12 09:30:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 023', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'קמפיינים ממומנים', age: '1-3 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX23', date: '11/07/2026', rawDate: '2026-07-11 16:01:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 024', status: 'location', statusLabel: 'מיקום', source: 'אירוע קהילתי', age: 'לא ידוע', reason: 'רחוקה מהסניף', owner: 'צוות ג', phone: '050-0XXXX24', date: '11/07/2026', rawDate: '2026-07-11 10:20:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 025', status: 'purchased', statusLabel: 'רכשה שיעור ניסיון', source: 'אתר אינטרנט', age: '1-4 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX25', date: '10/07/2026', rawDate: '2026-07-10 13:47:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 026', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'קמפיינים ממומנים', age: '4-8 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX26', date: '10/07/2026', rawDate: '2026-07-10 08:56:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 027', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'WhatsApp', age: '1-3 חודשים', reason: '-', owner: 'צוות ג', phone: '050-0XXXX27', date: '09/07/2026', rawDate: '2026-07-09 17:04:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 028', status: 'irrelevant', statusLabel: 'לא רלוונטי', source: 'רשתות חברתיות', age: 'לא ידוע', reason: 'לא מתאים כרגע', owner: 'צוות א', phone: '050-0XXXX28', date: '09/07/2026', rawDate: '2026-07-09 14:31:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 029', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'הפניות פנימיות', age: '1-4 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX29', date: '08/07/2026', rawDate: '2026-07-08 11:39:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 030', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'אתר אינטרנט', age: 'שנה-2.5 שנים', reason: '-', owner: 'צוות ג', phone: '050-0XXXX30', date: '08/07/2026', rawDate: '2026-07-08 09:17:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 031', status: 'return', statusLabel: 'לחזור בעתיד', source: 'קמפיינים ממומנים', age: '4-8 חודשים', reason: 'מבקשת להמתין', owner: 'צוות א', phone: '050-0XXXX31', date: '07/07/2026', rawDate: '2026-07-07 18:50:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 032', status: 'scheduled', statusLabel: 'תואמה שיחה', source: 'WhatsApp', age: 'לא ידוע', reason: '-', owner: 'צוות ב', phone: '050-0XXXX32', date: '07/07/2026', rawDate: '2026-07-07 12:26:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 033', status: 'purchased', statusLabel: 'רכשה שיעור ניסיון', source: 'רשתות חברתיות', age: '1-3 חודשים', reason: '-', owner: 'צוות ג', phone: '050-0XXXX33', date: '06/07/2026', rawDate: '2026-07-06 10:14:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 034', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'אירוע קהילתי', age: '4-8 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX34', date: '05/07/2026', rawDate: '2026-07-05 15:41:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 035', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'קמפיינים ממומנים', age: '1-3 חודשים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX35', date: '04/07/2026', rawDate: '2026-07-04 11:05:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 036', status: 'irrelevant', statusLabel: 'לא רלוונטי', source: 'לא ידוע', age: 'לא ידוע', reason: 'כפילות במערכת', owner: 'צוות ג', phone: '050-0XXXX36', date: '03/07/2026', rawDate: '2026-07-03 12:00:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 037', status: 'new', statusLabel: 'ליד חדש', source: 'אתר אינטרנט', age: '1-4 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX37', date: '02/07/2026', rawDate: '2026-07-02 09:30:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 038', status: 'in-progress', statusLabel: 'ליד בטיפול', source: 'הפניות פנימיות', age: 'שנה-2.5 שנים', reason: '-', owner: 'צוות ב', phone: '050-0XXXX38', date: '01/07/2026', rawDate: '2026-07-01 14:10:00', monthKey: '2026-07' },
+  { name: 'לקוחה דמו 039', status: 'calling', statusLabel: 'נסיונות חיוג', source: 'קמפיינים ממומנים', age: '4-8 חודשים', reason: '-', owner: 'צוות ג', phone: '050-0XXXX39', date: '28/06/2026', rawDate: '2026-06-28 13:20:00', monthKey: '2026-06' },
+  { name: 'לקוחה דמו 040', status: 'purchased', statusLabel: 'רכשה שיעור ניסיון', source: 'אתר אינטרנט', age: '1-3 חודשים', reason: '-', owner: 'צוות א', phone: '050-0XXXX40', date: '24/06/2026', rawDate: '2026-06-24 10:05:00', monthKey: '2026-06' },
 ];
 
 // ═══════════════════════════════════════════════════════════════
 // LOAD SCALLA DATA (live or fallback)
 // ═══════════════════════════════════════════════════════════════
 async function loadScallaData() {
+  if (DEMO_MODE) {
+    const badge = document.getElementById('crmBadge');
+    const dot = document.getElementById('crmDot');
+    const txt = document.getElementById('crmStatus');
+    const note = document.getElementById('leadsInfoNote');
+    leadsData = CACHED_LEADS;
+    statusData = CACHED_STATUS;
+    sourceData = CACHED_SOURCES;
+    scallaDataSource = 'demo';
+    if (badge) {
+      badge.innerHTML = '<span class="pulse"></span> CRM דמו ✓';
+      badge.style.background = 'rgba(74,222,128,0.22)';
+    }
+    if (dot) dot.className = 'fr-dot sample';
+    if (txt) txt.textContent = 'CRM - נתוני דמו אנונימיים';
+    if (note) {
+      note.innerHTML = '✅ <strong>נתוני CRM דמו אנונימיים</strong> - 40 רשומות סינתטיות | ללא חיבור למערכות לקוח';
+      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+    renderKPIs();
+    renderCharts();
+    renderFilters();
+    renderTable();
+    return;
+  }
   const badge = document.getElementById('crmBadge');
   const dot = document.getElementById('crmDot');
   const txt = document.getElementById('crmStatus');
   const note = document.getElementById('leadsInfoNote');
 
   try {
-    badge.innerHTML = '<span class="pulse"></span> מתחבר ל-ScallaCRM...';
+    badge.innerHTML = '<span class="pulse"></span> מתחבר ל-CRM...';
 
     // Step 1: Login
     await scallaLogin();
@@ -1853,18 +1509,18 @@ async function loadScallaData() {
     scallaDataSource = 'live';
 
     const now = new Date().toLocaleString('he-IL');
-    badge.innerHTML = '<span class="pulse"></span> ScallaCRM חי ✓';
+    badge.innerHTML = '<span class="pulse"></span> CRM חי ✓';
     badge.style.background = 'rgba(74,222,128,0.22)';
     if (dot) dot.className = 'fr-dot live';
-    if (txt) txt.textContent = `ScallaCRM - נתונים חיים | ${now}`;
+    if (txt) txt.textContent = `CRM - נתונים חיים | ${now}`;
     if (note) {
-      note.innerHTML = `✅ <strong>נתונים חיים מ-ScallaCRM API</strong> - ${leadsData.length} לידים | עודכן ${now}`;
+      note.innerHTML = `✅ <strong>נתונים חיים מ-CRM API</strong> - ${leadsData.length} לידים | עודכן ${now}`;
       note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
     }
-    console.log(`[ScallaCRM] Live data loaded: ${leadsData.length} leads`);
+    console.log(`[CRM] Live data loaded: ${leadsData.length} leads`);
 
   } catch (err) {
-    console.warn('[ScallaCRM] Live fetch failed, using cached data:', err.message);
+    console.warn('[CRM] Live fetch failed, using cached data:', err.message);
 
     // Fallback to cached data
     leadsData = CACHED_LEADS;
@@ -1872,10 +1528,10 @@ async function loadScallaData() {
     sourceData = CACHED_SOURCES;
     scallaDataSource = 'cached';
 
-    badge.innerHTML = '⚠ ScallaCRM - נתונים שמורים';
+    badge.innerHTML = '⚠ CRM - נתונים שמורים';
     badge.style.background = 'rgba(251,191,36,0.2)';
     if (dot) dot.className = 'fr-dot sample';
-    if (txt) txt.textContent = 'ScallaCRM - נתונים שמורים | 01/07/2026';
+    if (txt) txt.textContent = 'CRM - נתונים שמורים | 01/07/2026';
     if (note) {
       note.innerHTML = `⚠️ חיבור API נכשל - מציג נתונים שמורים מ-01/07/2026 (${CACHED_LEADS.length} רשומות)
         <span style="font-size:10px;opacity:0.7;margin-right:8px;">שגיאה: ${err.message}</span>`;
@@ -1888,7 +1544,6 @@ async function loadScallaData() {
   renderCharts();
   renderFilters();
   renderTable();
-  renderPerformanceModule();
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1902,7 +1557,7 @@ function renderKPIs() {
 
   document.getElementById('kpiTotalLeads').textContent = total;
   document.getElementById('kpiTotalLeadsSub').textContent =
-    scallaDataSource === 'live' ? 'ScallaCRM חי' : 'נתונים שמורים';
+    scallaDataSource === 'live' ? 'CRM חי' : (scallaDataSource === 'demo' ? 'CRM דמו' : 'נתונים שמורים');
   document.getElementById('kpiNewLeads').textContent = activeTreatmentLeads;
   document.getElementById('badge-leads').textContent = activeTreatmentLeads;
 
@@ -1977,11 +1632,10 @@ function renderCharts() {
   if (typeof Chart === 'undefined') { console.warn('Chart.js not loaded'); return; }
 
   const total = statusData.reduce((sum, d) => sum + d.count, 0);
-  const sourceLabel = scallaDataSource === 'live' ? 'נתונים חיים' : 'מדגם 40 רשומות';
+  const sourceLabel = scallaDataSource === 'live' ? 'נתונים חיים' : (scallaDataSource === 'demo' ? 'נתוני דמו אנונימיים' : 'מדגם 40 רשומות');
   const dateLabel = scallaDataSource === 'live'
     ? new Date().toLocaleDateString('he-IL')
-    : '01/07/2026';
-  const chartColors = chartThemeColors();
+    : (scallaDataSource === 'demo' ? 'דמו 2026' : '01/07/2026');
 
   // Update subtitles
   document.getElementById('statusChartSub').textContent = `מתוך ${total} לידים`;
@@ -2004,7 +1658,7 @@ function renderCharts() {
     type: 'doughnut',
     data: {
       labels: statusData.map(d => d.label),
-      datasets: [{ data: statusData.map(d => d.pct || d.count), backgroundColor: statusData.map(d => d.color), borderWidth: 2, borderColor: chartColors.card }]
+      datasets: [{ data: statusData.map(d => d.pct || d.count), backgroundColor: statusData.map(d => d.color), borderWidth: 2, borderColor: '#fff' }]
     },
     options: {
       responsive: true, maintainAspectRatio: false, cutout: '68%',
@@ -2035,8 +1689,8 @@ function renderCharts() {
       responsive: true, maintainAspectRatio: false, indexAxis: 'y',
       plugins: { legend: { display: false }, tooltip: { rtl: true } },
       scales: {
-        x: { grid: { color: chartColors.grid }, ticks: { color: chartColors.text, font: { family: 'Heebo' } } },
-        y: { grid: { display: false }, ticks: { color: chartColors.text, font: { family: 'Heebo', size: 11 } } }
+        x: { grid: { color: '#F3F0FF' }, ticks: { font: { family: 'Heebo' } } },
+        y: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 } } }
       }
     }
   });
@@ -2100,14 +1754,14 @@ function setReportTileHref(key, href) {
   document.querySelectorAll(`[data-report-key="${key}"]`).forEach(el => { el.dataset.href = href; });
 }
 function updateDynamicReportLinks() {
+  if (DEMO_MODE) return;
   const today = isoDate(0);
   const plus7 = isoDate(7);
   const now = new Date();
   const monthStart = isoFromDate(new Date(now.getFullYear(), now.getMonth(), 1));
   const monthEnd = isoFromDate(new Date(now.getFullYear(), now.getMonth() + 1, 0));
-  setReportTileHref('expiring-sessions-week', `https://manage.arboxapp.com/reports-v5/expiring-sessions-report?end=${encodeURIComponent(today + ',' + plus7)}`);
-    setReportTileHref('trial-classes-month', `https://manage.arboxapp.com/reports-v5/trial-classes-report?date=${encodeURIComponent(monthStart + ',' + monthEnd)}`);
-  setReportTileHref('expiring-memberships-month', `https://manage.arboxapp.com/reports-v5/expiring-memberships-report?end=${encodeURIComponent(monthStart + ',' + monthEnd)}`);
+  setReportTileHref('expiring-sessions-week', `https://demo-reports.example.local/reports-v5/expiring-sessions-report?end=${encodeURIComponent(today + ',' + plus7)}`);
+  setReportTileHref('trial-classes-month', `https://demo-reports.example.local/reports-v5/trial-classes-report?date=${encodeURIComponent(monthStart + ',' + monthEnd)}`);
 }
 function dateOnly(value) {
   return value ? String(value).slice(0, 10) : '';
@@ -2120,6 +1774,7 @@ function inDateRange(value, fromDate, toDate) {
 let arboxQueue = Promise.resolve();
 
 async function arboxProxy(path) {
+  if (DEMO_MODE) throw new Error('Demo mode does not connect to studio systems');
   const run = async () => {
     for (let attempt = 0; attempt < 3; attempt++) {
       const r = await fetch(ARBOX.ENDPOINT, {
@@ -2134,7 +1789,7 @@ async function arboxProxy(path) {
         await new Promise(resolve => setTimeout(resolve, 900 * (attempt + 1)));
         continue;
       }
-      throw new Error(j.detail || j.error?.message || j.error || ('Arbox HTTP ' + r.status));
+      throw new Error(j.detail || j.error?.message || j.error || ('מערכת סטודיו HTTP ' + r.status));
     }
   };
 
@@ -2149,7 +1804,7 @@ async function arboxGet(path) {
   return j.data || [];
 }
 
-// Safe variant for endpoints not yet confirmed to exist on this Arbox account/plan
+// Safe variant for endpoints not yet confirmed to exist on this מערכת סטודיו account/plan
 // (inactive members, expired plans, renewals, cancellations - see DashBoard_CR notes 07/07/2026).
 // Returns null (not []) on any failure so the UI can distinguish "confirmed zero" from "unverified".
 async function arboxGetSafe(path) {
@@ -2161,8 +1816,150 @@ async function arboxGetSafe(path) {
   }
 }
 
+function demoSetText(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function demoSetHtml(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.innerHTML = value;
+}
+
+function demoRankingRows(items, scoreClass = '') {
+  return items.map((item, index) =>
+    '<div class="ranking-item"><div class="rank-num rank-' + Math.min(index + 1, 3) + '">' + (index + 1) +
+    '</div><div class="ranking-name">' + item.name + '</div><div class="ranking-score ' + scoreClass + '">' + item.score + '</div></div>'
+  ).join('');
+}
+
+function demoExpiryRows(items, color = '') {
+  return items.map(item =>
+    '<div class="expiry-item" style="' + (color ? 'border-right-color:' + color + ';' : '') + '">' +
+      '<div class="expiry-avatar" style="' + (color ? 'background:linear-gradient(135deg,' + color + ',#d97706);' : '') + '">' + item.name.charAt(0) + '</div>' +
+      '<div class="expiry-info"><div class="expiry-name">' + item.name + '</div><div class="expiry-meta">' + item.meta + ' | פגה: ' + item.expires + '</div></div>' +
+      '<div class="expiry-days" style="' + (item.days <= 7 ? 'color:var(--danger);' : '') + '">' + (item.days === 0 ? 'היום!' : item.days + ' ימים') + '</div>' +
+    '</div>'
+  ).join('');
+}
+
+function loadDemoStudioData() {
+  const fh = 126, ih = 84, kr = 52, expiringWeek = 7;
+  const total = fh + ih + kr;
+  demoSetText('kpiFH', fh);
+  demoSetText('kpiIH', ih);
+  demoSetText('kpiKR', kr);
+  demoSetText('kpiExp', expiringWeek);
+  demoSetText('fhNum', fh);
+  demoSetText('ihNum', ih);
+  demoSetText('krNum', kr);
+  demoSetText('expiryCount', '12 מנויים');
+  demoSetText('punchExpCount', '9 כרטיסיות');
+  demoSetText('kpiActivePlans', total);
+  demoSetText('kpiActivePlansSub', 'הגדול ביותר: Full House (126)');
+  demoSetText('kpiPacksSold', 18);
+  demoSetText('kpiPacksActiveSub', kr + ' פעילות | החודש');
+  demoSetText('kpiInactive', 31);
+  demoSetText('kpiInactiveSub', 'ללא פעילות ב-30 יום');
+  demoSetText('kpiExpiredPlans', 9);
+  demoSetText('kpiExpiredPlansSub', 'פגו ב-30 הימים האחרונים');
+  demoSetText('kpiRenewals', 22);
+  demoSetText('kpiRenewalsSub', '30 הימים האחרונים');
+  demoSetText('kpiCancellations', 4);
+  demoSetText('kpiCancellationsSub', 'לפי תאריך ביטול');
+  demoSetText('kpiPunchExpKPI', 9);
+  demoSetText('kpiActiveCourses', 14);
+  const studioBadge = document.querySelector('#tab-btn-studio .tab-badge');
+  if (studioBadge) studioBadge.textContent = total;
+
+  [['fh', fh], ['ih', ih], ['kr', kr]].forEach(([cls, n]) => {
+    const pct = Math.round(n / total * 100);
+    const card = document.querySelector('.membership-card.' + cls);
+    if (card) {
+      card.querySelector('.cap-fill').style.width = pct + '%';
+      card.querySelector('.cap-label').textContent = pct + '% מסה"כ ' + total + ' מנויים פעילים';
+    }
+  });
+
+  demoSetHtml('expiryList', demoExpiryRows([
+    { name: 'לקוחה דמו 041', meta: 'Full House', expires: '25/07/2026', days: 3 },
+    { name: 'לקוחה דמו 042', meta: 'In House', expires: '27/07/2026', days: 5 },
+    { name: 'לקוחה דמו 043', meta: 'Full House', expires: '31/07/2026', days: 9 },
+    { name: 'לקוחה דמו 044', meta: 'In House', expires: '04/08/2026', days: 13 },
+    { name: 'לקוחה דמו 045', meta: 'Full House', expires: '09/08/2026', days: 18 },
+    { name: 'לקוחה דמו 046', meta: 'In House', expires: '17/08/2026', days: 26 },
+  ]));
+
+  demoSetHtml('punchExpList', demoExpiryRows([
+    { name: 'לקוחה דמו 047', meta: 'כרטיסיית 10 כניסות', expires: '23/07/2026', days: 1 },
+    { name: 'לקוחה דמו 048', meta: 'כרטיסיית 5 כניסות', expires: '26/07/2026', days: 4 },
+    { name: 'לקוחה דמו 049', meta: 'כרטיסיית 10 כניסות', expires: '30/07/2026', days: 8 },
+    { name: 'לקוחה דמו 050', meta: 'כרטיסיית 5 כניסות', expires: '05/08/2026', days: 14 },
+  ], '#f59e0b'));
+
+  demoSetHtml('workshopList', [
+    ['בייבי יוגה', 'יום חמישי 23/07/2026 | 10:00-10:45', 'מדריכה א', 12],
+    ['תנועה והתפתחות', 'יום חמישי 23/07/2026 | 17:00-17:45', 'מדריכה ב', 14],
+    ['סדנת הורים ותינוקות', 'יום שישי 24/07/2026 | 09:30-10:30', 'מדריכה ג', 10],
+    ['חוג מוזיקה', 'יום ראשון 26/07/2026 | 16:30-17:15', 'מדריכה א', 12],
+  ].map(item =>
+    '<div class="workshop-item"><div class="workshop-header"><div class="workshop-name">📌 ' + item[0] +
+    '</div><div class="workshop-date">' + item[1] + '</div></div><div class="workshop-progress"><div style="flex:1;font-size:11px;color:var(--text-secondary);">👤 ' +
+    item[2] + '</div><div class="workshop-count">עד ' + item[3] + ' משתתפות</div></div></div>'
+  ).join(''));
+
+  demoSetHtml('topList', demoRankingRows([
+    { name: 'לקוחה דמו 051', score: '11 שיעורים' },
+    { name: 'לקוחה דמו 052', score: '9 שיעורים' },
+    { name: 'לקוחה דמו 053', score: '8 שיעורים' },
+    { name: 'לקוחה דמו 054', score: '7 שיעורים' },
+    { name: 'לקוחה דמו 055', score: '7 שיעורים' },
+  ]));
+  demoSetHtml('noShowList', demoRankingRows([
+    { name: 'לקוחה דמו 056', score: '3 ביטולים' },
+    { name: 'לקוחה דמו 057', score: '2 ביטולים' },
+    { name: 'לקוחה דמו 058', score: '2 ביטולים' },
+  ], 'danger'));
+  demoSetHtml('courseBookingList', demoRankingRows([
+    { name: 'בייבי יוגה', score: '38 הרשמות' },
+    { name: 'תנועה והתפתחות', score: '31 הרשמות' },
+    { name: 'חוג מוזיקה', score: '24 הרשמות' },
+    { name: 'סדנת הורים', score: '19 הרשמות' },
+  ]));
+  demoSetHtml('nonEngagedList', demoRankingRows([
+    { name: 'לקוחה דמו 059', score: 'Full House' },
+    { name: 'לקוחה דמו 060', score: 'In House' },
+    { name: 'לקוחה דמו 061', score: 'Full House' },
+  ]));
+  demoSetText('onetimeCount', '6 לידים חמים');
+  demoSetHtml('onetimeList', demoRankingRows([
+    { name: 'לקוחה דמו 062', score: 'שיעור ניסיון' },
+    { name: 'לקוחה דמו 063', score: 'חדש ב-CRM' },
+    { name: 'לקוחה דמו 064', score: 'מעקב השבוע' },
+  ]));
+
+  const note = document.getElementById('studioInfoNote');
+  if (note) {
+    note.innerHTML = '✅ נתוני מערכת סטודיו <strong>דמו אנונימיים</strong> - ללא חיבור למערכות לקוח | ' + total + ' מנויים פעילים';
+    note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+  }
+  const arboxBadge = document.getElementById('arboxBadge');
+  const arboxDot = document.getElementById('arboxDot');
+  const arboxTxt = document.getElementById('arboxStatus');
+  if (arboxBadge) {
+    arboxBadge.innerHTML = '<span class="pulse"></span> סטודיו דמו ✓';
+    arboxBadge.style.background = 'rgba(74,222,128,0.22)';
+  }
+  if (arboxDot) arboxDot.className = 'fr-dot sample';
+  if (arboxTxt) arboxTxt.textContent = 'מערכת סטודיו - נתוני דמו אנונימיים';
+}
+
 async function loadStudioData() {
-  const loading = '<div style="padding:18px;text-align:center;color:var(--text-secondary);font-size:12px;">⟳ טוען נתונים מ-Arbox...</div>';
+  if (DEMO_MODE) {
+    loadDemoStudioData();
+    return;
+  }
+  const loading = '<div style="padding:18px;text-align:center;color:var(--text-secondary);font-size:12px;">⟳ טוען נתונים ממערכת סטודיו...</div>';
   ['expiryList','workshopList','topList','noShowList','punchExpList'].forEach(id => {
     const el = document.getElementById(id); if (el) el.innerHTML = loading;
   });
@@ -2185,8 +1982,8 @@ async function loadStudioData() {
     ]);
 
     const [inactiveMembers, expiredMemberships, renewals, cancellations] = await Promise.all([
-      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${monthStart}&toDate=${monthEnd}&limit=500&page=1`),
-      arboxGetSafe(`/reports/expiringMembershipsReport?fromDate=${monthStart}&toDate=${monthEnd}&limit=500&page=1`),
+      arboxGetSafe(`/reports/inactiveMembersReport?fromDate=${minus30}&toDate=${today}&limit=500`),
+      arboxGetSafe(`/reports/expiredMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
       arboxGetSafe(`/reports/renewalsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
       arboxGetSafe(`/reports/canceledMembershipsReport?fromDate=${minus30}&toDate=${today}&limit=500`),
     ]);
@@ -2270,25 +2067,25 @@ async function loadStudioData() {
       setTxt('kpiInactive', inactiveMembers.length);
       setTxt('kpiInactiveSub', 'ללא פעילות ב-30 יום');
     }
-    else setPending('kpiInactive', 'kpiInactiveSub', 'נדרש אימות מול Arbox');
+    else setPending('kpiInactive', 'kpiInactiveSub', 'נדרש אימות מול מערכת סטודיו');
 
     if (expiredMemberships) {
       setTxt('kpiExpiredPlans', expiredMemberships.length);
-      setTxt('kpiExpiredPlansSub', 'פגים החודש');
+      setTxt('kpiExpiredPlansSub', 'פגו ב-30 הימים האחרונים');
     }
-    else setPending('kpiExpiredPlans', 'kpiExpiredPlansSub', 'נדרש אימות מול Arbox');
+    else setPending('kpiExpiredPlans', 'kpiExpiredPlansSub', 'נדרש אימות מול מערכת סטודיו');
 
     if (renewals) {
       setTxt('kpiRenewals', renewalsInRange.length);
       setTxt('kpiRenewalsSub', '30 הימים האחרונים');
     }
-    else setPending('kpiRenewals', 'kpiRenewalsSub', 'נדרש אימות מול Arbox');
+    else setPending('kpiRenewals', 'kpiRenewalsSub', 'נדרש אימות מול מערכת סטודיו');
 
     if (cancellations) {
       setTxt('kpiCancellations', cancellationsInRange.length);
       setTxt('kpiCancellationsSub', 'לפי תאריך ביטול');
     }
-    else setPending('kpiCancellations', 'kpiCancellationsSub', 'נדרש אימות מול Arbox');
+    else setPending('kpiCancellations', 'kpiCancellationsSub', 'נדרש אימות מול מערכת סטודיו');
 
     // 8. Active Courses - use the validated hugim booking report, fall back to older report/schedule if unavailable.
     const scheduleCourseNames = new Set((schedule || []).filter(s => s.date >= today).map(s => s.session_name).filter(Boolean));
@@ -2392,10 +2189,10 @@ expiring.sort((a, b) => a.days - b.days);
           <div class="ranking-item"><div class="rank-num rank-${i+1}">${i+1}</div><div class="ranking-name">${name}</div><div class="ranking-score danger">${count} ביטולים</div></div>`).join('')
       : '<div style="padding:16px;text-align:center;color:var(--success);font-weight:600;">✓ אין ביטולים מאוחרים</div>';
 
-        // Single lesson buyers: transactions for 99₪ or 220₪ — cross-ref Arbox ↔ ScallaCRM
+        // Single lesson buyers: transactions for 99₪ or 220₪ — cross-ref מערכת סטודיו ↔ CRM
     const TRIAL_PRICES = [99, 220];
     const activeNames = new Set(members.map(m => (m.full_name || '').trim().toLowerCase()));
-    // Build ScallaCRM name lookup (full name + first name fallback)
+    // Build CRM name lookup (full name + first name fallback)
     const scallaNameMap = {};
     (leadsData || []).forEach(l => {
       const key = (l.name || '').trim().toLowerCase();
@@ -2442,77 +2239,46 @@ expiring.sort((a, b) => a.days - b.days);
             <div class="ranking-score" style="color:var(--warning);font-size:11px;">${o.date ? fmtDateHeb(o.date.slice(0,10)) : ''}</div>
           </div>`).join('')
       : `<div style="padding:14px;background:var(--bg);border-radius:10px;font-size:12px;color:var(--text-secondary);text-align:center;">
-          ${transactions && transactions.length > 0 ? '✓ אין רוכשי שיעור ניסיון ללא מנוי פעיל' : '🔍 נתוני עסקאות לא זמינים מ-Arbox (יש לבדוק הרשאות API)'}
+          ${transactions && transactions.length > 0 ? '✓ אין רוכשי שיעור ניסיון ללא מנוי פעיל' : '🔍 נתוני עסקאות לא זמינים ממערכת סטודיו (יש לבדוק הרשאות API)'}
         </div>`;
 
-    studioSnapshot = {
-      loadedAt: new Date().toISOString(),
-      range: { today, minus30, plus30, plus7, monthStart, monthEnd },
-      members,
-      schedule,
-      lateCancels,
-      bookings,
-      transactions,
-      activeHugim,
-      activeSessionsReport,
-      hugimBookings,
-      inactiveMembers,
-      expiredMemberships,
-      renewals,
-      cancellations,
-      fh,
-      ih,
-      kr,
-      expiring,
-      punchExpiring,
-      punchExpiringWeek,
-      nonEngaged,
-      onetimeList,
-      topLC,
-      topCust,
-      courseBookingArr,
-    };
-    renderPerformanceModule();
-
-    const note = document.getElementById('studioInfoNote');
+const note = document.getElementById('studioInfoNote');
     if (note) {
-      note.innerHTML = `✅ נתוני Arbox <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | ${members.length} מנויים פעילים`;
+      note.innerHTML = `✅ נתוני מערכת סטודיו <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | ${members.length} מנויים פעילים`;
       note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
     }
 
     const arboxBadge = document.getElementById('arboxBadge');
     const arboxDot = document.getElementById('arboxDot');
     const arboxTxt = document.getElementById('arboxStatus');
-    if (arboxBadge) { arboxBadge.innerHTML = '<span class="pulse"></span> Arbox מחובר ✓'; arboxBadge.style.background = 'rgba(74,222,128,0.22)'; }
+    if (arboxBadge) { arboxBadge.innerHTML = '<span class="pulse"></span> מערכת סטודיו מחובר ✓'; arboxBadge.style.background = 'rgba(74,222,128,0.22)'; }
     if (arboxDot) arboxDot.className = 'fr-dot live';
-    if (arboxTxt) arboxTxt.textContent = 'Arbox - נתונים חיים ✓';
+    if (arboxTxt) arboxTxt.textContent = 'מערכת סטודיו - נתונים חיים ✓';
 
   } catch (err) {
-    console.error('Arbox load error:', err);
-    studioSnapshot = null;
-    renderPerformanceModule();
+    console.error('מערכת סטודיו load error:', err);
     const note = document.getElementById('studioInfoNote');
-    if (note) { note.innerHTML = '⚠️ שגיאת חיבור ל-Arbox - מציג נתוני הדגמה'; note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;'; }
+    if (note) { note.innerHTML = '⚠️ שגיאת חיבור ל-מערכת סטודיו - מציג נתוני הדגמה'; note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;'; }
     const arboxBadge = document.getElementById('arboxBadge');
-    if (arboxBadge) { arboxBadge.innerHTML = '⚠ Arbox - שגיאת חיבור'; arboxBadge.style.background = 'rgba(251,191,36,0.2)'; }
+    if (arboxBadge) { arboxBadge.innerHTML = '⚠ מערכת סטודיו - שגיאת חיבור'; arboxBadge.style.background = 'rgba(251,191,36,0.2)'; }
   }
 }
 
 // ═══════════════════════════════════════════════════════════════
 // RENDER: MARKETING TAB
 // ═══════════════════════════════════════════════════════════════
-// Non-Meta lead sources - Meta API has no visibility into these (referrals, direct, WhatsApp).
+// Non-Meta lead sources - חיבור שיווקי has no visibility into these (referrals, direct, WhatsApp).
 // Kept as manual entries alongside whatever Meta returns live for the paid/organic rows.
 const MANUAL_CAMPAIGN_ROWS = [
-  { source: 'הפניות מגיליגולי', type: 'referral', leads: 4, spend: 0, conv: 1 },
+  { source: 'הפניות פנימיות', type: 'referral', leads: 14, spend: 0, conv: 4 },
   { source: 'אתר אינטרנט',      type: 'other',    leads: 3, spend: 600, conv: 0 },
   { source: 'WhatsApp',         type: 'referral', leads: 2, spend: 0, conv: 0 },
   { source: 'לא ידוע',          type: 'other',    leads: 4, spend: 0, conv: 0 },
 ];
 
 const DEMO_CAMPAIGN_ROWS = [
-  { source: 'קמפיין פייסבוק - שיינקין', type: 'paid',     leads: 22, spend: 5800, conv: 1 },
-  { source: 'פייסבוק / אינסטגרם אורגני', type: 'organic', leads:  5, spend:    0, conv: 0 },
+  { source: 'קמפיין דיגיטלי - אזור מרכז', type: 'paid', leads: 42, spend: 9200, conv: 8 },
+  { source: 'סושיאל אורגני', type: 'organic', leads: 18, spend: 0, conv: 3 },
   ...MANUAL_CAMPAIGN_ROWS,
 ];
 
@@ -2534,13 +2300,14 @@ function renderCampaignTable(campaignData) {
 }
 
 async function metaPost(action, params = {}) {
+  if (DEMO_MODE) throw new Error('Demo mode does not connect to marketing systems');
   const res = await fetch(META.ENDPOINT, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ action, ...params }),
   });
   const json = await res.json();
-  if (!res.ok || json.error) throw new Error((json.error && json.error.message) || json.error || 'Meta API error');
+  if (!res.ok || json.error) throw new Error((json.error && json.error.message) || json.error || 'חיבור שיווקי error');
   return json;
 }
 
@@ -2552,6 +2319,21 @@ function extractLeadCount(actions) {
 }
 
 async function loadMetaData() {
+  if (DEMO_MODE) {
+    renderCampaignTable(DEMO_CAMPAIGN_ROWS);
+    const note = document.getElementById('marketingInfoNote');
+    if (note) {
+      note.innerHTML = '✅ נתוני שיווק <strong>דמו אנונימיים</strong> - קמפיינים, תקציב והמרות סינתטיים';
+      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
+    }
+    const dot = document.getElementById('metaDot');
+    const status = document.getElementById('metaStatus');
+    const srcNote = document.getElementById('metaSourceNote');
+    if (dot) dot.className = 'fr-dot sample';
+    if (status) status.textContent = 'שיווק - נתוני דמו';
+    if (srcNote) srcNote.textContent = 'נתוני דמו אנונימיים';
+    return;
+  }
   try {
     const [campaignsRes, fansRes, socialRes] = await Promise.all([
       metaPost('campaigns', { date_preset: 'this_month' }),
@@ -2564,7 +2346,7 @@ async function loadMetaData() {
       type: 'paid',
       leads: extractLeadCount(c.actions),
       spend: Math.round(parseFloat(c.spend || 0)),
-      conv: 0, // Meta has no close/conversion data - that lives in ScallaCRM, not merged here yet
+      conv: 0, // Meta has no close/conversion data - that lives in CRM, not merged here yet
     }));
 
     renderCampaignTable([...metaRows, ...MANUAL_CAMPAIGN_ROWS]);
@@ -2594,22 +2376,22 @@ async function loadMetaData() {
 
     const note = document.getElementById('marketingInfoNote');
     if (note) {
-      note.innerHTML = `✅ נתוני Meta Ads <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | קמפיינים ממומנים בלבד, שאר המקורות עדיין ידניים`;
+      note.innerHTML = `✅ נתוני שיווק דיגיטלי <strong>חיים</strong> - עודכן ${new Date().toLocaleString('he-IL')} | קמפיינים ממומנים בלבד, שאר המקורות עדיין ידניים`;
       note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
     }
     const dot = document.getElementById('metaDot');
     const status = document.getElementById('metaStatus');
     if (dot) dot.className = 'fr-dot live';
-    if (status) status.textContent = 'שיווק - Meta Ads חי ✓';
+    if (status) status.textContent = 'שיווק - שיווק דיגיטלי חי ✓';
     const srcNote = document.getElementById('metaSourceNote');
-    if (srcNote) srcNote.textContent = '✓ מחובר ל-Meta API';
+    if (srcNote) srcNote.textContent = '✓ מחובר ל-חיבור שיווקי';
 
   } catch (err) {
     console.error('Meta load error:', err);
     // Table already shows DEMO_CAMPAIGN_ROWS from renderMarketingTab() - leave it, just flag the failure.
     const note = document.getElementById('marketingInfoNote');
     if (note) {
-      note.innerHTML = '⚠️ שגיאת חיבור ל-Meta Ads - מציג נתוני הדגמה עבור קמפיינים ממומנים';
+      note.innerHTML = '⚠️ שגיאת חיבור ל-שיווק דיגיטלי - מציג נתוני הדגמה עבור קמפיינים ממומנים';
       note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
     }
   }
@@ -2619,325 +2401,45 @@ function renderMarketingTab() {
   if (typeof Chart === 'undefined') return;
 
   renderCampaignTable(DEMO_CAMPAIGN_ROWS);
-  const chartColors = chartThemeColors();
 
   const wkCtx = document.getElementById('weeklyChart').getContext('2d');
-  if (weeklyChart) { weeklyChart.destroy(); weeklyChart = null; }
-  weeklyChart = new Chart(wkCtx, {
+  new Chart(wkCtx, {
     type: 'bar',
     data: {
       labels: ['שבוע 1 (1-7/6)', 'שבוע 2 (8-14/6)', 'שבוע 3 (15-21/6)', 'שבוע 4 (22-28/6)'],
       datasets: [
-        { label: 'לידים בפועל', data: [9, 11, 14, 4], backgroundColor: 'rgba(107,33,168,0.8)', borderRadius: 6 },
-        { label: 'יעד שבועי', data: [15, 15, 15, 15], type: 'line', borderColor: '#EC4899', borderDash: [5,5], borderWidth: 2, pointRadius: 0, fill: false }
+        { label: 'לידים בפועל', data: [12, 16, 21, 18], backgroundColor: 'rgba(107,33,168,0.8)', borderRadius: 6 },
+        { label: 'יעד שבועי', data: [18, 18, 18, 18], type: 'line', borderColor: '#EC4899', borderDash: [5,5], borderWidth: 2, pointRadius: 0, fill: false }
       ]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { position: 'top', rtl: true, labels: { color: chartColors.text, font: { family: 'Heebo' } } }, tooltip: { rtl: true } },
+      plugins: { legend: { position: 'top', rtl: true, labels: { font: { family: 'Heebo' } } }, tooltip: { rtl: true } },
       scales: {
-        x: { grid: { display: false }, ticks: { color: chartColors.text, font: { family: 'Heebo', size: 11 } } },
-        y: { grid: { color: chartColors.grid }, ticks: { color: chartColors.text, font: { family: 'Heebo' } } }
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 11 } } },
+        y: { grid: { color: '#F3F0FF' }, ticks: { font: { family: 'Heebo' } } }
       }
     }
   });
 
   const socCtx = document.getElementById('socialChart').getContext('2d');
-  if (socialChart) { socialChart.destroy(); socialChart = null; }
-  socialChart = new Chart(socCtx, {
+  new Chart(socCtx, {
     type: 'line',
     data: {
       labels: ['שבוע 1', 'שבוע 2', 'שבוע 3', 'שבוע 4'],
-      datasets: [{ label: 'חשיפות', data: [2800, 3100, 3500, 3000], borderColor: '#EC4899', backgroundColor: 'rgba(236,72,153,0.1)', fill: true, tension: 0.4, pointRadius: 3 }]
+      datasets: [{ label: 'חשיפות', data: [4200, 4600, 5200, 4900], borderColor: '#EC4899', backgroundColor: 'rgba(236,72,153,0.1)', fill: true, tension: 0.4, pointRadius: 3 }]
     },
     options: {
       responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
-        x: { grid: { display: false }, ticks: { color: chartColors.text, font: { family: 'Heebo', size: 10 } } },
+        x: { grid: { display: false }, ticks: { font: { family: 'Heebo', size: 10 } } },
         y: { display: false }
       }
     }
   });
 }
 
-// ═══════════════════════════════════════════════════════════════
-// AI PERFORMANCE MODULE - LOCAL ANALYTICS + OPTIONAL AI SUMMARY
-// ═══════════════════════════════════════════════════════════════
-function perfClamp(value, min, max) { return Math.max(min, Math.min(max, value)); }
-function perfPct(part, total) { return total > 0 ? Math.round((part / total) * 100) : null; }
-function perfCount(arr) { return Array.isArray(arr) ? arr.length : 0; }
-function perfHtml(value) {
-  return String(value ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-function perfSetText(id, value) { const el = document.getElementById(id); if (el) el.textContent = value; }
-function perfSetHtml(id, value) { const el = document.getElementById(id); if (el) el.innerHTML = value; }
-
-function performanceMetricHtml(value, label, sub) {
-  return `
-    <div class="performance-metric">
-      <div class="performance-metric-val">${perfHtml(value)}</div>
-      <div>
-        <div class="performance-metric-label">${perfHtml(label)}</div>
-        <div class="performance-metric-sub">${perfHtml(sub)}</div>
-      </div>
-    </div>`;
-}
-
-function performanceActionHtml(action) {
-  return `
-    <div class="performance-action ${action.priority}">
-      <div class="performance-action-head">
-        <span class="performance-priority ${action.priority}">${perfHtml(action.priorityLabel)}</span>
-        <span class="performance-action-metric">${perfHtml(action.metric)}</span>
-      </div>
-      <div class="performance-action-title">${perfHtml(action.title)}</div>
-      <div class="performance-action-body">${perfHtml(action.body)}</div>
-      <div class="performance-action-next">${perfHtml(action.next)}</div>
-    </div>`;
-}
-
-function performanceNames(items, getName) {
-  const names = (items || []).map(getName).filter(Boolean).slice(0, 5);
-  return names.length ? names.join(' · ') : 'אין רשימת שמות זמינה';
-}
-
-function buildPerformanceAnalysis() {
-  const now = new Date();
-  const currentMonthKey = `${now.getFullYear()}-${pad2(now.getMonth() + 1)}`;
-  const monthLeads = (leadsData || []).filter(l => l.monthKey === currentMonthKey);
-  const inProgressLeads = (leadsData || []).filter(l => IN_PROGRESS_STATUSES.includes(l.statusLabel));
-  const trialClosed = monthLeads.filter(l => l.statusLabel === TRIAL_CLOSED_STATUS);
-  const lostLeads = monthLeads.filter(l => LOST_STATUSES.includes(l.statusLabel));
-  const conversionRate = perfPct(trialClosed.length, monthLeads.length);
-  const hasStudio = !!(studioSnapshot && Array.isArray(studioSnapshot.members));
-
-  const activeMembers = hasStudio ? studioSnapshot.members.length : 0;
-  const expiring = hasStudio ? studioSnapshot.expiring || [] : [];
-  const punchExpiring = hasStudio ? studioSnapshot.punchExpiring || [] : [];
-  const punchExpiringWeek = hasStudio ? studioSnapshot.punchExpiringWeek || [] : [];
-  const nonEngaged = hasStudio ? studioSnapshot.nonEngaged || [] : [];
-  const onetimeList = hasStudio ? studioSnapshot.onetimeList || [] : [];
-  const lateCancels = hasStudio ? studioSnapshot.lateCancels || [] : [];
-  const bookings = hasStudio ? studioSnapshot.bookings || [] : [];
-  const inactiveMembers = hasStudio && Array.isArray(studioSnapshot.inactiveMembers) ? studioSnapshot.inactiveMembers : null;
-  const renewals = hasStudio && Array.isArray(studioSnapshot.renewals) ? studioSnapshot.renewals : null;
-  const cancellations = hasStudio && Array.isArray(studioSnapshot.cancellations) ? studioSnapshot.cancellations : null;
-  const topLC = hasStudio ? studioSnapshot.topLC || [] : [];
-
-  const nonEngagedRate = activeMembers ? nonEngaged.length / activeMembers : 0;
-  const expiryRate = activeMembers ? expiring.length / activeMembers : 0;
-  const lateCancelRate = bookings.length ? lateCancels.length / bookings.length : 0;
-  const engagementRate = activeMembers ? perfPct(activeMembers - nonEngaged.length, activeMembers) : null;
-
-  let score = hasStudio ? 84 : (scallaDataSource === 'live' ? 68 : 55);
-  if (hasStudio) {
-    score -= Math.min(24, Math.round(nonEngagedRate * 32));
-    score -= Math.min(18, Math.round(expiryRate * 45));
-    score -= Math.min(12, Math.round(lateCancelRate * 80));
-    score -= Math.min(10, Math.round(onetimeList.length * 1.2));
-    if (conversionRate !== null && conversionRate < 15) score -= 12;
-    else if (conversionRate !== null && conversionRate < 25) score -= 6;
-    else if (conversionRate !== null && conversionRate >= 25) score += 4;
-    if (renewals && cancellations && renewals.length > cancellations.length) score += 3;
-    if (!expiring.length && !nonEngaged.length && !onetimeList.length) score += 6;
-  }
-  score = perfClamp(Math.round(score), 35, 95);
-
-  const actions = [];
-  const addAction = (priority, metric, title, body, next) => {
-    const labels = { high: 'דחוף', medium: 'חשוב', good: 'תקין' };
-    actions.push({ priority, priorityLabel: labels[priority] || 'חשוב', metric, title, body, next });
-  };
-
-  if (!hasStudio) {
-    addAction('medium', 'Arbox לא נטען', 'להשלים טעינת נתוני לקוחות', 'אפשר לחשב לידים מ-Scalla, אבל המלצות שימור ו-upsell דורשות Arbox חי.', 'לבדוק חיבור Arbox ואז לרענן נתונים.');
-  }
-  if (hasStudio && expiring.length > 0) {
-    addAction('high', `${expiring.length} מנויים`, 'לסגור חידושים לפני פקיעת מנוי', 'מנוי שעומד לפוג הוא הסיכון הישיר ביותר להכנסה חוזרת. התחילו מהמנויים שפגים ב-7-14 ימים הקרובים.', 'להוציא רשימת חידוש יומית ולעדכן סטטוס אחרי כל שיחה.');
-  }
-  if (hasStudio && nonEngaged.length > 0) {
-    addAction(nonEngagedRate >= .25 ? 'high' : 'medium', `${nonEngaged.length} ללא פעילות`, 'להחזיר לקוחות שלא הגיעו 30 יום', 'לקוחות פעילים שלא נרשמו לשיעור נוטים לבטל או לא לחדש. זה אזור שימור עם השפעה מהירה.', 'לשלוח הודעה אישית עם 2 מועדי שיעור פנויים לשבוע הקרוב.');
-  }
-  if (hasStudio && onetimeList.length > 0) {
-    addAction('high', `${onetimeList.length} רוכשי ניסיון`, 'להמיר רוכשי שיעור ניסיון למנוי', 'אלו לקוחות שכבר שילמו והראו כוונה. חלון ההמרה קצר, לכן הם צריכים טיפול לפני לידים קרים.', 'לבנות משימת follow-up תוך 24 שעות מרכישה עם הצעת Full House או כרטיסייה.');
-  }
-  if (hasStudio && lateCancels.length > 0) {
-    addAction(lateCancelRate >= .12 ? 'high' : 'medium', `${lateCancels.length} ביטולים`, 'להקטין ביטולים מאוחרים ואי-הגעה', 'ביטולים חוזרים פוגעים בניצול שיעורים ובחוויה של לקוחות שממתינים למקום.', 'לזהות את 5 המבטלים המובילים ולהפעיל תזכורת/מדיניות ביטול רכה.');
-  }
-  if (conversionRate !== null && conversionRate < 20 && monthLeads.length >= 5) {
-    addAction('medium', `${conversionRate}% המרה`, 'לשפר מעבר ליד לשיעור ניסיון', 'יש מספיק נפח לידים החודש, אבל מעט מדי נסגרים לשיעור ניסיון.', 'לבדוק מקור ליד וסיבת אי-התקדמות, ואז לעדכן תסריט שיחה.');
-  }
-  if (inProgressLeads.length > 0) {
-    addAction('medium', `${inProgressLeads.length} לידים`, 'לנקות לידים בטיפול', 'לידים פתוחים שלא מקבלים next step מייצרים אשליית פייפליין ולא הכנסה.', 'לקבוע לכל ליד פעולה אחת: שיחה, WhatsApp, תזכורת או סגירה.');
-  }
-  if (!actions.length) {
-    addAction('good', 'אין חריגות', 'להמשיך מעקב שבועי', 'הנתונים לא מציפים כרגע סיכון ביצועי חריג.', 'לשמר קצב בדיקה קבוע של חידושים, פעילות לקוחות והמרת ניסיון.');
-  }
-
-  const customerSegments = [];
-  if (hasStudio && onetimeList.length) {
-    customerSegments.push({
-      priority: 'high', priorityLabel: 'Upsell', metric: `${onetimeList.length} לקוחות`,
-      title: 'רכשו שיעור ניסיון ללא מנוי פעיל',
-      body: performanceNames(onetimeList, o => `${o.name} (${o.price}₪)`),
-      next: 'לתעדף שיחת מכירה אישית היום.',
-    });
-  }
-  if (hasStudio && expiring.length) {
-    customerSegments.push({
-      priority: 'high', priorityLabel: 'שימור', metric: `${expiring.length} מנויים`,
-      title: 'מנויים שפגים ב-30 יום',
-      body: performanceNames(expiring, e => `${e.name} (${e.days} ימים)`),
-      next: 'להציע חידוש לפני תאריך הפקיעה.',
-    });
-  }
-  if (hasStudio && nonEngaged.length) {
-    customerSegments.push({
-      priority: 'medium', priorityLabel: 'מעורבות', metric: `${nonEngaged.length} לקוחות`,
-      title: 'מנויים פעילים ללא הזמנה ב-30 יום',
-      body: performanceNames(nonEngaged, m => m.full_name),
-      next: 'להחזיר אותם לשיעור קרוב.',
-    });
-  }
-  if (hasStudio && punchExpiring.length) {
-    customerSegments.push({
-      priority: punchExpiringWeek.length ? 'high' : 'medium', priorityLabel: 'כרטיסיות', metric: `${punchExpiring.length} כרטיסיות`,
-      title: 'כרטיסיות שעומדות לפוג',
-      body: performanceNames(punchExpiring, e => `${e.name} (${e.days} ימים)`),
-      next: 'להציע הארכה/חידוש לפני אובדן הערך.',
-    });
-  }
-  if (hasStudio && topLC.length) {
-    customerSegments.push({
-      priority: 'medium', priorityLabel: 'ביטולים', metric: `${topLC.length} מובילים`,
-      title: 'לקוחות עם ביטולים מאוחרים',
-      body: performanceNames(topLC, ([name, count]) => `${name} (${count})`),
-      next: 'לבדוק האם נדרש תזכורת או התאמת שעה.',
-    });
-  }
-  if (!customerSegments.length) {
-    customerSegments.push({
-      priority: hasStudio ? 'good' : 'medium', priorityLabel: hasStudio ? 'תקין' : 'ממתין', metric: hasStudio ? '0 חריגים' : 'אין Arbox',
-      title: hasStudio ? 'אין רשימת לקוחות דחופה' : 'נתוני לקוחות עדיין לא זמינים',
-      body: hasStudio ? 'לא נמצאו קבוצות לקוחות עם סיכון מיידי לפי הנתונים הקיימים.' : 'רשימות לקוחות יופיעו אחרי טעינת Arbox.',
-      next: hasStudio ? 'להמשיך מעקב אחרי חידושים ופעילות.' : 'לרענן אחרי שהחיבור פעיל.',
-    });
-  }
-
-  return {
-    hasStudio,
-    score,
-    scoreLabel: score >= 82 ? 'בריא, עם מעקב שוטף' : score >= 68 ? 'יציב, אבל יש פעולות לשיפור' : 'דורש טיפול ניהולי השבוע',
-    metrics: {
-      activeMembers,
-      fh: hasStudio ? studioSnapshot.fh : 0,
-      ih: hasStudio ? studioSnapshot.ih : 0,
-      kr: hasStudio ? studioSnapshot.kr : 0,
-      monthLeads: monthLeads.length,
-      inProgressLeads: inProgressLeads.length,
-      trialClosed: trialClosed.length,
-      lostLeads: lostLeads.length,
-      conversionRate,
-      engagementRate,
-      nonEngaged: nonEngaged.length,
-      expiring: expiring.length,
-      punchExpiring: punchExpiring.length,
-      punchExpiringWeek: punchExpiringWeek.length,
-      onetime: onetimeList.length,
-      bookings: bookings.length,
-      lateCancels: lateCancels.length,
-      inactiveMembers: inactiveMembers ? inactiveMembers.length : null,
-      renewals: renewals ? renewals.length : null,
-      cancellations: cancellations ? cancellations.length : null,
-    },
-    actions: actions.slice(0, 6),
-    customerSegments: customerSegments.slice(0, 5),
-  };
-}
-
-function renderPerformanceModule() {
-  const analysis = buildPerformanceAnalysis();
-  const m = analysis.metrics;
-  const highCount = analysis.actions.filter(a => a.priority === 'high').length;
-  const sourceLabel = `${scallaDataSource === 'live' ? 'Scalla חי' : scallaDataSource === 'cached' ? 'Scalla שמור' : 'Scalla ממתין'} | ${analysis.hasStudio ? 'Arbox חי' : 'Arbox ממתין'}`;
-
-  perfSetText('performanceScoreValue', analysis.hasStudio || leadsData.length ? analysis.score : '—');
-  perfSetText('performanceScoreLabel', analysis.scoreLabel);
-  const fill = document.getElementById('performanceScoreFill');
-  if (fill) fill.style.width = `${analysis.hasStudio || leadsData.length ? analysis.score : 0}%`;
-  perfSetText('badge-performance', highCount ? String(highCount) : '✓');
-  perfSetText('performanceSnapshotDate', new Date().toLocaleString('he-IL'));
-
-  perfSetHtml('performanceScoreMeta', `
-    <span class="performance-chip">${perfHtml(sourceLabel)}</span>
-    <span class="performance-chip">${perfHtml(m.activeMembers || 0)} מנויים פעילים</span>
-    <span class="performance-chip">${perfHtml(m.monthLeads)} לידים החודש</span>
-  `);
-
-  perfSetHtml('performanceMetricList', [
-    performanceMetricHtml(m.activeMembers || '—', 'לקוחות פעילים', analysis.hasStudio ? `FH ${m.fh} | IH ${m.ih} | כרטיסיות ${m.kr}` : 'ממתין ל-Arbox'),
-    performanceMetricHtml(m.engagementRate === null ? '—' : `${m.engagementRate}%`, 'מעורבות לקוחות', `${m.nonEngaged} ללא פעילות ב-30 יום`),
-    performanceMetricHtml(m.conversionRate === null ? '—' : `${m.conversionRate}%`, 'ליד ← שיעור ניסיון', `${m.trialClosed} סגירות מתוך ${m.monthLeads} לידים החודש`),
-    performanceMetricHtml(m.expiring, 'מנויים לפני פקיעה', 'ב-30 הימים הקרובים'),
-    performanceMetricHtml(m.onetime, 'הזדמנויות Upsell', 'רוכשי ניסיון ללא מנוי פעיל'),
-  ].join(''));
-
-  perfSetHtml('performanceActionList', analysis.actions.map(performanceActionHtml).join(''));
-  perfSetHtml('performanceCustomerList', analysis.customerSegments.map(performanceActionHtml).join(''));
-
-  const note = document.getElementById('performanceInfoNote');
-  if (note) {
-    if (analysis.hasStudio && (scallaDataSource === 'live' || scallaDataSource === 'cached')) {
-      note.innerHTML = `✅ <strong>מודול AI ביצועים פעיל</strong> - חילוץ לקוחות מ-Arbox ולידים מ-Scalla | ${sourceLabel}`;
-      note.style.cssText = 'background:var(--success-light);color:var(--success);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
-    } else {
-      note.innerHTML = `⟳ ממתין להשלמת טעינת נתונים | ${sourceLabel}`;
-      note.style.cssText = 'background:var(--warning-light);color:var(--warning);border-radius:10px;padding:11px 14px;font-size:12px;font-weight:500;display:flex;align-items:center;gap:8px;margin-bottom:16px;';
-    }
-  }
-}
-
-function buildPerformanceAiPrompt() {
-  const analysis = buildPerformanceAnalysis();
-  return `נתח את ביצועי העסק של הבית של גיליגולי לפי הנתונים הבאים והחזר בעברית קצרה: 1) שלוש פעולות בעדיפות גבוהה, 2) קהל לקוחות לטיפול, 3) מה לבדוק בשבוע הקרוב. אל תנחש מספרים שלא מופיעים כאן. נתוני סיכום: ${JSON.stringify(analysis.metrics)}. פעולות מקומיות שחושבו: ${JSON.stringify(analysis.actions.map(a => ({ priority: a.priorityLabel, metric: a.metric, title: a.title })))}.`;
-}
-
-async function requestPerformanceAiAnalysis() {
-  if (performanceAiBusy) return;
-  const btn = document.getElementById('performanceAiBtn');
-  const output = document.getElementById('performanceAiOutput');
-  const sub = document.getElementById('performanceAiSub');
-  performanceAiBusy = true;
-  if (btn) { btn.disabled = true; btn.textContent = 'מנתח...'; }
-  if (sub) sub.textContent = 'שולח סיכום נתונים לסוכן AI server-side.';
-  if (output) output.textContent = 'מנתח את הנתונים ומכין המלצות...';
-
-  try {
-    const endpoint = (typeof AI_CHAT !== 'undefined' && AI_CHAT.ENDPOINT) ? AI_CHAT.ENDPOINT : '/.netlify/functions/agent';
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: buildPerformanceAiPrompt(), history: [] }),
-      signal: AbortSignal.timeout(60000),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) throw new Error(data.error || data.detail || 'AI request failed');
-    if (output) output.textContent = data.reply || 'לא התקבלה תשובה מהמודול.';
-    if (sub) sub.textContent = `נותח עכשיו | ${Array.isArray(data.toolCalls) ? data.toolCalls.length : 0} קריאות נתונים`;
-  } catch (err) {
-    if (output) output.textContent = 'לא הצלחתי להשלים ניתוח AI כרגע: ' + err.message;
-    if (sub) sub.textContent = 'הניתוח המקומי עדיין זמין למעלה.';
-  } finally {
-    performanceAiBusy = false;
-    if (btn) { btn.disabled = false; btn.textContent = 'נתח והמלץ'; }
-  }
-}
 // ═══════════════════════════════════════════════════════════════
 // THRESHOLD ALERT SYSTEM
 // ═══════════════════════════════════════════════════════════════
@@ -2953,99 +2455,27 @@ const KPI_META = {
 const ALERT_COOLDOWN = 24 * 60 * 60 * 1000; // 24 hours
 
 function getThresholds() {
-  const legacy = readJsonStorage('kpi_thresholds', {});
-  if (legacy && Object.keys(legacy).length) return legacy;
-  return getControlSettings().alerts.thresholds || {};
+  try { return JSON.parse(localStorage.getItem('kpi_thresholds') || '{}'); } catch { return {}; }
 }
-function saveThresholds(t) {
-  localStorage.setItem('kpi_thresholds', JSON.stringify(t));
-  const raw = readRawControlSettings() || {};
-  const alerts = { ...(raw.alerts || {}), thresholds: t };
-  localStorage.setItem(CONTROL_SETTINGS_KEY, JSON.stringify({ ...raw, alerts }));
-}
+function saveThresholds(t) { localStorage.setItem('kpi_thresholds', JSON.stringify(t)); }
 
 function getEmailJSCfg() {
   try { return JSON.parse(localStorage.getItem('emailjs_config') || 'null'); } catch { return null; }
 }
 
-const EMAILJS_SDK_URLS = [
-  'https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js',
-  'https://unpkg.com/@emailjs/browser@4/dist/email.min.js',
-];
-let emailJsLoadPromise = null;
-
-function hasEmailJS() {
-  return Boolean(window.emailjs && typeof emailjs.init === 'function' && typeof emailjs.send === 'function');
-}
-
-function loadEmailJSScript(src) {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement('script');
-    const timer = setTimeout(() => {
-      script.remove();
-      reject(new Error('טעינת EmailJS נכשלה או נחסמה'));
-    }, 7000);
-    script.src = src;
-    script.async = true;
-    script.onload = () => {
-      clearTimeout(timer);
-      hasEmailJS() ? resolve() : reject(new Error('EmailJS נטען ללא API תקין'));
-    };
-    script.onerror = () => {
-      clearTimeout(timer);
-      reject(new Error('טעינת EmailJS נכשלה או נחסמה'));
-    };
-    document.head.appendChild(script);
-  });
-}
-
-async function ensureEmailJSLoaded() {
-  if (hasEmailJS()) return emailjs;
-  if (!emailJsLoadPromise) {
-    emailJsLoadPromise = (async () => {
-      for (const src of EMAILJS_SDK_URLS) {
-        try {
-          await loadEmailJSScript(src);
-          if (hasEmailJS()) return emailjs;
-        } catch {
-          // Try the next official CDN before logging the alert failure.
-        }
-      }
-      throw new Error('EmailJS לא נטען. בדקו שהדפדפן לא חוסם CDN ונסו שוב');
-    })();
-  }
-  return emailJsLoadPromise;
-}
-
-function formatEmailJSError(err) {
-  if (err && err.text) return `EmailJS: ${err.text}`;
-  if (err && err.message) return err.message;
-  return 'שליחת EmailJS נכשלה';
-}
-
-async function initEmailJS() {
+function initEmailJS() {
   const cfg = getEmailJSCfg();
-  if (cfg && cfg.publicKey) {
-    try {
-      await ensureEmailJSLoaded();
-      emailjs.init({ publicKey: cfg.publicKey });
-    } catch(e) {
-      console.warn('[Alerts] EmailJS init failed:', formatEmailJSError(e));
-    }
+  if (cfg && cfg.publicKey && window.emailjs) {
+    emailjs.init(cfg.publicKey);
   }
 }
 
 async function sendAlertEmail(kpiId, value, thresholdType, thresholdValue, toEmail) {
   const cfg = getEmailJSCfg();
-  if (!cfg || !cfg.publicKey || !cfg.serviceId || !cfg.templateId) {
-    console.warn('[Alerts] EmailJS is not configured. Configure alerts in DashBoard_Control_Panel.html.');
-    return;
-  }
+  if (!cfg || !cfg.publicKey) { openEmailJSModal(); return; }
   const meta = KPI_META[kpiId] || { label: kpiId };
   const typeLabel = thresholdType === 'lower' ? `ירד מתחת ל-${thresholdValue}` : `עלה מעל ל-${thresholdValue}`;
   try {
-    await ensureEmailJSLoaded();
-    emailjs.init({ publicKey: cfg.publicKey });
     await emailjs.send(cfg.serviceId, cfg.templateId, {
       kpi_name: meta.label,
       current_value: String(value),
@@ -3056,13 +2486,11 @@ async function sendAlertEmail(kpiId, value, thresholdType, thresholdValue, toEma
     });
     console.log(`📧 התראה נשלחה: ${meta.label} = ${value} (${typeLabel})`);
   } catch(e) {
-    console.error('EmailJS error:', formatEmailJSError(e));
+    console.error('EmailJS error:', e);
   }
 }
 
 function checkThresholds(kpiId, value) {
-  const settings = getControlSettings();
-  if (settings.alerts.enabled === false) return;
   const t = getThresholds();
   const cfg = t[kpiId];
   if (!cfg || !cfg.enabled) return;
@@ -3071,13 +2499,9 @@ function checkThresholds(kpiId, value) {
 
   // Check cooldown
   const ck = `alert_last_${kpiId}`;
-  const cooldownHours = Number(settings.alerts.cooldownHours);
-  const cooldownMs = Number.isFinite(cooldownHours) && cooldownHours >= 0
-    ? cooldownHours * 60 * 60 * 1000
-    : ALERT_COOLDOWN;
-  if (Date.now() - Number(localStorage.getItem(ck) || 0) < cooldownMs) return;
+  if (Date.now() - Number(localStorage.getItem(ck) || 0) < ALERT_COOLDOWN) return;
 
-  const email = cfg.email || settings.alerts.recipient || 'arye.glikman@gmail.com';
+  const email = cfg.email || 'demo-alerts@example.com';
   let breached = false;
 
   if (cfg.lower !== '' && cfg.lower !== null && cfg.lower !== undefined && num < Number(cfg.lower)) {
@@ -3133,10 +2557,10 @@ function openThresholdModal(kpiId) {
   _activeKpiId = kpiId;
   const meta = KPI_META[kpiId] || {};
   document.getElementById('tmodalTitle').textContent = `🔔 התראה: ${meta.label || kpiId}`;
-  const cfg = (getThresholds()[kpiId]) || { lower: '', upper: '', email: 'arye.glikman@gmail.com', enabled: true };
+  const cfg = (getThresholds()[kpiId]) || { lower: '', upper: '', email: 'demo-alerts@example.com', enabled: true };
   document.getElementById('tLower').value   = cfg.lower ?? '';
   document.getElementById('tUpper').value   = cfg.upper ?? '';
-  document.getElementById('tEmail').value   = cfg.email || 'arye.glikman@gmail.com';
+  document.getElementById('tEmail').value   = cfg.email || 'demo-alerts@example.com';
   document.getElementById('tEnabled').checked = cfg.enabled !== false;
   document.getElementById('thresholdOverlay').classList.add('open');
   document.getElementById('thresholdModal').classList.add('open');
@@ -3190,29 +2614,45 @@ function saveEmailJSConfig() {
   };
   if (!cfg.publicKey || !cfg.serviceId || !cfg.templateId) { alert('יש למלא את כל השדות'); return; }
   localStorage.setItem('emailjs_config', JSON.stringify(cfg));
-  initEmailJS();
+  if (window.emailjs) emailjs.init(cfg.publicKey);
   closeEmailJSModal();
   alert('✅ הגדרות EmailJS נשמרו');
 }
 async function testEmailJS() {
   const cfg = getEmailJSCfg();
-  if (!cfg || !cfg.publicKey || !cfg.serviceId || !cfg.templateId) { alert('יש לשמור הגדרות EmailJS קודם'); return; }
+  if (!cfg) { alert('יש לשמור הגדרות EmailJS קודם'); return; }
+  if (window.emailjs) emailjs.init(cfg.publicKey);
   try {
-    await ensureEmailJSLoaded();
-    emailjs.init({ publicKey: cfg.publicKey });
     await emailjs.send(cfg.serviceId, cfg.templateId, {
       kpi_name: 'סה"כ לידים (בדיקה)', current_value: '42',
       threshold_type: 'עלה מעל ל-40', threshold_value: '40',
-      to_email: 'arye.glikman@gmail.com', dashboard_url: window.location.href,
+      to_email: 'demo-alerts@example.com', dashboard_url: window.location.href,
     });
-    alert('✅ מייל בדיקה נשלח לarye.glikman@gmail.com');
-  } catch(e) { alert('❌ שגיאה: ' + formatEmailJSError(e)); }
+    alert('✅ מייל בדיקה נשלח לdemo-alerts@example.com');
+  } catch(e) { alert('❌ שגיאה: ' + (e?.text || JSON.stringify(e))); }
 }
 
 // ── Inject settings UI into each KPI tile ───────────────────
 function initThresholdUI() {
   initEmailJS();
-  document.querySelectorAll('.kpi-settings-btn, .threshold-dot').forEach(el => el.remove());
+  Object.keys(KPI_META).forEach(kpiId => {
+    const el = document.getElementById(kpiId);
+    const card = el && el.closest('.kpi-card');
+    if (!card) return;
+    if (!card.querySelector('.kpi-settings-btn')) {
+      const btn = document.createElement('button');
+      btn.className = 'kpi-settings-btn';
+      btn.textContent = '⚙';
+      btn.title = 'הגדר התראת סף';
+      btn.addEventListener('click', e => { e.stopPropagation(); openThresholdModal(kpiId); });
+      card.appendChild(btn);
+    }
+    if (!card.querySelector('.threshold-dot')) {
+      const dot = document.createElement('div');
+      dot.className = 'threshold-dot';
+      card.appendChild(dot);
+    }
+  });
   renderThresholdDots();
 }
 
@@ -3223,84 +2663,28 @@ async function refreshDashboard() {
   const btn = document.getElementById('refreshBtn');
   if (btn) { btn.disabled = true; btn.textContent = '⟳ מרענן...'; }
   updateDynamicReportLinks();
-  const tasks = [];
-  if (sourceIsNeeded('scalla')) tasks.push(loadScallaData());
-  if (sourceIsNeeded('arbox')) tasks.push(loadStudioData());
-  if (sourceIsNeeded('meta')) tasks.push(loadMetaData());
-  await Promise.all(tasks);
-  if (btn) { btn.disabled = false; btn.textContent = '🔄 רענן נתונים'; }
+  await Promise.all([loadScallaData(), loadStudioData(), loadMetaData()]);
+  if (btn) { btn.disabled = false; btn.textContent = 'רענן דמו'; }
   checkAllThresholds();
-}
-
-function clearDataRefreshTimers() {
-  dataRefreshTimers.forEach(timer => clearInterval(timer));
-  dataRefreshTimers = [];
-}
-
-function scheduleSourceRefreshes() {
-  clearDataRefreshTimers();
-  const sources = [
-    { key: 'scalla', load: loadScallaData },
-    { key: 'arbox', load: loadStudioData },
-    { key: 'meta', load: loadMetaData },
-  ];
-  sources.forEach(({ key, load }) => {
-    const interval = refreshIntervalMs(key);
-    if (!interval) return;
-    const timer = setInterval(async () => {
-      if (!sourceIsNeeded(key)) return;
-      try {
-        await load();
-        if (key === 'scalla' || key === 'arbox') checkAllThresholds();
-      } catch (err) {
-        console.warn(`[Refresh] ${key} refresh failed:`, err.message);
-      }
-    }, interval);
-    dataRefreshTimers.push(timer);
-  });
-}
-
-function applyDashboardControls() {
-  applyModuleVisibility();
-  if (typeof AI_CHAT !== 'undefined') setAiChatEnabled(getSavedAiChatEnabled(), false);
-  scheduleSourceRefreshes();
 }
 
 // Initialize
 (async function init() {
-  initThemeMode();
-  applyModuleVisibility();
   // Set up threshold UI (gear buttons + dots on each KPI tile)
   initThresholdUI();
   updateDynamicReportLinks();
   // Start data loading in parallel
-  const dataLoads = [];
-  if (sourceIsNeeded('scalla')) dataLoads.push(loadScallaData());
-  if (sourceIsNeeded('arbox')) dataLoads.push(loadStudioData());
-  if (sourceIsNeeded('meta')) dataLoads.push(loadMetaData());
-  const dataPromise = Promise.all(dataLoads);
+  const dataPromise = Promise.all([loadScallaData(), loadStudioData(), loadMetaData()]);
   // Render marketing tab (static data, needs Chart.js)
-  if (isModuleEnabled('marketing') && typeof Chart !== 'undefined') {
+  if (typeof Chart !== 'undefined') {
     renderMarketingTab();
-  } else if (isModuleEnabled('marketing')) {
+  } else {
     window.addEventListener('load', renderMarketingTab);
   }
   await dataPromise;
   // Check all thresholds after data is loaded
   checkAllThresholds();
-  scheduleSourceRefreshes();
 })();
-
-window.addEventListener('storage', event => {
-  if (event.key === THEME_MODE_KEY) {
-    applyThemeMode(getSavedThemeMode(), { persist: false });
-    return;
-  }
-  if (event.key !== CONTROL_SETTINGS_KEY && event.key !== 'ai_chat_enabled' && event.key !== 'kpi_thresholds') return;
-  applyDashboardControls();
-  renderThresholdDots();
-  if (isModuleEnabled('marketing') && typeof Chart !== 'undefined') renderMarketingTab();
-});
 
 // ═══════════════════════════════════════════════════════════════
 // KPI TILE CLICK HANDLER — always opens target system in a new tab
@@ -3309,6 +2693,7 @@ const REPORT_TILE_SELECTOR = '.kpi-card[data-href], .conv-card[data-href]';
 const REPORT_TILE_INTERACTIVE_SELECTOR = 'a, button, input, select, textarea, label';
 
 function openReportTileInNewTab(tile) {
+  if (DEMO_MODE) return;
   const targetUrl = tile && tile.dataset && tile.dataset.href;
   if (!targetUrl) return;
   const tab = window.open(targetUrl, '_blank', 'noopener,noreferrer');
@@ -3334,17 +2719,17 @@ document.querySelectorAll(REPORT_TILE_SELECTOR).forEach(card => {
 });
 
 // ═══════════════════════════════════════════════════════════════
-// AI INSIGHTS CHAT — Hebrew Q&A agent (Claude + live Scalla/Arbox tools)
+// AI INSIGHTS CHAT — Hebrew Q&A agent (Claude + live Scalla/מערכת סטודיו tools)
 // ═══════════════════════════════════════════════════════════════
 const AI_CHAT = {
-  ENDPOINT: '/.netlify/functions/agent',
+  ENDPOINT: '',
   history: [],   // Anthropic-format message history, echoed back by the server each turn
   busy: false,
-  enabled: true,
+  enabled: false,
   controller: null,
 };
 
-const AI_CHAT_ENABLED_KEY = 'ai_chat_enabled';
+const AI_CHAT_ENABLED_KEY = 'ai_chat_enabled_demo';
 
 const AI_CHAT_SUGGESTIONS = [
   'כמה לידים חדשים נכנסו החודש?',
@@ -3456,16 +2841,17 @@ function setAiChatEnabled(enabled, persist = true) {
 }
 
 function getSavedAiChatEnabled() {
-  const rawSettings = readRawControlSettings();
-  if (rawSettings && typeof rawSettings.chatAgent === 'boolean') return rawSettings.chatAgent;
-  try {
-    const legacy = localStorage.getItem(AI_CHAT_ENABLED_KEY);
-    if (legacy !== null) return legacy !== 'false';
-  } catch {}
-  return true;
+  if (DEMO_MODE) return false;
+  try { return localStorage.getItem(AI_CHAT_ENABLED_KEY) !== 'false'; } catch { return true; }
 }
 
 function initAiChat() {
+  if (DEMO_MODE) {
+    setAiChatEnabled(false, false);
+    const master = document.querySelector('.ai-chat-master');
+    if (master) master.hidden = true;
+    return;
+  }
   const input = document.getElementById('aiChatInput');
   const suggestionsEl = document.getElementById('aiChatSuggestions');
   if (suggestionsEl) {
@@ -3485,8 +2871,7 @@ function initAiChat() {
   document.getElementById('aiChatSend').addEventListener('click', () => aiChatSend());
   document.getElementById('aiChatFab').addEventListener('click', () => aiChatToggle());
   document.getElementById('aiChatCloseBtn').addEventListener('click', () => aiChatToggle(false));
-  const toggle = document.getElementById('aiChatEnabled');
-  if (toggle) toggle.addEventListener('change', event => setAiChatEnabled(event.target.checked));
+  document.getElementById('aiChatEnabled').addEventListener('change', event => setAiChatEnabled(event.target.checked));
   setAiChatEnabled(getSavedAiChatEnabled(), false);
 }
 // Deferred: the chat widget markup (button/panel) is written to the DOM *after* this
@@ -3504,12 +2889,12 @@ document.addEventListener('DOMContentLoaded', initAiChat);
   <div class="ai-chat-header">
     <div class="ai-chat-header-title">
       🤖 שאלו את הדשבורד
-      <span class="ai-chat-header-sub">&nbsp;· נתונים חיים מ-Scalla ו-Arbox</span>
+      <span class="ai-chat-header-sub">&nbsp;· נתוני דמו אנונימיים</span>
     </div>
     <button class="ai-chat-close" id="aiChatCloseBtn" type="button">✕</button>
   </div>
   <div class="ai-chat-messages" id="aiChatMessages">
-    <div class="ai-chat-msg bot">שלום! אפשר לשאול אותי שאלות על הלידים, המכירות והמנויים בסטודיו - אני אבדוק את הנתונים החיים ואענה בעברית.</div>
+    <div class="ai-chat-msg bot">צאט ה-AI מושבת בגרסת הדמו כדי למנוע גישה לנתוני לקוח חיים.</div>
   </div>
   <div class="ai-chat-suggestions" id="aiChatSuggestions"></div>
   <div class="ai-chat-input-row">
@@ -3517,5 +2902,10 @@ document.addEventListener('DOMContentLoaded', initAiChat);
     <button class="ai-chat-send" id="aiChatSend" type="button">➤</button>
   </div>
 </div>
+<label class="ai-chat-master" title="הפעלה או השבתה של סוכן הצ'אט">
+  <span>AI</span>
+  <input id="aiChatEnabled" type="checkbox" role="switch" aria-label="הפעלת סוכן הצ'אט">
+  <span class="ai-chat-switch" aria-hidden="true"></span>
+</label>
 </body>
 </html>

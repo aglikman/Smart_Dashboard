@@ -75,12 +75,17 @@ exports.handler = async (event) => {
       // CPL is calculated client-side (spend / leads), not a native field.
       case 'campaigns': {
         const adAccount = params.ad_account_id || META_AD_ACCOUNT_ID;
-        res = await graphGet(`/${adAccount}/insights`, {
-          fields: 'campaign_name,objective,spend,actions',
-          date_preset: params.date_preset || 'this_month',
-          level: 'campaign',
+        const insightParams = {
+          fields: params.fields || 'campaign_name,objective,spend,actions',
+          level: params.level || 'campaign',
           access_token: META_ACCESS_TOKEN,
-        });
+        };
+        if (params.since && params.until) {
+          insightParams.time_range = JSON.stringify({ since: params.since, until: params.until });
+        } else {
+          insightParams.date_preset = params.date_preset || 'this_month';
+        }
+        res = await graphGet(`/${adAccount}/insights`, insightParams);
         break;
       }
 
@@ -94,7 +99,7 @@ exports.handler = async (event) => {
         const pageToken = params.page_access_token || META_PAGE_ACCESS_TOKEN;
         res = await graphGet(`/${pageId}/insights`, {
           metric: 'page_impressions,page_engaged_users,page_post_engagements',
-          period: 'week',
+          period: params.period || 'week',
           access_token: pageToken,
         });
         break;
